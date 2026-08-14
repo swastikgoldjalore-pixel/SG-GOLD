@@ -1,10 +1,9 @@
 /* ==========================================================================
    SWASTIK GOLD JALORE - APP ENGINE STYLES
-   - Classic Sky Blue Regal Theme Design
-   - Sky Blue Container & Tab Backgrounds with Dark Navy Accents
-   - Clean 350ms Normal Signal Flashing Speed
+   - Classic Sky Blue Theme Design
+   - 3-Column Horizontal Spot Grid (SILVER COMEX, GOLD COMEX, USDINR)
+   - 350ms Normal Signal Flashing Speed
    - Tab-Level Login Shield with Visible Header & Top Nav Tabs
-   - PWA Install Shortcut Banner & Golden App Logo
    ========================================================================== */
 
 :root {
@@ -68,10 +67,10 @@ body {
 .menu-toggle-btn { background: none; border: none; color: #facc15; font-size: 20px; cursor: pointer; }
 .avatar-badge { background: #002244; color: #facc15; border: 1.5px solid #facc15; padding: 4px 10px; border-radius: 14px; font-weight: 800; font-size: 11px; cursor: pointer; }
 
-/* TOP NAV TABS WITH SKY BLUE ACCENT BACKGROUND */
+/* TOP NAV TABS */
 .top-nav-tabs {
     display: flex;
-    background: #003a80; /* SKY BLUE NAVY ACCENT */
+    background: #003a80;
     border-bottom: 2px solid #facc15;
     overflow-x: auto;
     position: relative;
@@ -118,7 +117,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #e0f2fe; /* SKY BLUE CONTENT AREA */
+    background: #e0f2fe;
     position: relative;
 }
 
@@ -130,16 +129,16 @@ body {
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
 
-/* SPOT RATES SECTION */
-.spot-rates-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
+/* 3-COLUMN SIDE-BY-SIDE SPOT RATES SECTION */
+.spot-rates-grid, .top-spot-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
 }
 
 .spot-card {
-    background: #003a80; /* REGAL NAVY CARD ON SKY BLUE */
+    background: #003a80;
     border: 1.5px solid #7dd3fc;
     border-radius: 8px;
     padding: 8px 4px;
@@ -149,14 +148,14 @@ body {
 
 .spot-label {
     display: block;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 800;
     color: #facc15;
     letter-spacing: 0.5px;
 }
 
 .spot-value {
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 900;
     color: #ffffff;
     display: block;
@@ -303,7 +302,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(224, 242, 254, 0.95); /* SKY BLUE BACKDROP */
+    background: rgba(224, 242, 254, 0.95);
     backdrop-filter: blur(6px);
     display: flex;
     justify-content: center;
@@ -313,7 +312,6 @@ body {
     overflow-y: auto;
 }
 
-/* FULLSCREEN OVERLAY ONLY WHEN ENTIRE MAIN SCREEN IS LOCKED BY ADMIN SECURITY ON */
 .auth-wrapper.full-screen-lock {
     top: 0 !important;
     z-index: 999999 !important;
@@ -373,78 +371,7 @@ body {
 .drawer-menu { list-style: none; margin-top: 12px; }
 .drawer-menu li { padding: 12px 10px; border-bottom: 1px solid #0284c7; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; color: white; }
 
-/* PWA 1-CLICK INSTALL FLOATING BANNER */
-.pwa-install-banner {
-    position: fixed;
-    bottom: 74px;
-    left: 12px;
-    right: 12px;
-    max-width: 516px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, #001e3d 0%, #003a80 100%);
-    border: 2px solid #facc15;
-    border-radius: 12px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    z-index: 99999;
-    animation: pwaSlideUp 0.4s ease-out;
-}
-
-@keyframes pwaSlideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.pwa-logo-box {
-    width: 44px;
-    height: 44px;
-    background: #001224;
-    border: 1.5px solid #facc15;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.pwa-logo-sg { font-family: 'Cinzel Decorative', serif; font-size: 15px; font-weight: 900; color: #facc15; line-height: 1; }
-.pwa-logo-txt { font-size: 6px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px; }
-
-.pwa-info { flex: 1; text-align: left; }
-.pwa-title { font-size: 12px; font-weight: 900; color: #facc15; line-height: 1.2; }
-.pwa-desc { font-size: 9.5px; color: #cbd5e1; font-weight: 700; margin-top: 1px; }
-
-.btn-pwa-install {
-    background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
-    color: #001e3d;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: 900;
-    font-size: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(250,204,21,0.4);
-    flex-shrink: 0;
-}
-
-.btn-pwa-close {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 2px;
-}
-
-/* MODAL OVERLAY FOR WELCOME POPUP */
+/* WELCOME POPUP MODAL OVERLAY */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -455,7 +382,6 @@ body {
     justify-content: center;
     z-index: 999999;
     padding: 16px;
-    animation: fadeIn 0.2s ease-out;
 }
 
 .theme-modal-card {
@@ -466,11 +392,7 @@ body {
     box-shadow: 0 12px 35px rgba(0,0,0,0.7);
     color: #ffffff;
     width: 100%;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
+    max-width: 340px;
 }
 
 .hidden { display: none !important; }

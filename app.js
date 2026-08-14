@@ -1,13 +1,9 @@
 /* ==========================================================================
-   SWASTIK GOLD JALORE - APP ENGINE SCRIPT
-   - Auto Uppercase Customer Login ID (e.g. SG1001)
-   - Real-time Registration Submission Engine (POST /api/register)
-   - Bank Detail Is Not Available Empty State Renderer
-   - Tab Navigation Protection (Header & Top Nav Tabs remain 100% visible)
-   - Prominent "Back to Live Rates" button inside auth modal card
-   - Strict Network Disconnect Monitor (ONLY triggers banner when navigator.onLine === false)
-   - Dedicated Security Toggle Persistence Protection
-   - Normal 350ms Pleasant Flash Signals
+   SWASTIK GOLD JALORE (swastikgold.net) - UNIVERSAL APP ENGINE
+   - Spot Rates 3-Column Side-by-Side (SILVER COMEX, GOLD COMEX, USDINR)
+   - Real-time Product Reordering Synchronization
+   - Single-Session (Session-1) 0ms Conflict Auto-Logout & Admin Force Logout
+   - Pure Swastik Gold Jalore Branding
    ========================================================================== */
 
 const INITIAL_DEFAULT_PRODUCTS = [
@@ -34,9 +30,8 @@ let appState = {
     spot: { ...INITIAL_DEFAULT_SPOT },
     products: [ ...INITIAL_DEFAULT_PRODUCTS ],
     futures: [ ...INITIAL_DEFAULT_FUTURES ],
-    marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं और सोने-चांदी की गलाई का कार्य भी किया जाता हैं ❖",
+    marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
     isSecurityLoginRequired: false,
-    hatohatSettings: {},
     bankAccounts: [
         { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
         { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
@@ -54,7 +49,9 @@ let appState = {
         hiddenSell: {},
         isMasterHidden: false,
         isMasterFrozen: false,
-        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"]
+        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"],
+        marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
+        popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
     },
     lastLiveFetchTime: 0
 };
@@ -65,11 +62,13 @@ let liveTickSimulationTimer = null;
 let syncChannel = null;
 const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
+// REAL-TIME BROADCAST CHANNEL FOR 0MS MULTI-DEVICE & ADMIN SYNC
 try {
     syncChannel = new BroadcastChannel('sg_realtime_sync');
     syncChannel.onmessage = (e) => {
         if (!e.data) return;
         const msg = e.data;
+
         if (msg.type === 'SESSION_INVALIDATED' && appState.user && appState.user.id === msg.customerId) {
             if (appState.sessionToken !== msg.newSessionToken) {
                 alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!");
@@ -83,6 +82,11 @@ try {
             evaluateSecurityLoginModal();
         } else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
             appState.adminSettings = { ...appState.adminSettings, ...msg.settings };
+            if (msg.settings.marqueeText) {
+                appState.marqueeText = msg.settings.marqueeText;
+                renderMarqueeTicker(msg.settings.marqueeText);
+            }
+            if (msg.settings.bankAccounts) renderBankAccounts(msg.settings.bankAccounts);
             renderProductsList(appState.products);
             renderFuturesList(appState.futures);
         }
@@ -96,6 +100,7 @@ window.addEventListener('storage', (e) => {
     } else if (e.key === 'sg_admin_settings_v3' && e.newValue) {
         try {
             appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(e.newValue) };
+            if (appState.adminSettings.marqueeText) renderMarqueeTicker(appState.adminSettings.marqueeText);
             renderProductsList(appState.products);
             renderFuturesList(appState.futures);
         } catch(err) {}
@@ -123,6 +128,11 @@ function initApp() {
     setInterval(sendVisitorPing, 5000);
 }
 
+function closeWelcomePopup() {
+    const modal = document.getElementById('welcomePopupModal');
+    if (modal) modal.classList.add('hidden');
+}
+
 function loadSavedSettings() {
     try {
         const secVal = localStorage.getItem('sg_security_lock_v3');
@@ -131,6 +141,10 @@ function loadSavedSettings() {
         const savedSettings = localStorage.getItem('sg_admin_settings_v3');
         if (savedSettings) {
             appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(savedSettings) };
+            if (appState.adminSettings.marqueeText) appState.marqueeText = appState.adminSettings.marqueeText;
+            if (appState.adminSettings.bankAccounts && appState.adminSettings.bankAccounts.length > 0) {
+                appState.bankAccounts = appState.adminSettings.bankAccounts;
+            }
         }
     } catch(e) {}
 }

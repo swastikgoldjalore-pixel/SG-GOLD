@@ -1,7 +1,7 @@
 {
   "name": "Swastik Gold Jalore - Bullion Live Desk",
   "short_name": "Swastik Gold",
-  "description": "Official Swastik Gold Jalore Bullion Live Rates Application - Powered by BK Jewelers",
+  "description": "Official Swastik Gold Jalore Bullion Live Rates Application",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
