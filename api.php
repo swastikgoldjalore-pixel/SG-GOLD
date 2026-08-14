@@ -47,7 +47,7 @@ function getSecurityLockStatus() {
             }
         }
     }
-    return true; // Default ON
+    return false; // Default Open for public visitors
 }
 
 function setSecurityLockStatus($val) {

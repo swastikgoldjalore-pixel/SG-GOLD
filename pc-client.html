@@ -119,10 +119,10 @@
         .cust-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.05); color:#e2e8f0; }
 
         .pin-code { background:#070f1e; color:#facc15; padding:2px 6px; border-radius:4px; font-weight:800; font-family:monospace; }
-        .rename-input { width:115px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
+        .rename-input { width:140px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
         
-        .prem-buy-input { width:60px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
-        .prem-sell-input { width:60px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
+        .prem-buy-input { width:65px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
+        .prem-sell-input { width:65px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
 
         .eye-hide-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #dc2626; vertical-align: middle; }
 
@@ -163,7 +163,7 @@
         <div class="admin-auth-card">
             <div style="font-size:32px;color:#facc15;font-weight:900;margin-bottom:4px;">🔒</div>
             <h2 class="admin-auth-title">ADMIN DESK ACCESS LOGIN</h2>
-            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v2.9.0)</p>
+            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v3.0.0)</p>
 
             <form onsubmit="handleOperatorLogin(event)">
                 <div class="admin-input-group">
@@ -188,13 +188,13 @@
                 <div class="swastik-logo-icon">卐</div>
                 <div>
                     <h1>SWASTIK GOLD - OPERATOR SOFTWARE DESK</h1>
-                    <p style="font-size:11px;color:#cbd5e1;">SSE 0ms Latency Engine • IST Timezone • v2.9.0 Latest Release</p>
+                    <p style="font-size:11px;color:#cbd5e1;">Real-Time Sync Engine • swastikgold.net • v3.0.0</p>
                 </div>
             </div>
             <div class="header-status">
-                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-on" onclick="toggleSecurityMode()">
+                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-off" onclick="toggleSecurityMode()">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span id="securityBtnText">🔒 SECURITY ON: Require Customer Login</span>
+                    <span id="securityBtnText">🔓 SECURITY OFF: Direct Open (No Login Required)</span>
                 </button>
 
                 <button id="pcMasterHideBtn" class="btn-hide-all" onclick="togglePcMasterHide()"><i class="fa-solid fa-eye-slash"></i> Hide Physical</button>
@@ -341,8 +341,8 @@
                     <h3 style="color:#818cf8;"><i class="fa-solid fa-brain"></i> Swastik AI Market Analysis (IST)</h3>
                     <div id="pcAiReportPreview" style="font-size:11px;color:#cbd5e1;line-height:1.5;">
                         <p style="color:#4ade80;font-weight:700;">✔ 15-Minute AI Engine Active</p>
-                        <p>COMEX Gold Target: <strong id="aiComexTarget">$2426.00</strong></p>
-                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹72,680</strong></p>
+                        <p>COMEX Gold Target: <strong id="aiComexTarget">$4382.50</strong></p>
+                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹1,54,690</strong></p>
                     </div>
                 </div>
 
@@ -353,40 +353,76 @@
                     <button onclick="savePcPopupMsg()" class="btn-live" style="width:100%;margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i> Save Pop-up Message</button>
                 </div>
 
-                <!-- INBOX MESSAGES -->
-                <div class="pc-card">
-                    <h3><i class="fa-solid fa-inbox"></i> Customer Booking Inbox</h3>
-                    <div id="pcInboxList" style="max-height:220px;overflow-y:auto;">
-                        <!-- Dynamic inbox -->
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
+    <!-- PC OPERATOR CONTROL LOGIC & REAL-TIME BROADCAST SYNC -->
     <script>
+        const INITIAL_PC_PRODUCTS = [
+            { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940 },
+            { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290 },
+            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390 },
+            { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0 },
+            { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190 },
+            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0 }
+        ];
+
+        const INITIAL_PC_FUTURES = [
+            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590 },
+            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190 }
+        ];
+
         let pcState = {
             isFrozen: false,
             isMasterHidden: false,
-            isSecurityLoginRequired: true,
-            adminSettings: {},
-            products: [],
-            futures: [],
+            isSecurityLoginRequired: false,
+            frozenPhysicalPrices: {},
+            adminSettings: {
+                renames: {},
+                premiumsBuy: {},
+                premiumsSell: {},
+                hiddenProducts: {},
+                hiddenBuy: {},
+                hiddenSell: {},
+                marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
+                popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
+            },
+            products: [ ...INITIAL_PC_PRODUCTS ],
+            futures: [ ...INITIAL_PC_FUTURES ],
             lastPrices: {},
             customers: [
                 { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456", activeSession: null }
             ],
             guestVisitors: [
-                { guestName: "Champalal Soni", mobile: "9414152854", ip: "127.0.0.1", device: "Android Smartphone", city: "Jalore", page: "Mobile App", status: "ONLINE", pingTime: "08:44 PM" }
+                { guestName: "Champalal Soni", mobile: "9414152854", ip: "127.0.0.1", device: "Desktop PC", city: "Jalore", page: "Operator Desk", status: "ONLINE", pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }
             ],
-            bankAccounts: []
+            bankAccounts: [
+                { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
+                { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
+            ]
         };
 
         let isPcTableBuilt = false;
-        let isUserEditingBanks = false; // PROTECT BANK EDITOR FROM SSE OVERWRITES WHILE DELETING/EDITING!
+        let isUserEditingBanks = false;
+        let syncChannel = null;
+
+        // Initialize Broadcast Channel for Zero-Latency Instant Tab Sync
+        try {
+            syncChannel = new BroadcastChannel('sg_realtime_sync');
+            syncChannel.onmessage = (e) => {
+                if (e.data) handleSyncMessage(e.data);
+            };
+        } catch(e) {}
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'sg_admin_settings_v3' || e.key === 'sg_customers_v3' || e.key === 'sg_security_lock_v3') {
+                loadLocalSettings();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadLocalSettings();
             const isAuth = sessionStorage.getItem('op_authenticated');
             if (isAuth === 'true') {
                 document.getElementById('operatorAuthModal').classList.add('hidden');
@@ -395,6 +431,58 @@
                 document.getElementById('operatorAuthModal').classList.remove('hidden');
             }
         });
+
+        function loadLocalSettings() {
+            try {
+                const savedSec = localStorage.getItem('sg_security_lock_v3');
+                if (savedSec !== null) pcState.isSecurityLoginRequired = (savedSec === 'true');
+
+                const savedSettings = localStorage.getItem('sg_admin_settings_v3');
+                if (savedSettings) {
+                    pcState.adminSettings = { ...pcState.adminSettings, ...JSON.parse(savedSettings) };
+                    pcState.isMasterHidden = !!pcState.adminSettings.isMasterHidden;
+                    pcState.isFrozen = !!pcState.adminSettings.isMasterFrozen;
+                }
+
+                const savedCusts = localStorage.getItem('sg_customers_v3');
+                if (savedCusts) {
+                    pcState.customers = JSON.parse(savedCusts);
+                }
+
+                const savedVisitors = localStorage.getItem('sg_guest_visitors_v3');
+                if (savedVisitors) {
+                    pcState.guestVisitors = JSON.parse(savedVisitors);
+                }
+            } catch(e) {}
+        }
+
+        function handleSyncMessage(msg) {
+            if (msg.type === 'NEW_REGISTRATION' && msg.customer) {
+                const exists = pcState.customers.find(c => c.id === msg.customer.id || c.mobile === msg.customer.mobile);
+                if (!exists) {
+                    pcState.customers.push(msg.customer);
+                    localStorage.setItem('sg_customers_v3', JSON.stringify(pcState.customers));
+                    renderPcCust();
+                }
+            } else if (msg.type === 'GUEST_PING' && msg.visitor) {
+                updateGuestVisitorList(msg.visitor);
+            }
+        }
+
+        function updateGuestVisitorList(v) {
+            const existing = pcState.guestVisitors.find(x => x.ip === v.ip || (x.mobile && x.mobile === v.mobile));
+            if (existing) {
+                existing.status = 'ONLINE';
+                existing.lastPing = Date.now();
+                existing.pingTime = v.pingTime;
+                existing.page = v.page;
+                if (v.guestName && v.guestName !== 'Guest Visitor') existing.guestName = v.guestName;
+                if (v.mobile && v.mobile !== 'Not Registered') existing.mobile = v.mobile;
+            } else {
+                pcState.guestVisitors.unshift({ ...v, status: 'ONLINE', lastPing: Date.now() });
+            }
+            renderGuestVisitors(pcState.guestVisitors);
+        }
 
         function handleOperatorLogin(e) {
             e.preventDefault();
@@ -416,26 +504,76 @@
         }
 
         async function initPcPanel() {
+            updateSecurityButtonUI();
+            updateControlButtons();
+            renderPcRates(pcState.products, pcState.futures);
             renderPcCust();
             renderGuestVisitors(pcState.guestVisitors);
             renderBankAccountsEditor();
+
+            const marqueeInput = document.getElementById('pcMarqueeText');
+            if (marqueeInput) marqueeInput.value = pcState.adminSettings.marqueeText || '';
+
+            const popupInput = document.getElementById('pcPopupText');
+            if (popupInput) popupInput.value = pcState.adminSettings.popupMsg || '';
+
             await fetchSecurityStatus();
             await fetchAdminSettings();
             initSseStream();
         }
 
         async function fetchSecurityStatus() {
-            const urls = ['/api/security-status?_=' + Date.now(), 'api.php?action=security-status&_=' + Date.now()];
+            const urls = ['api.php?action=security-status&_=' + Date.now(), '/api/security-status?_=' + Date.now()];
             for (const url of urls) {
                 try {
                     const res = await fetch(url);
                     if (res.ok) {
                         const data = await res.json();
                         pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                        localStorage.setItem('sg_security_lock_v3', String(pcState.isSecurityLoginRequired));
                         updateSecurityButtonUI();
                         return;
                     }
                 } catch(e) {}
+            }
+        }
+
+        /* 1. DEDICATED ATOMIC TOGGLE SECURITY FUNCTION */
+        async function toggleSecurityMode() {
+            pcState.isSecurityLoginRequired = !pcState.isSecurityLoginRequired;
+            localStorage.setItem('sg_security_lock_v3', String(pcState.isSecurityLoginRequired));
+            updateSecurityButtonUI();
+
+            if (syncChannel) {
+                syncChannel.postMessage({ type: 'SECURITY_TOGGLE', isSecurityLoginRequired: pcState.isSecurityLoginRequired });
+            }
+
+            // Sync with backend in background
+            const urls = ['api.php?action=toggle-security', '/api/toggle-security'];
+            for (const url of urls) {
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isSecurityLoginRequired: pcState.isSecurityLoginRequired })
+                    });
+                } catch(e) {}
+            }
+
+            alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+        }
+
+        function updateSecurityButtonUI() {
+            const btn = document.getElementById('pcSecurityToggleBtn');
+            const txt = document.getElementById('securityBtnText');
+            if (btn && txt) {
+                if (pcState.isSecurityLoginRequired) {
+                    btn.className = "btn-security-toggle btn-security-on";
+                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
+                } else {
+                    btn.className = "btn-security-toggle btn-security-off";
+                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
+                }
             }
         }
 
@@ -459,21 +597,17 @@
                 startPcPolling();
             }
 
-            setTimeout(() => {
-                if (!pcState.products || pcState.products.length === 0) {
-                    startPcPolling();
-                }
-            }, 1500);
+            startPcPolling();
         }
 
         function startPcPolling() {
             if (pcPollingTimer) return;
             pollPcRates();
-            pcPollingTimer = setInterval(pollPcRates, 350);
+            pcPollingTimer = setInterval(pollPcRates, 400);
         }
 
         async function pollPcRates() {
-            const urls = ['/api/rates-json?_=' + Date.now(), 'api.php?action=rates-json&_=' + Date.now()];
+            const urls = ['api.php?action=rates-json&_=' + Date.now(), '/api/rates-json?_=' + Date.now()];
             for (const url of urls) {
                 try {
                     const res = await fetch(url, { cache: 'no-store' });
@@ -518,220 +652,36 @@
                     else prods.push(obj);
                 }
             });
-            handleIncomingPcPayload({ allProducts: prods, allFutures: futs });
+            if (prods.length > 0 || futs.length > 0) {
+                handleIncomingPcPayload({ allProducts: prods, allFutures: futs });
+            }
         }
 
         function handleIncomingPcPayload(data) {
             if (!data) return;
-            pcState.products = data.allProducts || data.products || [];
-            pcState.futures = data.allFutures || data.futures || [];
-            pcState.guestVisitors = data.guestVisitors || [];
+            if (data.allProducts || data.products) pcState.products = data.allProducts || data.products;
+            if (data.allFutures || data.futures) pcState.futures = data.allFutures || data.futures;
             
-            if (!isUserEditingBanks) {
-                pcState.bankAccounts = data.bankAccounts || [];
+            if (data.guestVisitors && Array.isArray(data.guestVisitors)) {
+                data.guestVisitors.forEach(v => updateGuestVisitorList(v));
+            }
+
+            if (!isUserEditingBanks && data.bankAccounts && data.bankAccounts.length > 0) {
+                pcState.bankAccounts = data.bankAccounts;
                 renderBankAccountsEditor();
             }
 
             if (data.customers && Array.isArray(data.customers)) {
-                pcState.customers = data.customers;
+                // Merge customers
+                data.customers.forEach(sc => {
+                    const idx = pcState.customers.findIndex(c => c.id === sc.id);
+                    if (idx >= 0) pcState.customers[idx] = sc;
+                    else pcState.customers.push(sc);
+                });
                 renderPcCust();
             }
 
-            const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
-            const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
-
-            const onEl = document.getElementById('onlineCountBadge');
-            const offEl = document.getElementById('offlineCountBadge');
-            if (onEl) onEl.innerText = onlineList.length;
-            if (offEl) offEl.innerText = offlineList.length;
-            
-            renderGuestVisitors(pcState.guestVisitors);
-
-            if (data.swastikAiReport) {
-                const comexEl = document.getElementById('aiComexTarget');
-                const mcxEl = document.getElementById('aiMcxTarget');
-                if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
-                if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
-            }
-
             renderPcRates(pcState.products, pcState.futures);
-        }
-
-        function renderBankAccountsEditor() {
-            const container = document.getElementById('bankAccountsContainer');
-            if (!container) return;
-
-            if (!pcState.bankAccounts || pcState.bankAccounts.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1 / -1;text-align:center;padding:16px;background:#070f1e;border:1px dashed #cbd5e1;border-radius:6px;color:#94a3b8;font-weight:700;">⚠️ Bank Detail Is Not Available (सभी बैंक खाते डिलीट हो चुके हैं)</div>`;
-                return;
-            }
-
-            container.innerHTML = pcState.bankAccounts.map((b, idx) => `
-                <div style="background:#070f1e;padding:8px;border-radius:6px;border:1px solid #1e293b;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <span style="color:#f59e0b;font-weight:700;">Bank #${idx + 1}</span>
-                        <button onclick="removeBankRow('${b.id}')" style="background:#ef4444;color:white;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px;"><i class="fa-solid fa-trash"></i> Delete</button>
-                    </div>
-                    <input type="text" id="bankName-${b.id}" class="bank-input-field" value="${b.bankName || ''}" placeholder="Bank Name" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="accountNo-${b.id}" class="bank-input-field" value="${b.accountNo || ''}" placeholder="Account Number" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="ifsc-${b.id}" class="bank-input-field" value="${b.ifsc || ''}" placeholder="IFSC Code" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="branch-${b.id}" class="bank-input-field" value="${b.branch || ''}" placeholder="Branch Location" onfocus="isUserEditingBanks=true">
-                </div>
-            `).join('');
-        }
-
-        function addNewBankAccountRow() {
-            isUserEditingBanks = true;
-            const newId = "bank_" + Date.now();
-            if (!pcState.bankAccounts) pcState.bankAccounts = [];
-            pcState.bankAccounts.push({
-                id: newId,
-                bankName: "HDFC Bank Ltd",
-                accountNo: "50200084712035",
-                ifsc: "HDFC0000241",
-                branch: "gandhi chowk, Jalore",
-                accountType: "Bullion Current Account"
-            });
-            renderBankAccountsEditor();
-        }
-
-        async function removeBankRow(id) {
-            isUserEditingBanks = true;
-            pcState.bankAccounts = pcState.bankAccounts.filter(x => x.id !== id);
-            renderBankAccountsEditor();
-            await saveBankAccountsToAdmin(false); // ATOMIC 1-CLICK PERMANENT SAVE ON DELETE
-        }
-
-        async function saveBankAccountsToAdmin(showAlert = true) {
-            const updatedBanks = pcState.bankAccounts.map(b => {
-                const bNameEl = document.getElementById(`bankName-${b.id}`);
-                const accNoEl = document.getElementById(`accountNo-${b.id}`);
-                const ifscEl = document.getElementById(`ifsc-${b.id}`);
-                const branchEl = document.getElementById(`branch-${b.id}`);
-
-                const bName = bNameEl ? bNameEl.value.trim() : b.bankName;
-                const accNo = accNoEl ? accNoEl.value.trim() : b.accountNo;
-                const ifsc = ifscEl ? ifscEl.value.trim() : b.ifsc;
-                const branch = branchEl ? branchEl.value.trim() : b.branch;
-
-                return { ...b, bankName: bName, accountNo: accNo, ifsc: ifsc, branch: branch };
-            });
-
-            await updateServerSettings({ bankAccounts: updatedBanks });
-            isUserEditingBanks = false;
-            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट एवं डिस्क पर सेव हो गए!");
-        }
-
-        function switchCustTab(tabType) {
-            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
-            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
-            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
-
-            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
-            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
-            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
-        }
-
-        function renderGuestVisitors(visitors) {
-            const tbody = document.getElementById('guestVisitorRows');
-            if (!tbody) return;
-            if (!visitors || visitors.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई गेस्ट विज़िटर डेटा उपलब्ध नहीं है</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = visitors.map(v => {
-                const isOnline = v.status === 'ONLINE';
-                const statusBadge = isOnline ? 
-                    `<strong style="color:#4ade80;">🟢 LIVE ONLINE</strong>` : 
-                    `<strong style="color:#f87171;">🔴 OFFLINE VISITED</strong>`;
-
-                const nameDisplay = v.guestName || 'Champalal Soni';
-                const mobileDisplay = v.mobile || '9414152854';
-
-                return `
-                <tr style="${!isOnline ? 'opacity:0.75;' : ''}">
-                    <td>${statusBadge}</td>
-                    <td><strong style="color:#facc15;">${nameDisplay}</strong></td>
-                    <td><strong style="color:#4ade80;font-family:monospace;">${mobileDisplay}</strong></td>
-                    <td><strong>${v.ip}</strong></td>
-                    <td><span style="color:#38bdf8;font-weight:700;">${v.device}</span></td>
-                    <td>${v.city || 'Jalore Region'}</td>
-                    <td>${v.page}</td>
-                    <td><span class="pin-code">${v.pingTime}</span></td>
-                </tr>`;
-            }).join('');
-        }
-
-        async function fetchAdminSettings() {
-            const urls = ['/api/admin-settings?_=' + Date.now(), 'api.php?action=admin-settings&_=' + Date.now()];
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        pcState.adminSettings = await res.json();
-                        pcState.customers = pcState.adminSettings.customers || [];
-                        pcState.bankAccounts = pcState.adminSettings.bankAccounts || [];
-                        
-                        const marqueeInput = document.getElementById('pcMarqueeText');
-                        if (marqueeInput && !marqueeInput.matches(':focus')) {
-                            marqueeInput.value = pcState.adminSettings.marqueeText || '';
-                        }
-
-                        const popupInput = document.getElementById('pcPopupText');
-                        if (popupInput && !popupInput.matches(':focus')) {
-                            popupInput.value = pcState.adminSettings.popupMsg || '';
-                        }
-
-                        pcState.isMasterHidden = pcState.adminSettings.isMasterHidden || false;
-                        pcState.isFrozen = pcState.adminSettings.isMasterFrozen || false;
-                        
-                        updateControlButtons();
-                        renderPcCust();
-                        renderBankAccountsEditor();
-                        return;
-                    }
-                } catch(e) {}
-            }
-        }
-
-        /* DEDICATED ATOMIC TOGGLE SECURITY FUNCTION (POST /api/toggle-security) */
-        async function toggleSecurityMode() {
-            const nextStatus = !pcState.isSecurityLoginRequired;
-            const urls = ['/api/toggle-security', 'api.php?action=toggle-security'];
-
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                        updateSecurityButtonUI();
-                        alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
-                        return;
-                    }
-                } catch(e) {}
-            }
-            alert("सर्वर से कनेक्ट करने में त्रुटि!");
-        }
-
-        function updateSecurityButtonUI() {
-            const btn = document.getElementById('pcSecurityToggleBtn');
-            const txt = document.getElementById('securityBtnText');
-            if (btn && txt) {
-                if (pcState.isSecurityLoginRequired) {
-                    btn.className = "btn-security-toggle btn-security-on";
-                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
-                } else {
-                    btn.className = "btn-security-toggle btn-security-off";
-                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
-                }
-            }
         }
 
         function renderPcRates(products, futures) {
@@ -740,9 +690,9 @@
 
             if (!isPcTableBuilt || tbody.children.length !== allItems.length) {
                 tbody.innerHTML = allItems.map(p => {
-                    const isProductHidden = pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id];
-                    const isBuyHidden = pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id];
-                    const isSellHidden = pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id];
+                    const isProductHidden = !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id]);
+                    const isBuyHidden = !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id]);
+                    const isSellHidden = !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id]);
                     const customName = (pcState.adminSettings.renames && pcState.adminSettings.renames[p.id]) || p.name;
                     
                     const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id]) !== undefined ? pcState.adminSettings.premiumsBuy[p.id] : 0;
@@ -755,17 +705,17 @@
                         </td>
                         <td><strong>${p.id}</strong></td>
                         <td>
-                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}">
+                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;">
-                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy +/-" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;"><span class="price-up" id="pc-buy-${p.id}">${(p.buy > 0 && !isProductHidden && !isBuyHidden) ? p.buy : '-'}</span></td>
                         <td style="text-align:center;">
                             <input type="checkbox" id="hideBuy-${p.id}" ${isBuyHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'buy')">
                         </td>
                         <td style="text-align:center;">
-                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell +/-" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;"><span class="price-down" id="pc-sell-${p.id}">${(p.sell > 0 && !isProductHidden && !isSellHidden) ? p.sell : '-'}</span></td>
                         <td style="text-align:center;">
@@ -778,6 +728,7 @@
 
             allItems.forEach(p => {
                 const key = p.id;
+                const isFuture = p.id.includes('FUTURE') || p.id.includes('MCX');
                 const oldPrices = pcState.lastPrices[key] || { buy: p.buy, sell: p.sell };
 
                 const buyEl = document.getElementById(`pc-buy-${key}`);
@@ -799,17 +750,26 @@
                     else rowEl.classList.remove('row-hidden');
                 }
 
-                const rawBuy = p.rawBuy || p.buy;
-                const rawSell = p.rawSell || p.sell;
+                // FREEZE RULE: If frozen and not future, keep frozen price!
+                let rawBuy = p.rawBuy || p.buy;
+                let rawSell = p.rawSell || p.sell;
+
+                if (pcState.isFrozen && !isFuture && pcState.frozenPhysicalPrices[key]) {
+                    rawBuy = pcState.frozenPhysicalPrices[key].buy;
+                    rawSell = pcState.frozenPhysicalPrices[key].sell;
+                }
 
                 const activeBuyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : (p.buyPremium || 0);
                 const activeSellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : (p.sellPremium || 0);
 
-                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : p.buy;
-                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : p.sell;
+                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : 0;
+                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : 0;
+
+                // HIDE PHYSICAL RULE: Show '-' on prices, but do NOT remove row
+                const isPriceHiddenByMaster = !isFuture && pcState.isMasterHidden;
 
                 if (buyEl) {
-                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? String(finalBuyPreview) : '-';
+                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !isPriceHiddenByMaster) ? String(finalBuyPreview) : '-';
                     if (buyEl.innerText !== buyText) buyEl.innerText = buyText;
 
                     if (finalBuyPreview > 0 && oldPrices.buy > 0 && finalBuyPreview !== oldPrices.buy) {
@@ -818,7 +778,7 @@
                 }
 
                 if (sellEl) {
-                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? String(finalSellPreview) : '-';
+                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !isPriceHiddenByMaster) ? String(finalSellPreview) : '-';
                     if (sellEl.innerText !== sellText) sellEl.innerText = sellText;
 
                     if (finalSellPreview > 0 && oldPrices.sell > 0 && finalSellPreview !== oldPrices.sell) {
@@ -837,32 +797,6 @@
             setTimeout(() => cellEl.classList.remove('flash-green', 'flash-red'), 350);
         }
 
-        async function toggleInstantProductHide(itemId) {
-            const chk = document.getElementById(`hideProd-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            const currentHiddenMap = { ...(pcState.adminSettings.hiddenProducts || {}) };
-            currentHiddenMap[itemId] = isChecked;
-
-            await updateServerSettings({ hiddenProducts: currentHiddenMap });
-            previewLiveCalculatedRates(itemId);
-        }
-
-        async function toggleInstantColumnHide(itemId, colType) {
-            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            let currentMap = colType === 'buy' ? { ...(pcState.adminSettings.hiddenBuy || {}) } : { ...(pcState.adminSettings.hiddenSell || {}) };
-            currentMap[itemId] = isChecked;
-
-            const updatedSettings = {};
-            if (colType === 'buy') updatedSettings.hiddenBuy = currentMap;
-            else updatedSettings.hiddenSell = currentMap;
-
-            await updateServerSettings(updatedSettings);
-            previewLiveCalculatedRates(itemId);
-        }
-
         function previewLiveCalculatedRates(itemId) {
             const allItems = [...pcState.products, ...pcState.futures];
             const item = allItems.find(x => x.id === itemId);
@@ -873,27 +807,47 @@
             const premBuyInp = document.getElementById(`premBuy-${itemId}`);
             const premSellInp = document.getElementById(`premSell-${itemId}`);
             
-            const hideProdChk = document.getElementById(`hideProd-${itemId}`);
-            const hideBuyChk = document.getElementById(`hideBuy-${itemId}`);
-            const hideSellChk = document.getElementById(`hideSell-${itemId}`);
-
-            const isRowHidden = hideProdChk ? hideProdChk.checked : false;
-            const isBuyHidden = hideBuyChk ? hideBuyChk.checked : false;
-            const isSellHidden = hideSellChk ? hideSellChk.checked : false;
-
             const rawBuy = item.rawBuy || item.buy;
             const rawSell = item.rawSell || item.sell;
 
             const buyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : 0;
             const sellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : 0;
 
-            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : item.buy;
-            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : item.sell;
+            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
 
-            if (buyEl) buyEl.innerText = (finalBuy > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? finalBuy : '-';
-            if (sellEl) sellEl.innerText = (finalSell > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? finalSell : '-';
+            if (buyEl) buyEl.innerText = finalBuy > 0 ? finalBuy : '-';
+            if (sellEl) sellEl.innerText = finalSell > 0 ? finalSell : '-';
         }
 
+        async function toggleInstantProductHide(itemId) {
+            const chk = document.getElementById(`hideProd-${itemId}`);
+            const isChecked = chk ? chk.checked : false;
+
+            if (!pcState.adminSettings.hiddenProducts) pcState.adminSettings.hiddenProducts = {};
+            pcState.adminSettings.hiddenProducts[itemId] = isChecked;
+
+            await updateServerSettings({ hiddenProducts: pcState.adminSettings.hiddenProducts });
+            previewLiveCalculatedRates(itemId);
+        }
+
+        async function toggleInstantColumnHide(itemId, colType) {
+            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
+            const isChecked = chk ? chk.checked : false;
+
+            if (colType === 'buy') {
+                if (!pcState.adminSettings.hiddenBuy) pcState.adminSettings.hiddenBuy = {};
+                pcState.adminSettings.hiddenBuy[itemId] = isChecked;
+                await updateServerSettings({ hiddenBuy: pcState.adminSettings.hiddenBuy });
+            } else {
+                if (!pcState.adminSettings.hiddenSell) pcState.adminSettings.hiddenSell = {};
+                pcState.adminSettings.hiddenSell[itemId] = isChecked;
+                await updateServerSettings({ hiddenSell: pcState.adminSettings.hiddenSell });
+            }
+            previewLiveCalculatedRates(itemId);
+        }
+
+        /* 2. SAVE ALL PRODUCT OVERRIDES (Renames & Premiums) */
         async function saveAllProductOverrides() {
             const renames = {};
             const premiumsBuy = {};
@@ -921,8 +875,68 @@
                 if (hideSellEl && hideSellEl.checked) hiddenSell[p.id] = true;
             });
 
-            await updateServerSettings({ renames, premiumsBuy, premiumsSell, hiddenProducts, hiddenBuy, hiddenSell });
-            alert("उत्पाद के नाम, प्रीमियम और हाइड कंट्रोल्स सफलतापूर्वक सेव हो गए!");
+            const updatedSettings = {
+                ...pcState.adminSettings,
+                renames,
+                premiumsBuy,
+                premiumsSell,
+                hiddenProducts,
+                hiddenBuy,
+                hiddenSell
+            };
+
+            await updateServerSettings(updatedSettings);
+            alert("✔ उत्पाद के नाम, प्रीमियम और हाइड सेटिंग्स सफलतापूर्वक सेव एवं सिंक हो गए!");
+        }
+
+        /* 3. HIDE PHYSICAL BUTTON (Exact Rule: Hide prices only, keep rows visible) */
+        async function togglePcMasterHide() {
+            pcState.isMasterHidden = !pcState.isMasterHidden;
+            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
+            updateControlButtons();
+            renderPcRates(pcState.products, pcState.futures);
+        }
+
+        /* 4. FREEZE PHYSICAL BUTTON (Exact Rule: Freeze physical prices, keep futures live) */
+        async function togglePcFreeze() {
+            pcState.isFrozen = !pcState.isFrozen;
+            if (pcState.isFrozen) {
+                // Snapshot current physical prices
+                pcState.frozenPhysicalPrices = {};
+                pcState.products.forEach(p => {
+                    pcState.frozenPhysicalPrices[p.id] = { buy: p.buy, sell: p.sell };
+                });
+            } else {
+                pcState.frozenPhysicalPrices = {};
+            }
+
+            await updateServerSettings({ isMasterFrozen: pcState.isFrozen, frozenPhysicalPrices: pcState.frozenPhysicalPrices });
+            updateControlButtons();
+            renderPcRates(pcState.products, pcState.futures);
+        }
+
+        function updateControlButtons() {
+            const hideBtn = document.getElementById('pcMasterHideBtn');
+            if (hideBtn) {
+                if (pcState.isMasterHidden) {
+                    hideBtn.innerText = "Show Physical";
+                    hideBtn.style.background = "#10b981";
+                } else {
+                    hideBtn.innerText = "Hide Physical";
+                    hideBtn.style.background = "#dc2626";
+                }
+            }
+
+            const freezeBtn = document.getElementById('pcFreezeBtn');
+            if (freezeBtn) {
+                if (pcState.isFrozen) {
+                    freezeBtn.innerText = "Resume Physical";
+                    freezeBtn.style.background = "#10b981";
+                } else {
+                    freezeBtn.innerText = "Freeze Physical";
+                    freezeBtn.style.background = "#ef4444";
+                }
+            }
         }
 
         async function savePcMarqueeText() {
@@ -939,58 +953,55 @@
             alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
         }
 
-        async function togglePcMasterHide() {
-            pcState.isMasterHidden = !pcState.isMasterHidden;
-            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
-            updateControlButtons();
-        }
-
-        async function togglePcFreeze() {
-            pcState.isFrozen = !pcState.isFrozen;
-            await updateServerSettings({ isMasterFrozen: pcState.isFrozen });
-            updateControlButtons();
-        }
-
-        function updateControlButtons() {
-            const hideBtn = document.getElementById('pcMasterHideBtn');
-            if (pcState.isMasterHidden) {
-                hideBtn.innerText = "Show Physical";
-                hideBtn.style.background = "#10b981";
-            } else {
-                hideBtn.innerText = "Hide Physical";
-                hideBtn.style.background = "#dc2626";
-            }
-
-            const freezeBtn = document.getElementById('pcFreezeBtn');
-            if (pcState.isFrozen) {
-                freezeBtn.innerText = "Resume Physical";
-                freezeBtn.style.background = "#10b981";
-            } else {
-                freezeBtn.innerText = "Freeze Physical";
-                freezeBtn.style.background = "#ef4444";
-            }
-        }
-
         async function updateServerSettings(data) {
-            const urls = ['/api/admin-settings', 'api.php?action=admin-settings'];
+            pcState.adminSettings = { ...pcState.adminSettings, ...data };
+            localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
+            
+            if (syncChannel) {
+                syncChannel.postMessage({ type: 'SETTINGS_UPDATE', settings: pcState.adminSettings });
+            }
+
+            const urls = ['api.php?action=admin-settings', '/api/admin-settings'];
             for (const url of urls) {
                 try {
-                    const res = await fetch(url, {
+                    await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
+                } catch(e) {}
+            }
+        }
+
+        async function fetchAdminSettings() {
+            const urls = ['api.php?action=admin-settings&_=' + Date.now(), '/api/admin-settings?_=' + Date.now()];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url);
                     if (res.ok) {
-                        const result = await res.json();
-                        pcState.adminSettings = result.settings;
-                        pcState.customers = result.settings.customers || [];
-                        pcState.bankAccounts = result.settings.bankAccounts || [];
+                        const data = await res.json();
+                        pcState.adminSettings = { ...pcState.adminSettings, ...data };
+                        if (data.customers && data.customers.length > 0) pcState.customers = data.customers;
+                        if (data.bankAccounts && data.bankAccounts.length > 0) pcState.bankAccounts = data.bankAccounts;
+                        
+                        localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
                         renderPcCust();
                         renderBankAccountsEditor();
                         return;
                     }
                 } catch(e) {}
             }
+        }
+
+        /* 5. DEDICATED 3-TAB CUSTOMER MANAGEMENT */
+        function switchCustTab(tabType) {
+            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
+            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
+            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
+
+            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
+            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
+            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
         }
 
         function renderPcCust() {
@@ -1006,10 +1017,10 @@
             if (appBadge) appBadge.innerText = approvedList.length;
             if (reqBadge) reqBadge.innerText = pendingList.length;
 
-            // RENDER TAB 1: APPROVED CUSTOMERS
+            // TAB 1: APPROVED REGISTERED CUSTOMERS
             if (approvedTbody) {
                 if (approvedList.length === 0) {
-                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई स्वीकृत कस्टमर नहीं है</td></tr>`;
+                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:10px;">कोई स्वीकृत कस्टमर नहीं है</td></tr>`;
                 } else {
                     approvedTbody.innerHTML = approvedList.map(c => {
                         const pinStr = c.pin || '123456';
@@ -1048,7 +1059,7 @@
                 }
             }
 
-            // RENDER TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER
+            // TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER
             if (requestTbody) {
                 if (pendingList.length === 0) {
                     requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px;">वर्तमान में कोई नई रजिस्ट्रेशन रिक्वेस्ट पेंडिंग नहीं है</td></tr>`;
@@ -1097,16 +1108,136 @@
             if (target) {
                 target.status = status;
                 if (status === 'BLOCKED') target.activeSession = null;
+                localStorage.setItem('sg_customers_v3', JSON.stringify(custs));
+                
+                if (syncChannel) {
+                    syncChannel.postMessage({ type: 'CUSTOMER_STATUS_CHANGE', customerId: id, status: status });
+                }
+
                 await updateServerSettings({ customers: custs });
-                alert(`कस्टमर ${target.name} (ID: ${target.id}) की रिक्वेस्ट ${status === 'APPROVED' ? 'स्वीकृत (APPROVED)' : status} कर दी गई है!`);
+                renderPcCust();
+                alert(`✔ कस्टमर ${target.name} (ID: ${target.id}) की रिक्वेस्ट ${status === 'APPROVED' ? 'स्वीकृत (APPROVED)' : status} कर दी गई है!`);
             }
         }
 
         async function deleteCustomer(id) {
             if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को डिलीट/रिजेक्ट करना चाहते हैं?`)) return;
-            const updatedCusts = pcState.customers.filter(x => x.id !== id);
-            await updateServerSettings({ customers: updatedCusts });
+            pcState.customers = pcState.customers.filter(x => x.id !== id);
+            localStorage.setItem('sg_customers_v3', JSON.stringify(pcState.customers));
+            await updateServerSettings({ customers: pcState.customers });
+            renderPcCust();
             alert(`कस्टमर ID ${id} रिजेक्ट/डिलीट कर दिया गया है!`);
+        }
+
+        /* TAB 3: GUEST & ONLINE VISITORS RENDERER */
+        function renderGuestVisitors(visitors) {
+            const tbody = document.getElementById('guestVisitorRows');
+            if (!tbody) return;
+            if (!visitors || visitors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:10px;">कोई गेस्ट विज़िटर डेटा उपलब्ध नहीं है</td></tr>`;
+                return;
+            }
+
+            const now = Date.now();
+            let onlineCount = 0;
+            let offlineCount = 0;
+
+            tbody.innerHTML = visitors.map(v => {
+                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 15000));
+                if (isOnline) onlineCount++;
+                else offlineCount++;
+
+                const statusBadge = isOnline ? 
+                    `<strong style="color:#4ade80;">🟢 LIVE ONLINE</strong>` : 
+                    `<strong style="color:#f87171;">🔴 OFFLINE VISITED</strong>`;
+
+                const nameDisplay = v.guestName || 'Guest Visitor';
+                const mobileDisplay = v.mobile || 'Not Registered';
+
+                return `
+                <tr style="${!isOnline ? 'opacity:0.75;' : ''}">
+                    <td>${statusBadge}</td>
+                    <td><strong style="color:#facc15;">${nameDisplay}</strong></td>
+                    <td><strong style="color:#4ade80;font-family:monospace;">${mobileDisplay}</strong></td>
+                    <td><strong>${v.ip || '127.0.0.1'}</strong></td>
+                    <td><span style="color:#38bdf8;font-weight:700;">${v.device || 'Mobile / PC'}</span></td>
+                    <td>${v.city || 'Jalore Region'}</td>
+                    <td>${v.page || 'Live Rates'}</td>
+                    <td><span class="pin-code">${v.pingTime || '--:--'}</span></td>
+                </tr>`;
+            }).join('');
+
+            const onEl = document.getElementById('onlineCountBadge');
+            const offEl = document.getElementById('offlineCountBadge');
+            if (onEl) onEl.innerText = onlineCount;
+            if (offEl) offEl.innerText = offlineCount;
+        }
+
+        /* 6. BANK ACCOUNTS MANAGEMENT */
+        function renderBankAccountsEditor() {
+            const container = document.getElementById('bankAccountsContainer');
+            if (!container) return;
+
+            if (!pcState.bankAccounts || pcState.bankAccounts.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1 / -1;text-align:center;padding:16px;background:#070f1e;border:1px dashed #cbd5e1;border-radius:6px;color:#94a3b8;font-weight:700;">⚠️ Bank Detail Is Not Available (सभी बैंक खाते डिलीट हो चुके हैं)</div>`;
+                return;
+            }
+
+            container.innerHTML = pcState.bankAccounts.map((b, idx) => `
+                <div style="background:#070f1e;padding:8px;border-radius:6px;border:1px solid #1e293b;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <span style="color:#f59e0b;font-weight:700;">Bank #${idx + 1}</span>
+                        <button onclick="removeBankRow('${b.id}')" style="background:#ef4444;color:white;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px;"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                    <input type="text" id="bankName-${b.id}" class="bank-input-field" value="${b.bankName || ''}" placeholder="Bank Name" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="accountNo-${b.id}" class="bank-input-field" value="${b.accountNo || ''}" placeholder="Account Number" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="ifsc-${b.id}" class="bank-input-field" value="${b.ifsc || ''}" placeholder="IFSC Code" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="branch-${b.id}" class="bank-input-field" value="${b.branch || ''}" placeholder="Branch Location" onfocus="isUserEditingBanks=true">
+                </div>
+            `).join('');
+        }
+
+        function addNewBankAccountRow() {
+            isUserEditingBanks = true;
+            const newId = "bank_" + Date.now();
+            if (!pcState.bankAccounts) pcState.bankAccounts = [];
+            pcState.bankAccounts.push({
+                id: newId,
+                bankName: "HDFC Bank Ltd",
+                accountNo: "50200084712035",
+                ifsc: "HDFC0000241",
+                branch: "gandhi chowk, Jalore",
+                accountType: "Bullion Current Account"
+            });
+            renderBankAccountsEditor();
+        }
+
+        async function removeBankRow(id) {
+            isUserEditingBanks = true;
+            pcState.bankAccounts = pcState.bankAccounts.filter(x => x.id !== id);
+            renderBankAccountsEditor();
+            await saveBankAccountsToAdmin(false);
+        }
+
+        async function saveBankAccountsToAdmin(showAlert = true) {
+            const updatedBanks = pcState.bankAccounts.map(b => {
+                const bNameEl = document.getElementById(`bankName-${b.id}`);
+                const accNoEl = document.getElementById(`accountNo-${b.id}`);
+                const ifscEl = document.getElementById(`ifsc-${b.id}`);
+                const branchEl = document.getElementById(`branch-${b.id}`);
+
+                const bName = bNameEl ? bNameEl.value.trim() : b.bankName;
+                const accNo = accNoEl ? accNoEl.value.trim() : b.accountNo;
+                const ifsc = ifscEl ? ifscEl.value.trim() : b.ifsc;
+                const branch = branchEl ? branchEl.value.trim() : b.branch;
+
+                return { ...b, bankName: bName, accountNo: accNo, ifsc: ifsc, branch: branch };
+            });
+
+            pcState.bankAccounts = updatedBanks;
+            await updateServerSettings({ bankAccounts: updatedBanks });
+            isUserEditingBanks = false;
+            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट एवं सेव हो गए!");
         }
     </script>
 </body>

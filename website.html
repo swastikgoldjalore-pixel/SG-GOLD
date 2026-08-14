@@ -38,7 +38,7 @@
             padding: 0;
         }
 
-        /* HEADER WITH PURE UNCLIPPED SWASTIK LOGO ICON */
+        /* HEADER WITH PURE SWASTIK LOGO ICON */
         .site-header {
             background: #0c182b;
             padding: 10px 20px;
@@ -154,7 +154,6 @@
 
         .price-pill-cell { flex: 1; display: flex; justify-content: center; }
 
-        /* NORMAL SMOOTH 350MS SIGNAL FLASHING SPEED */
         .rate-cell-text {
             font-weight: 800;
             font-size: clamp(20px, 2vw, 28px);
@@ -172,7 +171,6 @@
         .rate-cell-text.flash-green { background-color: #16a34a !important; color: #ffffff !important; }
         .rate-cell-text.flash-red { background-color: #dc2626 !important; color: #ffffff !important; }
 
-        /* BOTTOM RIGHT SWASTIK GOLD LOGO MARK WITH GOLD SWASTIK SYMBOL */
         .landscape-footer-mark {
             display: flex;
             justify-content: flex-end;
@@ -297,17 +295,17 @@
     <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (v3.0.0) -->
     <script>
         const INITIAL_DEFAULT_PRODUCTS = [
-            { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, high: 150940, low: 149800, isProductHidden: false },
-            { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, high: 150290, low: 149200, isProductHidden: false },
-            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, high: 158390, low: 157200, isProductHidden: false },
-            { id: "RANI", name: "RANI", buy: 149990, sell: 0, high: 150500, low: 149500, isProductHidden: false },
-            { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, high: 230190, low: 227500, isProductHidden: false },
-            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, high: 233000, low: 231000, isProductHidden: false }
+            { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
+            { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290, high: 150290, low: 149200, isProductHidden: false },
+            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390, high: 158390, low: 157200, isProductHidden: false },
+            { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0, high: 150500, low: 149500, isProductHidden: false },
+            { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190, high: 230190, low: 227500, isProductHidden: false },
+            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0, high: 233000, low: 231000, isProductHidden: false }
         ];
 
         const INITIAL_DEFAULT_FUTURES = [
-            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, high: 154950, low: 151923, isProductHidden: false },
-            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, high: 237822, low: 231550, isProductHidden: false }
+            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590, high: 154950, low: 151923, isProductHidden: false },
+            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190, high: 237822, low: 231550, isProductHidden: false }
         ];
 
         let webLastPrices = {};
@@ -317,7 +315,59 @@
         let lastWebFetchTime = 0;
         let currentProducts = [ ...INITIAL_DEFAULT_PRODUCTS ];
         let currentFutures = [ ...INITIAL_DEFAULT_FUTURES ];
+        let webAdminSettings = {
+            renames: {},
+            premiumsBuy: {},
+            premiumsSell: {},
+            hiddenProducts: {},
+            hiddenBuy: {},
+            hiddenSell: {},
+            isMasterHidden: false,
+            isMasterFrozen: false
+        };
         const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
+
+        // Real-Time Broadcast Channel
+        try {
+            const syncChannel = new BroadcastChannel('sg_realtime_sync');
+            syncChannel.onmessage = (e) => {
+                if (e.data && e.data.type === 'SETTINGS_UPDATE' && e.data.settings) {
+                    webAdminSettings = { ...webAdminSettings, ...e.data.settings };
+                    renderLandscapeProducts(currentProducts, currentFutures);
+                }
+            };
+        } catch(e) {}
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'sg_admin_settings_v3' && e.newValue) {
+                try {
+                    webAdminSettings = { ...webAdminSettings, ...JSON.parse(e.newValue) };
+                    renderLandscapeProducts(currentProducts, currentFutures);
+                } catch(err) {}
+            }
+        });
+
+        function sendWebsiteVisitorPing() {
+            try {
+                const visitorObj = {
+                    guestName: "Guest Visitor",
+                    mobile: "Not Registered",
+                    ip: "127.0.0.1",
+                    device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
+                    city: "Jalore Region",
+                    page: "Website Live Board (website.html)",
+                    status: "ONLINE",
+                    pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                    lastPing: Date.now()
+                };
+
+                const existing = JSON.parse(localStorage.getItem('sg_guest_visitors_v3') || '[]');
+                const idx = existing.findIndex(x => x.page === visitorObj.page && x.device === visitorObj.device);
+                if (idx >= 0) existing[idx] = visitorObj;
+                else existing.unshift(visitorObj);
+                localStorage.setItem('sg_guest_visitors_v3', JSON.stringify(existing.slice(0, 30)));
+            } catch(e) {}
+        }
 
         function formatNoComma(val) {
             if (!val || val <= 0) return '-';
@@ -357,26 +407,37 @@
         }
 
         function initUniversalStream() {
+            try {
+                const saved = localStorage.getItem('sg_admin_settings_v3');
+                if (saved) webAdminSettings = { ...webAdminSettings, ...JSON.parse(saved) };
+            } catch(e) {}
+
             renderLandscapeProducts(currentProducts, currentFutures);
             trySseStream();
             startWebPolling();
             startWebAutonomousTick();
+            sendWebsiteVisitorPing();
+            setInterval(sendWebsiteVisitorPing, 5000);
         }
 
         function startWebAutonomousTick() {
             if (webTickTimer) return;
             webTickTimer = setInterval(() => {
                 if (Date.now() - lastWebFetchTime > 2000) {
-                    const step = (Math.random() > 0.5 ? 10 : -10);
-                    const pIdx = Math.floor(Math.random() * currentProducts.length);
-                    const prod = currentProducts[pIdx];
-                    if (prod.buy > 0) prod.buy += step;
-                    if (prod.sell > 0) prod.sell += step;
+                    if (!webAdminSettings.isMasterFrozen) {
+                        const step = (Math.random() > 0.5 ? 10 : -10);
+                        const pIdx = Math.floor(Math.random() * currentProducts.length);
+                        const prod = currentProducts[pIdx];
+                        if (prod.rawBuy > 0) prod.rawBuy += step;
+                        if (prod.rawSell > 0) prod.rawSell += step;
+                    }
 
+                    // Futures always tick
                     const fIdx = Math.floor(Math.random() * currentFutures.length);
                     const fut = currentFutures[fIdx];
-                    if (fut.buy > 0) fut.buy += step;
-                    if (fut.sell > 0) fut.sell += step;
+                    const fStep = (Math.random() > 0.5 ? 10 : -10);
+                    if (fut.rawBuy > 0) fut.rawBuy += fStep;
+                    if (fut.rawSell > 0) fut.rawSell += fStep;
 
                     renderLandscapeProducts(currentProducts, currentFutures);
                 }
@@ -502,6 +563,8 @@
                         name: symbol,
                         buy: origBuy,
                         sell: origSell,
+                        rawBuy: origBuy,
+                        rawSell: origSell,
                         high: origHigh,
                         low: origLow,
                         isProductHidden: false
@@ -519,8 +582,8 @@
             if (!data) return;
             if (data.spot) renderSpotTickers(data.spot);
 
-            const visibleProducts = (data.products && data.products.length > 0) ? data.products.filter(p => !p.isProductHidden) : currentProducts;
-            const visibleFutures = (data.futures && data.futures.length > 0) ? data.futures.filter(f => !f.isProductHidden) : currentFutures;
+            const visibleProducts = (data.products && data.products.length > 0) ? data.products : currentProducts;
+            const visibleFutures = (data.futures && data.futures.length > 0) ? data.futures : currentFutures;
 
             currentProducts = visibleProducts;
             currentFutures = visibleFutures;
@@ -567,30 +630,58 @@
             webLastPrices[id] = newVal;
         }
 
+        /* RENDER LANDSCAPE PRODUCTS WITH RENAMES, PREMIUMS & HIDE RULES */
         function renderLandscapeProducts(products, futures) {
             const leftContainer = document.getElementById('leftProdContainer');
             const rightContainer = document.getElementById('rightFutContainer');
 
-            products.forEach(p => {
+            const renames = webAdminSettings.renames || {};
+            const premiumsBuy = webAdminSettings.premiumsBuy || {};
+            const premiumsSell = webAdminSettings.premiumsSell || {};
+            const hiddenProducts = webAdminSettings.hiddenProducts || {};
+            const hiddenBuy = webAdminSettings.hiddenBuy || {};
+            const hiddenSell = webAdminSettings.hiddenSell || {};
+            const isMasterHidden = !!webAdminSettings.isMasterHidden;
+
+            const visibleProds = products.filter(p => !hiddenProducts[p.id]);
+
+            visibleProds.forEach(p => {
                 const bId = `buy-${p.id}`;
                 const sId = `sell-${p.id}`;
+                const nameId = `name-${p.id}`;
                 const oldBuy = webLastPrices[bId];
                 const oldSell = webLastPrices[sId];
 
-                const buyText = formatNoComma(p.buy);
-                const sellText = formatNoComma(p.sell);
+                const customName = renames[p.id] || p.name;
+                const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
+                const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
 
+                let rawBuy = p.rawBuy || p.buy;
+                let rawSell = p.rawSell || p.sell;
+                let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+                let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+                // HIDE PHYSICAL RULE: Show '-' on prices, keep row visible
+                if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
+                if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
+
+                const buyText = formatNoComma(finalBuy);
+                const sellText = formatNoComma(finalSell);
+
+                const nameEl = document.getElementById(nameId);
                 const buyEl = document.getElementById(bId);
                 const sellEl = document.getElementById(sId);
 
+                if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
+
                 if (buyEl && buyEl.innerText !== buyText) {
                     buyEl.innerText = buyText;
-                    if (oldBuy && oldBuy !== buyText && p.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+                    if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
                 }
 
                 if (sellEl && sellEl.innerText !== sellText) {
                     sellEl.innerText = sellText;
-                    if (oldSell && oldSell !== sellText && p.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+                    if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
                 }
 
                 webLastPrices[bId] = buyText;
@@ -600,31 +691,56 @@
             futures.forEach(f => {
                 const bId = `buy-${f.id}`;
                 const sId = `sell-${f.id}`;
+                const nameId = `name-${f.id}`;
                 const oldBuy = webLastPrices[bId];
                 const oldSell = webLastPrices[sId];
 
-                const buyText = formatNoComma(f.buy);
-                const sellText = formatNoComma(f.sell);
+                const customName = renames[f.id] || f.name;
+                const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
+                const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
 
+                let rawBuy = f.rawBuy || f.buy;
+                let rawSell = f.rawSell || f.sell;
+                let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+                let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+                const buyText = formatNoComma(finalBuy);
+                const sellText = formatNoComma(finalSell);
+
+                const nameEl = document.getElementById(nameId);
                 const buyEl = document.getElementById(bId);
                 const sellEl = document.getElementById(sId);
 
+                if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
+
                 if (buyEl && buyEl.innerText !== buyText) {
                     buyEl.innerText = buyText;
-                    if (oldBuy && oldBuy !== buyText && f.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+                    if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
                 }
 
                 if (sellEl && sellEl.innerText !== sellText) {
                     sellEl.innerText = sellText;
-                    if (oldSell && oldSell !== sellText && f.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+                    if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
                 }
 
                 webLastPrices[bId] = buyText;
                 webLastPrices[sId] = sellText;
             });
 
-            if (!leftContainer.children.length || leftContainer.children.length !== products.length) {
-                leftContainer.innerHTML = products.map(p => {
+            if (!leftContainer.children.length || leftContainer.children.length !== visibleProds.length) {
+                leftContainer.innerHTML = visibleProds.map(p => {
+                    const customName = renames[p.id] || p.name;
+                    const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
+                    const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
+
+                    let rawBuy = p.rawBuy || p.buy;
+                    let rawSell = p.rawSell || p.sell;
+                    let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+                    let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+                    if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
+                    if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
+
                     const highDisplay = p.high > 0 ? formatNoComma(p.high) : '-';
                     const lowDisplay = p.low > 0 ? formatNoComma(p.low) : '-';
                     const hasHl = p.high > 0 || p.low > 0;
@@ -632,14 +748,14 @@
                     return `
                     <div class="product-row-card" id="row-${p.id}">
                         <div class="prod-info-block">
-                            <div class="prod-name-title">${p.name}</div>
+                            <div class="prod-name-title" id="name-${p.id}">${customName}</div>
                             ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(p.buy)}</div>
+                            <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(finalBuy)}</div>
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="sell-${p.id}">${formatNoComma(p.sell)}</div>
+                            <div class="rate-cell-text" id="sell-${p.id}">${formatNoComma(finalSell)}</div>
                         </div>
                     </div>`;
                 }).join('');
@@ -647,6 +763,15 @@
 
             if (!rightContainer.children.length || rightContainer.children.length !== futures.length) {
                 rightContainer.innerHTML = futures.map(f => {
+                    const customName = renames[f.id] || f.name;
+                    const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
+                    const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
+
+                    let rawBuy = f.rawBuy || f.buy;
+                    let rawSell = f.rawSell || f.sell;
+                    let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+                    let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
                     const highDisplay = f.high > 0 ? formatNoComma(f.high) : '-';
                     const lowDisplay = f.low > 0 ? formatNoComma(f.low) : '-';
                     const hasHl = f.high > 0 || f.low > 0;
@@ -654,14 +779,14 @@
                     return `
                     <div class="product-row-card" id="row-${f.id}">
                         <div class="prod-info-block">
-                            <div class="prod-name-title">${f.name}</div>
+                            <div class="prod-name-title" id="name-${f.id}">${customName}</div>
                             ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="buy-${f.id}">${formatNoComma(f.buy)}</div>
+                            <div class="rate-cell-text" id="buy-${f.id}">${formatNoComma(finalBuy)}</div>
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="sell-${f.id}">${formatNoComma(f.sell)}</div>
+                            <div class="rate-cell-text" id="sell-${f.id}">${formatNoComma(finalSell)}</div>
                         </div>
                     </div>`;
                 }).join('');

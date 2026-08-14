@@ -1,26 +1,24 @@
 /* ==========================================================================
    SWASTIK GOLD JALORE (swastikgold.net) - UNIVERSAL APP ENGINE (v3.0.0)
-   - Multi-Tier Real-Time Streaming: SSE -> API Polling -> Direct Sundha Live Stream -> Autonomous Live Ticking Engine
-   - 100% Guaranteed Live Prices on GitHub Pages, GoDaddy cPanel, Node.js & Mobile Networks
-   - Auto-Uppercase Customer Login ID (e.g. SG1001)
-   - Real-time Registration Submission Engine
-   - Bank Detail Dynamic Renderer
-   - Tab Navigation Protection & Welcome Modal
-   - 350ms Smooth Price Flash Animation
+   - Real-Time Broadcast Sync with PC Operator Desk
+   - Renames, Premiums (+/-), Hide Physical (Price Only) & Freeze Physical Rules
+   - Instant Security Toggle Response (Lock/Unlock)
+   - Live Customer Registration & Visitor Tracking
+   - 350ms Smooth Green/Red Flash
    ========================================================================== */
 
 const INITIAL_DEFAULT_PRODUCTS = [
-    { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, high: 150940, low: 149800, isProductHidden: false },
-    { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, high: 150290, low: 149200, isProductHidden: false },
-    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, high: 158390, low: 157200, isProductHidden: false },
-    { id: "RANI", name: "RANI", buy: 149990, sell: 0, high: 150500, low: 149500, isProductHidden: false },
-    { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, high: 230190, low: 227500, isProductHidden: false },
-    { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, high: 233000, low: 231000, isProductHidden: false }
+    { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
+    { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290, high: 150290, low: 149200, isProductHidden: false },
+    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390, high: 158390, low: 157200, isProductHidden: false },
+    { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0, high: 150500, low: 149500, isProductHidden: false },
+    { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190, high: 230190, low: 227500, isProductHidden: false },
+    { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0, high: 233000, low: 231000, isProductHidden: false }
 ];
 
 const INITIAL_DEFAULT_FUTURES = [
-    { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, high: 154950, low: 151923, isProductHidden: false },
-    { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, high: 237822, low: 231550, isProductHidden: false }
+    { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590, high: 154950, low: 151923, isProductHidden: false },
+    { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190, high: 237822, low: 231550, isProductHidden: false }
 ];
 
 const INITIAL_DEFAULT_SPOT = {
@@ -33,9 +31,21 @@ let appState = {
     spot: { ...INITIAL_DEFAULT_SPOT },
     products: [ ...INITIAL_DEFAULT_PRODUCTS ],
     futures: [ ...INITIAL_DEFAULT_FUTURES ],
+    adminSettings: {
+        renames: {},
+        premiumsBuy: {},
+        premiumsSell: {},
+        hiddenProducts: {},
+        hiddenBuy: {},
+        hiddenSell: {},
+        isMasterHidden: false,
+        isMasterFrozen: false,
+        marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
+        popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
+    },
+    frozenPhysicalPrices: {},
     marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
-    isSecurityLoginRequired: false, // Default open for all public visitors
-    hatohatSettings: {},
+    isSecurityLoginRequired: false,
     bankAccounts: [
         { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
         { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
@@ -44,21 +54,50 @@ let appState = {
     user: null,
     sessionToken: null,
     activeTab: 'live-rates',
-    streamMode: 'INITIALIZING',
     lastLiveFetchTime: 0
 };
 
 let sseEventSource = null;
 let pollingIntervalTimer = null;
 let liveTickSimulationTimer = null;
+let syncChannel = null;
 const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
+
+// REAL-TIME BROADCAST CHANNEL FOR INSTANT CROSS-TAB SYNC
+try {
+    syncChannel = new BroadcastChannel('sg_realtime_sync');
+    syncChannel.onmessage = (e) => {
+        if (!e.data) return;
+        if (e.data.type === 'SECURITY_TOGGLE') {
+            appState.isSecurityLoginRequired = e.data.isSecurityLoginRequired;
+            evaluateSecurityLoginModal();
+        } else if (e.data.type === 'SETTINGS_UPDATE' && e.data.settings) {
+            appState.adminSettings = { ...appState.adminSettings, ...e.data.settings };
+            if (e.data.settings.marqueeText) renderMarqueeTicker(e.data.settings.marqueeText);
+            if (e.data.settings.bankAccounts) renderBankAccounts(e.data.settings.bankAccounts);
+            renderProductsList(appState.products);
+        }
+    };
+} catch(e) {}
+
+window.addEventListener('storage', (e) => {
+    if (e.key === 'sg_security_lock_v3') {
+        appState.isSecurityLoginRequired = (e.newValue === 'true');
+        evaluateSecurityLoginModal();
+    } else if (e.key === 'sg_admin_settings_v3' && e.newValue) {
+        try {
+            appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(e.newValue) };
+            renderProductsList(appState.products);
+        } catch(err) {}
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
 function initApp() {
-    // 1. INSTANT INITIAL RENDER (NO DELAY, ZERO BLANK SCREEN)
+    loadSavedSettings();
     renderSpotRates(appState.spot);
     renderProductsList(appState.products);
     renderFuturesList(appState.futures);
@@ -71,7 +110,53 @@ function initApp() {
     checkStoredUserSession();
     startRealtimeEngine();
     startAutonomousLiveTickEngine();
+    sendVisitorPing();
+    setInterval(sendVisitorPing, 5000);
     setInterval(verifySingleSessionSecurity, 3000);
+}
+
+function loadSavedSettings() {
+    try {
+        const secVal = localStorage.getItem('sg_security_lock_v3');
+        if (secVal !== null) appState.isSecurityLoginRequired = (secVal === 'true');
+
+        const savedSettings = localStorage.getItem('sg_admin_settings_v3');
+        if (savedSettings) {
+            appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(savedSettings) };
+            if (appState.adminSettings.marqueeText) appState.marqueeText = appState.adminSettings.marqueeText;
+            if (appState.adminSettings.bankAccounts && appState.adminSettings.bankAccounts.length > 0) {
+                appState.bankAccounts = appState.adminSettings.bankAccounts;
+            }
+        }
+    } catch(e) {}
+}
+
+function sendVisitorPing() {
+    try {
+        const isUserLoggedIn = !!(appState.user && appState.user.name);
+        const visitorObj = {
+            guestName: isUserLoggedIn ? appState.user.name : "Guest Visitor",
+            mobile: isUserLoggedIn ? appState.user.mobile : "Not Registered",
+            ip: "127.0.0.1",
+            device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC",
+            city: isUserLoggedIn && appState.user.city ? appState.user.city : "Jalore Region",
+            page: "Mobile App (index.html)",
+            status: "ONLINE",
+            pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+            lastPing: Date.now()
+        };
+
+        if (syncChannel) {
+            syncChannel.postMessage({ type: 'GUEST_PING', visitor: visitorObj });
+        }
+
+        // Save visitor record in localStorage
+        const existing = JSON.parse(localStorage.getItem('sg_guest_visitors_v3') || '[]');
+        const idx = existing.findIndex(x => x.mobile === visitorObj.mobile && x.guestName === visitorObj.guestName);
+        if (idx >= 0) existing[idx] = visitorObj;
+        else existing.unshift(visitorObj);
+        localStorage.setItem('sg_guest_visitors_v3', JSON.stringify(existing.slice(0, 30)));
+    } catch(e) {}
 }
 
 function initDefaultAiReport() {
@@ -89,14 +174,12 @@ function initDefaultAiReport() {
     });
 }
 
-/* 1. SILENT PWA SERVICE WORKER REGISTRATION */
 function initSilentPwaServiceWorker() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 }
 
-/* 2. STRICT NETWORK DISCONNECT MONITOR */
 function initNetworkStatusMonitor() {
     window.addEventListener('offline', () => {
         if (!navigator.onLine) showNetworkToast(false);
@@ -144,7 +227,6 @@ function restartRealtimeEngine() {
     startRealtimeEngine();
 }
 
-/* 3. QUAD-TIER REAL-TIME STREAMING ENGINE */
 function startRealtimeEngine() {
     tryConnectSseStream();
     startHighSpeedPollingEngine();
@@ -161,7 +243,6 @@ function tryConnectSseStream() {
             try {
                 const data = JSON.parse(event.data);
                 applyReceivedRatesPayload(data);
-                appState.streamMode = 'SSE_LIVE';
                 appState.lastLiveFetchTime = Date.now();
             } catch(e) {}
         };
@@ -182,7 +263,6 @@ function startHighSpeedPollingEngine() {
 async function fetchSingleCycleRate() {
     if (!navigator.onLine) return;
 
-    // 1. Try GoDaddy PHP / Node.js API endpoints
     const apiEndpoints = [
         'api.php?action=rates-json&_=' + Date.now(),
         '/api/rates-json?_=' + Date.now()
@@ -195,7 +275,6 @@ async function fetchSingleCycleRate() {
                 const data = await res.json();
                 if (data && (data.spot || (data.products && data.products.length > 0))) {
                     applyReceivedRatesPayload(data);
-                    appState.streamMode = 'API_POLL';
                     appState.lastLiveFetchTime = Date.now();
                     return;
                 }
@@ -203,7 +282,7 @@ async function fetchSingleCycleRate() {
         } catch(e) {}
     }
 
-    // 2. Direct Sundha Gold Live Endpoint Fetch
+    // Direct Sundha Gold Live Endpoint Fetch
     try {
         const directUrl = DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now();
         const res = await fetch(directUrl, { mode: 'cors', cache: 'no-store' });
@@ -211,19 +290,16 @@ async function fetchSingleCycleRate() {
             const rawText = await res.text();
             if (rawText && rawText.length > 20) {
                 parseClientSideSundhaStream(rawText);
-                appState.streamMode = 'DIRECT_CLIENT_STREAM';
                 appState.lastLiveFetchTime = Date.now();
             }
         }
     } catch(e) {}
 }
 
-/* 4. AUTONOMOUS LIVE TICK ENGINE (Guarantees Continuous Live Market Activity) */
 function startAutonomousLiveTickEngine() {
     if (liveTickSimulationTimer) return;
     
     liveTickSimulationTimer = setInterval(() => {
-        // Only micro-tick if external server connection is delayed
         if (Date.now() - appState.lastLiveFetchTime > 2000) {
             applyLiveMicroVariation();
         }
@@ -233,7 +309,7 @@ function startAutonomousLiveTickEngine() {
 function applyLiveMicroVariation() {
     if (!appState.products || appState.products.length === 0) return;
 
-    // Micro-tick spot
+    // Spot micro-ticks
     const gNum = parseFloat(appState.spot.gold_bid) || 4375.95;
     const sNum = parseFloat(appState.spot.silver_bid) || 64.75;
     const uNum = parseFloat(appState.spot.usdinr_bid) || 95.46;
@@ -255,25 +331,23 @@ function applyLiveMicroVariation() {
 
     renderSpotRates(appState.spot);
 
-    // Micro-tick random product / future
-    const pickRandom = Math.random();
-    if (pickRandom > 0.4 && appState.products.length > 0) {
+    // Micro-tick random product (ONLY if not frozen)
+    if (!appState.adminSettings.isMasterFrozen) {
         const pIdx = Math.floor(Math.random() * appState.products.length);
         const prod = appState.products[pIdx];
         const step = (Math.random() > 0.5 ? 10 : -10);
-        if (prod.buy > 0) prod.buy += step;
-        if (prod.sell > 0) prod.sell += step;
+        if (prod.rawBuy > 0) prod.rawBuy += step;
+        if (prod.rawSell > 0) prod.rawSell += step;
         renderProductsList(appState.products);
     }
 
-    if (pickRandom > 0.5 && appState.futures.length > 0) {
-        const fIdx = Math.floor(Math.random() * appState.futures.length);
-        const fut = appState.futures[fIdx];
-        const step = (Math.random() > 0.5 ? 10 : -10);
-        if (fut.buy > 0) fut.buy += step;
-        if (fut.sell > 0) fut.sell += step;
-        renderFuturesList(appState.futures);
-    }
+    // Futures ALWAYS tick live even if physical is frozen!
+    const fIdx = Math.floor(Math.random() * appState.futures.length);
+    const fut = appState.futures[fIdx];
+    const fStep = (Math.random() > 0.5 ? 10 : -10);
+    if (fut.rawBuy > 0) fut.rawBuy += fStep;
+    if (fut.rawSell > 0) fut.rawSell += fStep;
+    renderFuturesList(appState.futures);
 }
 
 function parseCleanNumber(valStr) {
@@ -283,7 +357,6 @@ function parseCleanNumber(valStr) {
     return isNaN(num) ? 0 : Math.round(num);
 }
 
-/* CLIENT-SIDE PARSER FOR DIRECT SUNDHA STREAM */
 function parseClientSideSundhaStream(data) {
     if (!data) return;
     const lines = data.split(/\r?\n/);
@@ -330,6 +403,8 @@ function parseClientSideSundhaStream(data) {
                 name: symbol,
                 buy: origBuy,
                 sell: origSell,
+                rawBuy: origBuy,
+                rawSell: origSell,
                 high: origHigh,
                 low: origLow,
                 isProductHidden: false
@@ -362,7 +437,6 @@ function applyReceivedRatesPayload(data) {
         appState.isSecurityLoginRequired = data.isSecurityLoginRequired;
     }
 
-    if (data.hatohat) appState.hatohatSettings = data.hatohat;
     if (data.bankAccounts && data.bankAccounts.length > 0) appState.bankAccounts = data.bankAccounts;
 
     renderMarqueeTicker(appState.marqueeText);
@@ -425,38 +499,80 @@ function updateSpotCell(id, newVal) {
     appState.lastPrices[id] = newVal;
 }
 
+/* RENDER PHYSICAL PRODUCTS (Applies Renames, Premiums, Hide Physical Prices, Freeze) */
 function renderProductsList(products) {
     const container = document.getElementById('productsList');
     if (!container) return;
 
-    products.forEach(p => {
+    const renames = appState.adminSettings.renames || {};
+    const premiumsBuy = appState.adminSettings.premiumsBuy || {};
+    const premiumsSell = appState.adminSettings.premiumsSell || {};
+    const hiddenProducts = appState.adminSettings.hiddenProducts || {};
+    const hiddenBuy = appState.adminSettings.hiddenBuy || {};
+    const hiddenSell = appState.adminSettings.hiddenSell || {};
+    const isMasterHidden = !!appState.adminSettings.isMasterHidden;
+    const isMasterFrozen = !!appState.adminSettings.isMasterFrozen;
+
+    const visibleProds = products.filter(p => !hiddenProducts[p.id]);
+
+    visibleProds.forEach(p => {
         const bId = `prod-buy-${p.id}`;
         const sId = `prod-sell-${p.id}`;
+        const nameId = `prod-name-${p.id}`;
         const oldBuy = appState.lastPrices[bId];
         const oldSell = appState.lastPrices[sId];
 
-        const buyText = formatCleanNoComma(p.buy);
-        const sellText = formatCleanNoComma(p.sell);
+        const customName = renames[p.id] || p.name;
+        const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
+        const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
 
+        let rawBuy = p.rawBuy || p.buy;
+        let rawSell = p.rawSell || p.sell;
+
+        let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+        let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+        // HIDE PHYSICAL RULE: Show '-' on prices, keep row visible
+        if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
+        if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
+
+        const buyText = formatCleanNoComma(finalBuy);
+        const sellText = formatCleanNoComma(finalSell);
+
+        const nameEl = document.getElementById(nameId);
         const buyEl = document.getElementById(bId);
         const sellEl = document.getElementById(sId);
 
+        if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
+
         if (buyEl && buyEl.innerText !== buyText) {
             buyEl.innerText = buyText;
-            if (oldBuy && oldBuy !== buyText && p.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+            if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
         }
 
         if (sellEl && sellEl.innerText !== sellText) {
             sellEl.innerText = sellText;
-            if (oldSell && oldSell !== sellText && p.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+            if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
         }
 
         appState.lastPrices[bId] = buyText;
         appState.lastPrices[sId] = sellText;
     });
 
-    if (!container.children.length || container.children.length !== products.length) {
-        container.innerHTML = products.map(p => {
+    if (!container.children.length || container.children.length !== visibleProds.length) {
+        container.innerHTML = visibleProds.map(p => {
+            const customName = renames[p.id] || p.name;
+            const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
+            const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
+
+            let rawBuy = p.rawBuy || p.buy;
+            let rawSell = p.rawSell || p.sell;
+            let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+            let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+            if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
+            if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
+
             const highDisplay = p.high > 0 ? formatCleanNoComma(p.high) : '-';
             const lowDisplay = p.low > 0 ? formatCleanNoComma(p.low) : '-';
             const hasHl = p.high > 0 || p.low > 0;
@@ -464,44 +580,62 @@ function renderProductsList(products) {
             return `
             <div class="product-row-card" id="prod-row-${p.id}">
                 <div class="prod-info-block">
-                    <div class="prod-name-title">${p.name}</div>
+                    <div class="prod-name-title" id="prod-name-${p.id}">${customName}</div>
                     ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="prod-buy-${p.id}">${formatCleanNoComma(p.buy)}</div>
+                    <div class="rate-cell-text" id="prod-buy-${p.id}">${formatCleanNoComma(finalBuy)}</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="prod-sell-${p.id}">${formatCleanNoComma(p.sell)}</div>
+                    <div class="rate-cell-text" id="prod-sell-${p.id}">${formatCleanNoComma(finalSell)}</div>
                 </div>
             </div>`;
         }).join('');
     }
 }
 
+/* RENDER MCX FUTURES (Always Live, Never Frozen by Physical Master Freeze) */
 function renderFuturesList(futures) {
     const container = document.getElementById('futuresList');
     if (!container) return;
 
+    const renames = appState.adminSettings.renames || {};
+    const premiumsBuy = appState.adminSettings.premiumsBuy || {};
+    const premiumsSell = appState.adminSettings.premiumsSell || {};
+
     futures.forEach(f => {
         const bId = `fut-buy-${f.id}`;
         const sId = `fut-sell-${f.id}`;
+        const nameId = `fut-name-${f.id}`;
         const oldBuy = appState.lastPrices[bId];
         const oldSell = appState.lastPrices[sId];
 
-        const buyText = formatCleanNoComma(f.buy);
-        const sellText = formatCleanNoComma(f.sell);
+        const customName = renames[f.id] || f.name;
+        const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
+        const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
 
+        let rawBuy = f.rawBuy || f.buy;
+        let rawSell = f.rawSell || f.sell;
+        let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+        let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
+        const buyText = formatCleanNoComma(finalBuy);
+        const sellText = formatCleanNoComma(finalSell);
+
+        const nameEl = document.getElementById(nameId);
         const buyEl = document.getElementById(bId);
         const sellEl = document.getElementById(sId);
 
+        if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
+
         if (buyEl && buyEl.innerText !== buyText) {
             buyEl.innerText = buyText;
-            if (oldBuy && oldBuy !== buyText && f.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+            if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
         }
 
         if (sellEl && sellEl.innerText !== sellText) {
             sellEl.innerText = sellText;
-            if (oldSell && oldSell !== sellText && f.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+            if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
         }
 
         appState.lastPrices[bId] = buyText;
@@ -510,6 +644,15 @@ function renderFuturesList(futures) {
 
     if (!container.children.length || container.children.length !== futures.length) {
         container.innerHTML = futures.map(f => {
+            const customName = renames[f.id] || f.name;
+            const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
+            const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
+
+            let rawBuy = f.rawBuy || f.buy;
+            let rawSell = f.rawSell || f.sell;
+            let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+            let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+
             const highDisplay = f.high > 0 ? formatCleanNoComma(f.high) : '-';
             const lowDisplay = f.low > 0 ? formatCleanNoComma(f.low) : '-';
             const hasHl = f.high > 0 || f.low > 0;
@@ -517,14 +660,14 @@ function renderFuturesList(futures) {
             return `
             <div class="product-row-card" id="fut-row-${f.id}">
                 <div class="prod-info-block">
-                    <div class="prod-name-title">${f.name}</div>
+                    <div class="prod-name-title" id="fut-name-${f.id}">${customName}</div>
                     ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="fut-buy-${f.id}">${formatCleanNoComma(f.buy)}</div>
+                    <div class="rate-cell-text" id="fut-buy-${f.id}">${formatCleanNoComma(finalBuy)}</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="fut-sell-${f.id}">${formatCleanNoComma(f.sell)}</div>
+                    <div class="rate-cell-text" id="fut-sell-${f.id}">${formatCleanNoComma(finalSell)}</div>
                 </div>
             </div>`;
         }).join('');
@@ -628,7 +771,7 @@ function renderSwastikAiReport(aiReport) {
     }
 }
 
-/* 5. SECURITY & AUTHENTICATION MANAGEMENT */
+/* SECURITY & AUTHENTICATION MANAGEMENT */
 function checkStoredUserSession() {
     const userStr = localStorage.getItem('sg_user');
     const token = localStorage.getItem('sg_session_token');
@@ -669,9 +812,17 @@ function evaluateSecurityLoginModal() {
     authScreen.classList.remove('full-screen-lock');
 }
 
-/* 6. SINGLE SESSION SECURITY POLLER */
 async function verifySingleSessionSecurity() {
     if (!appState.user || !appState.sessionToken) return;
+
+    // Check local storage customer status first
+    const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
+    const myCust = localCusts.find(c => c.id === appState.user.id);
+    if (myCust && myCust.status === 'BLOCKED') {
+        alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
+        handleLogout();
+        return;
+    }
 
     const urls = [
         `api.php?action=verify-session&id=${appState.user.id}&sessionToken=${appState.sessionToken}&_=${Date.now()}`,
@@ -685,7 +836,7 @@ async function verifySingleSessionSecurity() {
                 const data = await res.json();
                 if (!data.valid) {
                     if (data.reason === 'MULTI_DEVICE') {
-                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है! सुरक्षा कारणों से इस डिवाइस से ऑटोमैटिक लॉगआउट किया जा रहा है।");
+                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
                     } else if (data.reason === 'BLOCKED') {
                         alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
                     } else if (data.reason === 'DELETED') {
@@ -703,6 +854,32 @@ async function handleLogin(e) {
     e.preventDefault();
     const idInput = document.getElementById('loginIdInput').value.trim().toUpperCase();
     const pinInput = document.getElementById('loginPinInput').value.trim();
+
+    // Check local storage customers first
+    const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
+    const localMatched = localCusts.find(c => c.id.toUpperCase() === idInput && c.pin === pinInput);
+
+    if (localMatched) {
+        if (localMatched.status === 'PENDING') {
+            alert("⏳ आपका खाता अभी एडमिन अप्रूवल के लिए पेंडिंग है। ऑपरेटर अप्रूवल के बाद लॉगिन करें।");
+            return;
+        }
+        if (localMatched.status === 'BLOCKED') {
+            alert("⛔ आपका खाता ब्लॉक कर दिया गया है।");
+            return;
+        }
+
+        const sessionToken = "sess_" + Date.now();
+        appState.user = localMatched;
+        appState.sessionToken = sessionToken;
+        localStorage.setItem('sg_user', JSON.stringify(localMatched));
+        localStorage.setItem('sg_session_token', sessionToken);
+        updateAvatarBadge(localMatched.id);
+        document.getElementById('authScreen').classList.add('hidden');
+        sendVisitorPing();
+        alert(`स्वागत है ${localMatched.name} जी! लॉगिन सफल।`);
+        return;
+    }
 
     const loginUrls = ['api.php?action=login', '/api/login'];
 
@@ -725,6 +902,7 @@ async function handleLogin(e) {
 
                     updateAvatarBadge(data.customer.id);
                     document.getElementById('authScreen').classList.add('hidden');
+                    sendVisitorPing();
                     alert(`स्वागत है ${data.customer.name} जी! लॉगिन सफल।`);
                     return;
                 } else {
@@ -735,7 +913,7 @@ async function handleLogin(e) {
         } catch(e) {}
     }
 
-    // Static Fallback for Demo Account
+    // Default Demo Account
     if (idInput === 'SG1001' && pinInput === '123456') {
         const demoCust = { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED" };
         const demoToken = "sess_demo_" + Date.now();
@@ -745,14 +923,15 @@ async function handleLogin(e) {
         localStorage.setItem('sg_session_token', demoToken);
         updateAvatarBadge("SG1001");
         document.getElementById('authScreen').classList.add('hidden');
+        sendVisitorPing();
         alert("स्वागत है Champalal Soni जी! (डेमो लॉगिन सफल)");
         return;
     }
 
-    alert("सर्वर से कनेक्ट करने में त्रुटि या गलत लॉगिन ID/PIN!");
+    alert("गलत लॉगिन ID या पासवर्ड PIN!");
 }
 
-/* REALTIME NEW CUSTOMER REGISTRATION SUBMISSION ENGINE */
+/* REALTIME NEW CUSTOMER REGISTRATION ENGINE */
 async function handleRegister(e) {
     e.preventDefault();
     const name = document.getElementById('regName').value.trim();
@@ -764,39 +943,51 @@ async function handleRegister(e) {
         return;
     }
 
-    const regUrls = ['api.php?action=register', '/api/register'];
+    const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
+    const nextNum = localCusts.length + 1002;
+    const newId = `SG${nextNum}`;
+    const randomPin = String(Math.floor(100000 + Math.random() * 900000));
 
+    const newCustomer = {
+        id: newId,
+        name: name,
+        mobile: mobile,
+        city: city,
+        status: "PENDING",
+        pin: randomPin,
+        activeSession: null
+    };
+
+    localCusts.push(newCustomer);
+    localStorage.setItem('sg_customers_v3', JSON.stringify(localCusts));
+
+    if (syncChannel) {
+        syncChannel.postMessage({ type: 'NEW_REGISTRATION', customer: newCustomer });
+    }
+
+    // Send to backend API
+    const regUrls = ['api.php?action=register', '/api/register'];
     for (const url of regUrls) {
         try {
-            const res = await fetch(url, {
+            await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, mobile, city })
             });
-
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success) {
-                    alert(
-                        `🎉 बधाई हो ${data.customer.name} जी!\n\n` +
-                        `आपका रजिस्ट्रेशन सफलतापूर्वक सबमिट हो गया है।\n\n` +
-                        `🔑 आपकी Customer ID: ${data.customer.id}\n` +
-                        `🔒 आपका पासवर्ड (PIN): ${data.customer.pin}\n\n` +
-                        `एडमिन द्वारा अप्रूव होने के बाद आप लॉगिन कर सकेंगे!`
-                    );
-                    toggleAuthView('login');
-                    document.getElementById('loginIdInput').value = data.customer.id;
-                    document.getElementById('loginPinInput').value = data.customer.pin;
-                    return;
-                } else {
-                    alert(data.message || "रजिस्ट्रेशन असफल!");
-                    return;
-                }
-            }
         } catch(e) {}
     }
 
-    alert("रजिस्ट्रेशन सबमिट हो गया! एडमिन द्वारा अप्रूवल के बाद आपका खाता चालू हो जाएगा।");
+    alert(
+        `🎉 बधाई हो ${name} जी!\n\n` +
+        `आपका रजिस्ट्रेशन सफलतापूर्वक सबमिट हो गया है।\n\n` +
+        `🔑 आपकी Customer ID: ${newId}\n` +
+        `🔒 आपका पासवर्ड (PIN): ${randomPin}\n\n` +
+        `ऑपरेटर द्वारा अप्रूव होने के बाद आप लॉगिन कर सकेंगे!`
+    );
+
+    toggleAuthView('login');
+    document.getElementById('loginIdInput').value = newId;
+    document.getElementById('loginPinInput').value = randomPin;
 }
 
 function handleLogout() {
@@ -807,6 +998,7 @@ function handleLogout() {
     updateAvatarBadge("SG1001");
     switchTab('live-rates');
     evaluateSecurityLoginModal();
+    sendVisitorPing();
 }
 
 function switchTab(tabId) {
