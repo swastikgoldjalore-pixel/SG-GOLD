@@ -333,27 +333,6 @@ body {
 .auth-title { font-family: 'Cinzel Decorative', serif; font-size: 22px; font-weight: 900; color: #f59e0b; }
 .auth-subtext { font-size: 10px; color: #cbd5e1; font-weight: 700; letter-spacing: 1px; }
 
-/* PROMINENT BACK TO LIVE RATES BUTTON */
-.btn-back-rates {
-    width: 100%;
-    padding: 10px;
-    background: #003a80;
-    color: #facc15;
-    border: 1.5px solid #facc15;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 12px;
-    cursor: pointer;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(250,204,21,0.2);
-    transition: all 0.2s;
-}
-.btn-back-rates:hover { background: #facc15; color: #000000; }
-
 .input-group { margin-bottom: 12px; text-align: left; }
 .input-group label { display: block; font-size: 11px; font-weight: 700; color: #facc15; margin-bottom: 4px; }
 .stylish-input { width: 100%; padding: 10px 12px; background: #00152b; border: 1.5px solid #0284c7; border-radius: 6px; color: white; font-size: 13px; font-weight: 600; outline: none; }

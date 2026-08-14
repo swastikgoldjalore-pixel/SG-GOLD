@@ -418,14 +418,23 @@
                 const msg = e.data;
                 if (msg.type === 'SESSION_INVALIDATED' && currentUser && currentUser.id === msg.customerId) {
                     if (currentSessionToken !== msg.newSessionToken) {
-                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है! सुरक्षा कारणों से इस डिवाइस से ऑटोमैटिक लॉगआउट किया जा रहा है।");
+                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
                         handleWebLogout(false);
                     }
                 } else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && currentUser && currentUser.id === msg.customerId) {
-                    alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता डिलीट कर दिया गया है!");
+                    alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
                     handleWebLogout(false);
+                } else if (msg.type === 'CUSTOMER_STATUS_CHANGE' && currentUser && currentUser.id === msg.customerId) {
+                    if (msg.status === 'BLOCKED') {
+                        alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
+                        handleWebLogout(false);
+                    }
                 } else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
                     webAdminSettings = { ...webAdminSettings, ...msg.settings };
+                    if (msg.settings.marqueeText) {
+                        const marq = document.getElementById('marqueeText');
+                        if (marq) marq.innerText = msg.settings.marqueeText;
+                    }
                     renderLandscapeProducts(currentProducts, currentFutures);
                 }
             };
@@ -442,11 +451,14 @@
                     const custs = JSON.parse(e.newValue);
                     const myCust = custs.find(c => c.id === currentUser.id);
                     if (myCust) {
-                        if (myCust.status === 'BLOCKED' || myCust.status === 'DELETED') {
-                            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक/हटा दिया गया है!");
+                        if (myCust.status === 'BLOCKED') {
+                            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
+                            handleWebLogout(false);
+                        } else if (myCust.status === 'DELETED') {
+                            alert("⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
                             handleWebLogout(false);
                         } else if (myCust.activeSession && myCust.activeSession !== currentSessionToken) {
-                            alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
+                            alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
                             handleWebLogout(false);
                         }
                     }
@@ -535,29 +547,83 @@
             localStorage.removeItem('sg_session_token');
             checkCustomerAuth();
             if (showAlert) alert("सफलतापूर्वक लॉगआउट हो गया!");
+        function getOrCreateWebVisitorId() {
+            let vid = localStorage.getItem('sg_visitor_uid');
+            if (!vid) {
+                vid = 'V_WEB_' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
+                localStorage.setItem('sg_visitor_uid', vid);
+            }
+            return vid;
         }
 
-        function sendWebsiteVisitorPing() {
+        async function sendWebsiteVisitorPing() {
             try {
                 const isUserLoggedIn = !!(currentUser && currentUser.name);
+                const vid = getOrCreateWebVisitorId();
+                const storedGuestName = localStorage.getItem('sg_guest_name');
+                const storedGuestPhone = localStorage.getItem('sg_guest_phone');
+
+                let guestDisplayName = "Landscape Visitor (" + vid.substr(-4) + ")";
+                if (isUserLoggedIn) {
+                    guestDisplayName = currentUser.name;
+                } else if (storedGuestName && storedGuestName.trim()) {
+                    guestDisplayName = storedGuestName.trim();
+                }
+
                 const visitorObj = {
-                    guestName: isUserLoggedIn ? currentUser.name : "Landscape Visitor",
-                    mobile: isUserLoggedIn ? currentUser.mobile : "Not Registered",
+                    visitorId: vid,
+                    guestName: guestDisplayName,
+                    mobile: isUserLoggedIn ? currentUser.mobile : (storedGuestPhone || "Not Registered"),
                     ip: "127.0.0.1",
                     device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
-                    city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore Region",
+                    city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore / Rajasthan",
                     page: "Website Live Board (website.html)",
                     status: "ONLINE",
                     pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
                     lastPing: Date.now()
                 };
 
-                const existing = JSON.parse(localStorage.getItem('sg_guest_visitors_v3') || '[]');
-                const idx = existing.findIndex(x => x.page === visitorObj.page && x.device === visitorObj.device);
-                if (idx >= 0) existing[idx] = visitorObj;
-                else existing.unshift(visitorObj);
-                localStorage.setItem('sg_guest_visitors_v3', JSON.stringify(existing.slice(0, 30)));
+                const urls = ['api.php?action=visitor-ping', '/api/visitor-ping'];
+                for (const url of urls) {
+                    try {
+                        await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(visitorObj)
+                        });
+                        break;
+                    } catch(e) {}
+                }
             } catch(e) {}
+        }
+
+        async function verifyWebSessionSecurity() {
+            if (!currentUser || !currentSessionToken) return;
+
+            const urls = [
+                `api.php?action=verify-session&id=${currentUser.id}&sessionToken=${currentSessionToken}&_=${Date.now()}`,
+                `/api/verify-session?id=${currentUser.id}&sessionToken=${currentSessionToken}&_=${Date.now()}`
+            ];
+
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (!data.valid) {
+                            if (data.reason === 'MULTI_DEVICE') {
+                                alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
+                            } else if (data.reason === 'BLOCKED') {
+                                alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
+                            } else if (data.reason === 'DELETED') {
+                                alert("⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
+                            }
+                            handleWebLogout(false);
+                        }
+                        return;
+                    }
+                } catch(e) {}
+            }
         }
 
         function formatNoComma(val) {
@@ -609,7 +675,8 @@
             startWebPolling();
             startWebAutonomousTick();
             sendWebsiteVisitorPing();
-            setInterval(sendWebsiteVisitorPing, 5000);
+            setInterval(sendWebsiteVisitorPing, 3000);
+            setInterval(verifyWebSessionSecurity, 1000);
         }
 
         function startWebAutonomousTick() {
@@ -772,6 +839,17 @@
         function handleIncomingWebPayload(data) {
             if (!data) return;
             if (data.spot) renderSpotTickers(data.spot);
+
+            if (data.adminSettings) {
+                webAdminSettings = { ...webAdminSettings, ...data.adminSettings };
+            }
+            if (data.productOrder) {
+                webAdminSettings.productOrder = data.productOrder;
+            }
+            if (data.marqueeText) {
+                const marq = document.getElementById('marqueeText');
+                if (marq) marq.innerText = data.marqueeText;
+            }
 
             const visibleProducts = (data.products && data.products.length > 0) ? data.products : currentProducts;
             const visibleFutures = (data.futures && data.futures.length > 0) ? data.futures : currentFutures;
