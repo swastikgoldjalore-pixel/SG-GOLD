@@ -112,7 +112,17 @@ let globalAdminSettings = {
             accountType: "Bullion Current Account"
         }
     ],
-    renames: {},
+    productOrder: ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "GOLD_FUTURE", "SILVER_FUTURE"],
+    renames: {
+        "RANI": "RANI",
+        "RUPA": "RUPA",
+        "SILVER_CHORSA_98": "SILVER Chorsa 98",
+        "GOLD_9950_IMPOTED": "GOLD 995 IMPORTED",
+        "GOLD_999_KD": "GOLD 999 KD",
+        "GOLD_RTGS_999": "GOLD RTGS 999",
+        "GOLD_FUTURE": "GOLD FUTURE",
+        "SILVER_FUTURE": "SILVER FUTURE"
+    },
     premiumsBuy: {},
     premiumsSell: {},
     hiddenProducts: {},

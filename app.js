@@ -8,12 +8,12 @@
    ========================================================================== */
 
 const INITIAL_DEFAULT_PRODUCTS = [
-    { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
-    { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290, high: 150290, low: 149200, isProductHidden: false },
-    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390, high: 158390, low: 157200, isProductHidden: false },
     { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0, high: 150500, low: 149500, isProductHidden: false },
-    { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190, high: 230190, low: 227500, isProductHidden: false },
-    { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0, high: 233000, low: 231000, isProductHidden: false }
+    { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0, high: 233000, low: 231000, isProductHidden: false },
+    { id: "SILVER_CHORSA_98", name: "SILVER Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190, high: 230190, low: 227500, isProductHidden: false },
+    { id: "GOLD_9950_IMPOTED", name: "GOLD 995 IMPORTED", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290, high: 150290, low: 149200, isProductHidden: false },
+    { id: "GOLD_999_KD", name: "GOLD 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
+    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390, high: 158390, low: 157200, isProductHidden: false }
 ];
 
 const INITIAL_DEFAULT_FUTURES = [
@@ -42,7 +42,9 @@ let appState = {
     sessionToken: null,
     activeTab: 'live-rates',
     adminSettings: {
-        renames: {},
+        renames: {
+            "GOLD_9950_IMPOTED": "GOLD 995 IMPORTED"
+        },
         premiumsBuy: {},
         premiumsSell: {},
         hiddenProducts: {},
@@ -50,7 +52,7 @@ let appState = {
         hiddenSell: {},
         isMasterHidden: false,
         isMasterFrozen: false,
-        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"],
+        productOrder: ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "GOLD_FUTURE", "SILVER_FUTURE"],
         marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
         popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
     },

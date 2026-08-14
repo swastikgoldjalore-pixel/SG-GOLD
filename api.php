@@ -72,7 +72,27 @@ function getDefaultAdminSettings() {
             'rtgsSilverOffset' => 0,
             'isHatohatActive' => true
         ],
-        'bulletinMsg' => "Swastik Gold Jalore में आपका हार्दिक स्वागत है। किसी भी जानकारी हेतु संपर्क करें।",
+        'bulletinMsg' => "Swastik Gold Jalore में आपका हार्दिक स्वागत है। बुलियन रेट्स एवं डिलीवरी संबंधी किसी भी जानकारी हेतु संपर्क करें। धन्यवाद!",
+        'productOrder' => [
+            "RANI",
+            "RUPA",
+            "SILVER_CHORSA_98",
+            "GOLD_9950_IMPOTED",
+            "GOLD_999_KD",
+            "GOLD_RTGS_999",
+            "GOLD_FUTURE",
+            "SILVER_FUTURE"
+        ],
+        'renames' => [
+            "RANI" => "RANI",
+            "RUPA" => "RUPA",
+            "SILVER_CHORSA_98" => "SILVER Chorsa 98",
+            "GOLD_9950_IMPOTED" => "GOLD 995 IMPORTED",
+            "GOLD_999_KD" => "GOLD 999 KD",
+            "GOLD_RTGS_999" => "GOLD RTGS 999",
+            "GOLD_FUTURE" => "GOLD FUTURE",
+            "SILVER_FUTURE" => "SILVER FUTURE"
+        ],
         'bankAccounts' => [
             [
                 'id' => "bank_1",
@@ -91,7 +111,6 @@ function getDefaultAdminSettings() {
                 'accountType' => "Bullion Current Account"
             ]
         ],
-        'renames' => [],
         'premiumsBuy' => [],
         'premiumsSell' => [],
         'hiddenProducts' => [],
@@ -310,19 +329,19 @@ function computeLiveRatesPayload() {
     }
 
     // GLOBAL SERVER-SIDE PRODUCT ORDER SORTING
-    if (!empty($settings['productOrder']) && is_array($settings['productOrder'])) {
-        $orderMap = array_flip($settings['productOrder']);
-        $orderSorter = function($a, $b) use ($orderMap) {
-            $posA = isset($orderMap[$a['id']]) ? $orderMap[$a['id']] : 999;
-            $posB = isset($orderMap[$b['id']]) ? $orderMap[$b['id']] : 999;
-            if ($posA === $posB) return 0;
-            return ($posA < $posB) ? -1 : 1;
-        };
-        usort($visibleProducts, $orderSorter);
-        usort($allProducts, $orderSorter);
-        usort($visibleFutures, $orderSorter);
-        usort($allFutures, $orderSorter);
-    }
+    $defaultOrder = ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "GOLD_FUTURE", "SILVER_FUTURE"];
+    $activeOrder = (!empty($settings['productOrder']) && is_array($settings['productOrder'])) ? $settings['productOrder'] : $defaultOrder;
+    $orderMap = array_flip($activeOrder);
+    $orderSorter = function($a, $b) use ($orderMap) {
+        $posA = isset($orderMap[$a['id']]) ? $orderMap[$a['id']] : 999;
+        $posB = isset($orderMap[$b['id']]) ? $orderMap[$b['id']] : 999;
+        if ($posA === $posB) return 0;
+        return ($posA < $posB) ? -1 : 1;
+    };
+    usort($visibleProducts, $orderSorter);
+    usort($allProducts, $orderSorter);
+    usort($visibleFutures, $orderSorter);
+    usort($allFutures, $orderSorter);
 
     // SWASTIK AI MARKET INTELLIGENCE & 100% PRECISION TARGET GENERATOR
     $goldComex = (float)$spot['gold_bid'];
