@@ -185,7 +185,7 @@ function getOrCreateVisitorId() {
     return vid;
 }
 
-async function sendVisitorPing() {
+async function sendVisitorPing(status = 'ONLINE') {
     try {
         const isUserLoggedIn = !!(appState.user && appState.user.name);
         const vid = getOrCreateVisitorId();
@@ -207,7 +207,7 @@ async function sendVisitorPing() {
             device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Browser",
             city: isUserLoggedIn && appState.user.city ? appState.user.city : "Jalore / Rajasthan",
             page: "Mobile Live Rates Desk",
-            status: "ONLINE",
+            status: status,
             pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
             lastPing: Date.now()
         };
@@ -229,6 +229,18 @@ async function sendVisitorPing() {
         }
     } catch(e) {}
 }
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        sendVisitorPing('OFFLINE');
+    } else {
+        sendVisitorPing('ONLINE');
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    sendVisitorPing('OFFLINE');
+});
 
 function initSilentPwaServiceWorker() {
     if ('serviceWorker' in navigator) {
@@ -539,6 +551,12 @@ function applyReceivedRatesPayload(data) {
         renderWelcomePopupMessage(data.popupMsg);
     }
 
+    if (data.adminSettings && data.adminSettings.bulletinMsg) {
+        renderBulletinMessage(data.adminSettings.bulletinMsg);
+    } else if (data.bulletinMsg) {
+        renderBulletinMessage(data.bulletinMsg);
+    }
+
     evaluateSecurityLoginModal();
 }
 
@@ -601,6 +619,26 @@ function applyProductOrdering(list, orderIds) {
     });
 }
 
+function getPhysicalSellHighLow(productId, currentFinalSell) {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    let hlData = null;
+    try {
+        hlData = JSON.parse(localStorage.getItem('sg_sell_hl_' + todayKey) || '{}');
+    } catch(e) { hlData = {}; }
+
+    if (currentFinalSell > 0) {
+        if (!hlData[productId]) {
+            hlData[productId] = { high: currentFinalSell, low: currentFinalSell };
+        } else {
+            if (currentFinalSell > hlData[productId].high) hlData[productId].high = currentFinalSell;
+            if (currentFinalSell < hlData[productId].low) hlData[productId].low = currentFinalSell;
+        }
+        try { localStorage.setItem('sg_sell_hl_' + todayKey, JSON.stringify(hlData)); } catch(e) {}
+    }
+
+    return hlData[productId] || { high: currentFinalSell, low: currentFinalSell };
+}
+
 function renderProductsList(products) {
     const container = document.getElementById('productsList');
     if (!container) return;
@@ -620,6 +658,7 @@ function renderProductsList(products) {
         const bId = `prod-buy-${p.id}`;
         const sId = `prod-sell-${p.id}`;
         const nameId = `prod-name-${p.id}`;
+        const hlId = `hl-${p.id}`;
         const oldBuy = appState.lastPrices[bId];
         const oldSell = appState.lastPrices[sId];
 
@@ -629,7 +668,6 @@ function renderProductsList(products) {
 
         let rawBuy = p.rawBuy || p.buy;
         let rawSell = p.rawSell || p.sell;
-
         let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
         let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
 
@@ -642,6 +680,7 @@ function renderProductsList(products) {
         const nameEl = document.getElementById(nameId);
         const buyEl = document.getElementById(bId);
         const sellEl = document.getElementById(sId);
+        const hlEl = document.getElementById(hlId);
 
         if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
 
@@ -653,6 +692,18 @@ function renderProductsList(products) {
         if (sellEl && sellEl.innerText !== sellText) {
             sellEl.innerText = sellText;
             if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+        }
+
+        // PHYSICAL HIGH/LOW BASED ON LIVE SELL PRICE WITH MIDNIGHT RESET
+        const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
+        if (hlEl) {
+            if (isSellHidden || finalSell <= 0) {
+                hlEl.style.display = 'none';
+            } else {
+                hlEl.style.display = 'block';
+                const hl = getPhysicalSellHighLow(p.id, finalSell);
+                hlEl.innerText = `H: ${formatCleanNoComma(hl.high)}   L: ${formatCleanNoComma(hl.low)}`;
+            }
         }
 
         appState.lastPrices[bId] = buyText;
@@ -677,15 +728,20 @@ function renderProductsList(products) {
             if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
             if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
-            const highDisplay = (!isMasterHidden && p.high > 0) ? formatCleanNoComma(p.high) : '-';
-            const lowDisplay = (!isMasterHidden && p.low > 0) ? formatCleanNoComma(p.low) : '-';
-            const hasHl = !isMasterHidden && (p.high > 0 || p.low > 0);
+            const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
+            let hlMarkup = '';
+            if (!isSellHidden && finalSell > 0) {
+                const hl = getPhysicalSellHighLow(p.id, finalSell);
+                hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}">H: ${formatCleanNoComma(hl.high)}   L: ${formatCleanNoComma(hl.low)}</div>`;
+            } else {
+                hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}" style="display:none;"></div>`;
+            }
 
             return `
             <div class="product-row-card" id="prod-row-${p.id}">
                 <div class="prod-info-block">
                     <div class="prod-name-title" id="prod-name-${p.id}">${customName}</div>
-                    ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : `<div class="prod-hl-line">H: -   L: -</div>`}
+                    ${hlMarkup}
                 </div>
                 <div class="price-pill-cell">
                     <div class="rate-cell-text" id="prod-buy-${p.id}">${formatCleanNoComma(finalBuy)}</div>
@@ -799,6 +855,18 @@ function renderWelcomePopupMessage(msg) {
     }
 }
 
+function renderBulletinMessage(msg) {
+    if (!msg) return;
+    const el = document.getElementById('bulletinMessageText');
+    if (el && el.innerText !== msg) {
+        el.innerText = msg;
+    }
+    const dEl = document.getElementById('bulletinDate');
+    if (dEl) {
+        dEl.innerText = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+}
+
 function renderSwastikAiReport(report) {
     if (!report) return;
 
@@ -810,11 +878,11 @@ function renderSwastikAiReport(report) {
         const g = report.comexGold;
         setTextIf('aiGoldComexRate', `$${g.rate}`);
         setTextIf('aiGoldComexSig', g.signal);
-        setTextIf('aiGoldComexT15', `$${g.target15m}`);
+        setTextIf('aiGoldComexT1d', `$${g.target1d || g.target15m}`);
         setTextIf('aiGoldComexT1w', `$${g.target1w}`);
         setTextIf('aiGoldComexT1m', `$${g.target1m}`);
         setTextIf('aiGoldComexS1', `$${g.support1 || (parseFloat(g.rate) - 12).toFixed(2)}`);
-        setTextIf('aiGoldComexR1', `$${g.resistance1 || (parseFloat(g.rate) + 15).toFixed(2)}`);
+        setTextIf('aiGoldComexR1', `$${g.resistance1 || (parseFloat(g.rate) + 22).toFixed(2)}`);
     }
 
     // COMEX SILVER
@@ -822,11 +890,11 @@ function renderSwastikAiReport(report) {
         const s = report.comexSilver;
         setTextIf('aiSilverComexRate', `$${s.rate}`);
         setTextIf('aiSilverComexSig', s.signal);
-        setTextIf('aiSilverComexT15', `$${s.target15m}`);
+        setTextIf('aiSilverComexT1d', `$${s.target1d || s.target15m}`);
         setTextIf('aiSilverComexT1w', `$${s.target1w}`);
         setTextIf('aiSilverComexT1m', `$${s.target1m}`);
-        setTextIf('aiSilverComexS1', `$${s.support1 || (parseFloat(s.rate) - 0.45).toFixed(2)}`);
-        setTextIf('aiSilverComexR1', `$${s.resistance1 || (parseFloat(s.rate) + 0.90).toFixed(2)}`);
+        setTextIf('aiSilverComexS1', `$${s.support1 || (parseFloat(s.rate) - 0.55).toFixed(2)}`);
+        setTextIf('aiSilverComexR1', `$${s.resistance1 || (parseFloat(s.rate) + 1.40).toFixed(2)}`);
     }
 
     // MCX GOLD
@@ -834,7 +902,7 @@ function renderSwastikAiReport(report) {
         const mg = report.mcxGold;
         setTextIf('aiGoldMcxRate', `₹${mg.rate}`);
         setTextIf('aiGoldMcxSig', mg.signal);
-        setTextIf('aiGoldMcxT15', `₹${mg.target15m}`);
+        setTextIf('aiGoldMcxT1d', `₹${mg.target1d || mg.target15m}`);
         setTextIf('aiGoldMcxT1w', `₹${mg.target1w}`);
         setTextIf('aiGoldMcxT1m', `₹${mg.target1m}`);
         setTextIf('aiGoldMcxS1', `₹${mg.support1 || ''}`);
@@ -846,7 +914,7 @@ function renderSwastikAiReport(report) {
         const ms = report.mcxSilver;
         setTextIf('aiSilverMcxRate', `₹${ms.rate}`);
         setTextIf('aiSilverMcxSig', ms.signal);
-        setTextIf('aiSilverMcxT15', `₹${ms.target15m}`);
+        setTextIf('aiSilverMcxT1d', `₹${ms.target1d || ms.target15m}`);
         setTextIf('aiSilverMcxT1w', `₹${ms.target1w}`);
         setTextIf('aiSilverMcxT1m', `₹${ms.target1m}`);
         setTextIf('aiSilverMcxS1', `₹${ms.support1 || ''}`);
@@ -914,38 +982,38 @@ function calculateClientSideAiReport() {
         comexGold: {
             rate: gComex.toFixed(2),
             signal: "STRONG BULLISH 🚀 (98.8% Accuracy)",
-            target15m: (gComex + 8.40).toFixed(2),
-            target1w: (gComex + 48.50).toFixed(2),
-            target1m: (gComex + 125.00).toFixed(2),
+            target1d: (gComex + 18.50).toFixed(2),
+            target1w: (gComex + 58.50).toFixed(2),
+            target1m: (gComex + 145.00).toFixed(2),
             support1: (gComex - 12.00).toFixed(2),
-            resistance1: (gComex + 15.50).toFixed(2)
+            resistance1: (gComex + 22.50).toFixed(2)
         },
         comexSilver: {
             rate: sComex.toFixed(2),
             signal: "SUPER BULLISH 🚀 (99.4% Accuracy)",
-            target15m: (sComex + 0.65).toFixed(2),
-            target1w: (sComex + 2.20).toFixed(2),
-            target1m: (sComex + 5.80).toFixed(2),
-            support1: (sComex - 0.45).toFixed(2),
-            resistance1: (sComex + 0.90).toFixed(2)
+            target1d: (sComex + 1.15).toFixed(2),
+            target1w: (sComex + 3.40).toFixed(2),
+            target1m: (sComex + 7.80).toFixed(2),
+            support1: (sComex - 0.55).toFixed(2),
+            resistance1: (sComex + 1.40).toFixed(2)
         },
         mcxGold: {
             rate: String(gMcx),
             signal: "BULLISH 📈 (98.6% Accuracy)",
-            target15m: String(gMcx + 380),
-            target1w: String(gMcx + 1450),
-            target1m: String(gMcx + 3800),
+            target1d: String(gMcx + 620),
+            target1w: String(gMcx + 1850),
+            target1m: String(gMcx + 4600),
             support1: String(gMcx - 450),
-            resistance1: String(gMcx + 620)
+            resistance1: String(gMcx + 750)
         },
         mcxSilver: {
             rate: String(sMcx),
             signal: "EXPLOSIVE BULLISH 🚀 (99.5% Accuracy)",
-            target15m: String(sMcx + 780),
-            target1w: String(sMcx + 2850),
-            target1m: String(sMcx + 7400),
-            support1: String(sMcx - 850),
-            resistance1: String(sMcx + 1200)
+            target1d: String(sMcx + 1350),
+            target1w: String(sMcx + 3900),
+            target1m: String(sMcx + 9200),
+            support1: String(sMcx - 950),
+            resistance1: String(sMcx + 1600)
         },
         goldCatalysts: [
             "🏛️ **US Fed ब्याज दर कटौती का प्रभाव**: अमेरिकी फेडरल रिजर्व द्वारा आगामी बैठकों में ब्याज दरों में कटौती की 92% संभावना से सुरक्षित निवेश (Safe-Haven Bullion Demand) में भारी उछाल।",

@@ -193,10 +193,10 @@ function getTodayFestivalGreeting() {
 // SWASTIK AI REAL-TIME MARKET INTELLIGENCE ENGINE
 let swastikAiReport = {
     lastAiUpdate: getIstTimeString(),
-    comexGold: { rate: "2418.50", signal: "BULLISH 🚀", target15m: "2426.00", target1w: "2460.00", target1m: "2520.00" },
-    comexSilver: { rate: "29.80", signal: "VERY BULLISH 🚀", target15m: "30.20", target1w: "31.50", target1m: "33.80" },
-    mcxGold: { rate: "72,450", signal: "BULLISH 📈", target15m: "72,680", target1w: "73,400", target1m: "74,800" },
-    mcxSilver: { rate: "88,200", signal: "STRONG BULLISH 🚀", target15m: "88,750", target1w: "90,100", target1m: "93,500" },
+    comexGold: { rate: "2418.50", signal: "BULLISH 🚀", target1d: "2436.00", target1w: "2460.00", target1m: "2520.00" },
+    comexSilver: { rate: "29.80", signal: "VERY BULLISH 🚀", target1d: "30.90", target1w: "31.50", target1m: "33.80" },
+    mcxGold: { rate: "72,450", signal: "BULLISH 📈", target1d: "73,080", target1w: "73,400", target1m: "74,800" },
+    mcxSilver: { rate: "88,200", signal: "STRONG BULLISH 🚀", target1d: "89,550", target1w: "90,100", target1m: "93,500" },
     fundamentalDrivers: [
         "🔥 ट्रम्प का नया टैरिफ बयान एवं अमेरिकी डॉलर सूचकांक (DXY) में नरमी से अंतरराष्ट्रीय सोने में उछाल।",
         "📈 US Fed द्वारा ब्याज दरों में कटौती की संभावना से कॉमेक्स बुलियन मार्केट में भारी खरीदारी दर्ज।",
@@ -223,28 +223,28 @@ function generateSwastikAiMarketReport() {
         comexGold: {
             rate: goldComex > 500 ? goldComex.toFixed(2) : "2418.50",
             signal: "BULLISH 🚀",
-            target15m: (goldComex > 500 ? (goldComex + 7.5) : 2426.0).toFixed(2),
+            target1d: (goldComex > 500 ? (goldComex + 18.5) : 2436.0).toFixed(2),
             target1w: (goldComex > 500 ? (goldComex + 45.0) : 2460.0).toFixed(2),
             target1m: (goldComex > 500 ? (goldComex + 110.0) : 2520.0).toFixed(2)
         },
         comexSilver: {
             rate: silverComex.toFixed(2),
             signal: "STRONG BULLISH 🚀",
-            target15m: (silverComex + 0.45).toFixed(2),
+            target1d: (silverComex + 1.15).toFixed(2),
             target1w: (silverComex + 1.80).toFixed(2),
             target1m: (silverComex + 4.20).toFixed(2)
         },
         mcxGold: {
             rate: goldMcxLive.toLocaleString('en-IN'),
             signal: "BULLISH 📈",
-            target15m: (goldMcxLive + 230).toLocaleString('en-IN'),
+            target1d: (goldMcxLive + 620).toLocaleString('en-IN'),
             target1w: (goldMcxLive + 950).toLocaleString('en-IN'),
             target1m: (goldMcxLive + 2350).toLocaleString('en-IN')
         },
         mcxSilver: {
             rate: silverMcxLive.toLocaleString('en-IN'),
             signal: "STRONG BULLISH 🚀",
-            target15m: (silverMcxLive + 550).toLocaleString('en-IN'),
+            target1d: (silverMcxLive + 1350).toLocaleString('en-IN'),
             target1w: (silverMcxLive + 1900).toLocaleString('en-IN'),
             target1m: (silverMcxLive + 5300).toLocaleString('en-IN')
         },

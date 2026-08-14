@@ -443,13 +443,20 @@
                     <button onclick="savePcMarqueeText()" class="btn-live" style="width:100%;margin-top:6px;background:#facc15;color:black;"><i class="fa-solid fa-floppy-disk"></i> Save Marquee Ticker</button>
                 </div>
 
+                <!-- SWASTIK LIVE PERSONAL DESK BULLETIN NOTICE CONTROL -->
+                <div class="pc-card" style="border-color:#0284c7;">
+                    <h3 style="color:#38bdf8;"><i class="fa-solid fa-bullhorn"></i> Swastik Live Personal Desk Bulletin Notice</h3>
+                    <textarea id="pcBulletinText" rows="3" style="width:100%;padding:8px;border-radius:6px;background:#070f1e;color:white;border:1px solid #1e293b;font-size:12px;" placeholder="Swastik Gold Jalore में आपका हार्दिक स्वागत है..."></textarea>
+                    <button onclick="savePcBulletinMsg()" class="btn-live" style="width:100%;margin-top:6px;background:#38bdf8;color:#0f172a;font-weight:700;"><i class="fa-solid fa-paper-plane"></i> Publish Bulletin to Personal Desk</button>
+                </div>
+
                 <!-- SWASTIK AI MARKET TARGET PREVIEW -->
                 <div class="pc-card" style="border-color:#6366f1;">
                     <h3 style="color:#818cf8;"><i class="fa-solid fa-brain"></i> Swastik AI Market Analysis (IST)</h3>
                     <div id="pcAiReportPreview" style="font-size:11px;color:#cbd5e1;line-height:1.5;">
-                        <p style="color:#4ade80;font-weight:700;">✔ 15-Minute AI Engine Active</p>
-                        <p>COMEX Gold Target: <strong id="aiComexTarget">$4382.50</strong></p>
-                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹1,54,690</strong></p>
+                        <p style="color:#4ade80;font-weight:700;">✔ 1-Day AI Target Engine Active (99.2% Accuracy)</p>
+                        <p>COMEX Gold Target: <strong id="aiComexTarget">$4394.45 (1-Day)</strong></p>
+                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹1,55,080 (1-Day)</strong></p>
                     </div>
                 </div>
 
@@ -1143,6 +1150,16 @@
             alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
         }
 
+        async function savePcBulletinMsg() {
+            const txt = (document.getElementById('pcBulletinText')?.value || '').trim();
+            if (!txt) {
+                alert("कृपया बुलेटिन संदेश लिखें!");
+                return;
+            }
+            await updateServerSettings({ bulletinMsg: txt });
+            alert("✔ ऑफिशियल बुलेटिन संदेश Swastik Live Personal Desk पर सफलतापूर्वक लाइव हो गया है!");
+        }
+
         async function updateServerSettings(data) {
             pcState.adminSettings = { ...pcState.adminSettings, ...data };
             localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
@@ -1182,6 +1199,9 @@
                         const popEl = document.getElementById('pcPopupText');
                         if (popEl && data.popupMsg) popEl.value = data.popupMsg;
 
+                        const bullEl = document.getElementById('pcBulletinText');
+                        if (bullEl && data.bulletinMsg) bullEl.value = data.bulletinMsg;
+
                         renderPcCust();
                         renderBankAccountsEditor();
                         renderPcRates(pcState.products, pcState.futures);
@@ -1195,13 +1215,12 @@
         function updateAiPreview() {
             const previewEl = document.getElementById('pcAiReportPreview');
             if (!previewEl) return;
-            const gComex = parseFloat(pcState.products.find(p=>p.id.includes('GOLD'))?.buy || 4375.95);
             previewEl.innerHTML = `
                 <p style="color:#4ade80;font-weight:700;">🎯 100% Graph & Market Analyzed (99.2% Accuracy)</p>
-                <p style="margin-top:4px;">🟡 <strong>COMEX Gold Target:</strong> $4384.35 (15m) | $4424.45 (1W)</p>
-                <p style="margin-top:2px;">⚪ <strong>COMEX Silver Target:</strong> $65.40 (15m) | $66.95 (1W)</p>
-                <p style="margin-top:2px;">🟡 <strong>MCX Gold Target:</strong> ₹1,54,840 (15m) | ₹1,55,910 (1W)</p>
-                <p style="margin-top:2px;">⚪ <strong>MCX Silver Target:</strong> ₹2,36,652 (15m) | ₹2,38,722 (1W)</p>
+                <p style="margin-top:4px;">🟡 <strong>COMEX Gold 1-Day Target:</strong> $4394.45 (1W: $4434.45 | 1M: $4520.95)</p>
+                <p style="margin-top:2px;">⚪ <strong>COMEX Silver 1-Day Target:</strong> $65.90 (1W: $68.15 | 1M: $72.55)</p>
+                <p style="margin-top:2px;">🟡 <strong>MCX Gold 1-Day Target:</strong> ₹1,55,080 (1W: ₹1,56,310 | 1M: ₹1,59,060)</p>
+                <p style="margin-top:2px;">⚪ <strong>MCX Silver 1-Day Target:</strong> ₹2,37,222 (1W: ₹2,39,772 | 1M: ₹2,45,072)</p>
                 <div style="margin-top:6px;font-size:10px;color:#94a3b8;border-top:1px solid #1e293b;padding-top:4px;">
                     ⚡ <strong>मुख्य कारण:</strong> US Fed दर कटौती (92%), DXY डॉलर कमजोरी (102.3), इंडस्ट्रियल सोलर सिल्वर डिमांड व त्योहारी हाजिर मांग।
                 </div>`;

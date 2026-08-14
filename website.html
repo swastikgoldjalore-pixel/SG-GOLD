@@ -556,7 +556,7 @@
             return vid;
         }
 
-        async function sendWebsiteVisitorPing() {
+        async function sendWebsiteVisitorPing(status = 'ONLINE') {
             try {
                 const isUserLoggedIn = !!(currentUser && currentUser.name);
                 const vid = getOrCreateWebVisitorId();
@@ -578,7 +578,7 @@
                     device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
                     city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore / Rajasthan",
                     page: "Website Live Board (website.html)",
-                    status: "ONLINE",
+                    status: status,
                     pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
                     lastPing: Date.now()
                 };
@@ -596,6 +596,18 @@
                 }
             } catch(e) {}
         }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                sendWebsiteVisitorPing('OFFLINE');
+            } else {
+                sendWebsiteVisitorPing('ONLINE');
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            sendWebsiteVisitorPing('OFFLINE');
+        });
 
         async function verifyWebSessionSecurity() {
             if (!currentUser || !currentSessionToken) return;
@@ -911,6 +923,26 @@
             });
         }
 
+        function getWebPhysicalSellHighLow(productId, currentFinalSell) {
+            const todayKey = new Date().toISOString().slice(0, 10);
+            let hlData = null;
+            try {
+                hlData = JSON.parse(localStorage.getItem('sg_sell_hl_' + todayKey) || '{}');
+            } catch(e) { hlData = {}; }
+
+            if (currentFinalSell > 0) {
+                if (!hlData[productId]) {
+                    hlData[productId] = { high: currentFinalSell, low: currentFinalSell };
+                } else {
+                    if (currentFinalSell > hlData[productId].high) hlData[productId].high = currentFinalSell;
+                    if (currentFinalSell < hlData[productId].low) hlData[productId].low = currentFinalSell;
+                }
+                try { localStorage.setItem('sg_sell_hl_' + todayKey, JSON.stringify(hlData)); } catch(e) {}
+            }
+
+            return hlData[productId] || { high: currentFinalSell, low: currentFinalSell };
+        }
+
         /* RENDER LANDSCAPE PRODUCTS WITH RENAMES, PREMIUMS, SEQUENCE ORDER & HIDE RULES */
         function renderLandscapeProducts(products, futures) {
             const leftContainer = document.getElementById('leftProdContainer');
@@ -932,6 +964,7 @@
                 const bId = `buy-${p.id}`;
                 const sId = `sell-${p.id}`;
                 const nameId = `name-${p.id}`;
+                const hlId = `hl-${p.id}`;
                 const oldBuy = webLastPrices[bId];
                 const oldSell = webLastPrices[sId];
 
@@ -954,6 +987,7 @@
                 const nameEl = document.getElementById(nameId);
                 const buyEl = document.getElementById(bId);
                 const sellEl = document.getElementById(sId);
+                const hlEl = document.getElementById(hlId);
 
                 if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
 
@@ -965,6 +999,18 @@
                 if (sellEl && sellEl.innerText !== sellText) {
                     sellEl.innerText = sellText;
                     if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+                }
+
+                // PHYSICAL HIGH/LOW BASED ON LIVE SELL PRICE WITH MIDNIGHT RESET
+                const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
+                if (hlEl) {
+                    if (isSellHidden || finalSell <= 0) {
+                        hlEl.style.display = 'none';
+                    } else {
+                        hlEl.style.display = 'block';
+                        const hl = getWebPhysicalSellHighLow(p.id, finalSell);
+                        hlEl.innerText = `H: ${formatNoComma(hl.high)}   L: ${formatNoComma(hl.low)}`;
+                    }
                 }
 
                 webLastPrices[bId] = buyText;
@@ -1028,16 +1074,20 @@
                     if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
                     if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
-                    // HIDE HIGH / LOW WHEN PHYSICAL IS HIDDEN
-                    const highDisplay = (!isMasterHidden && p.high > 0) ? formatNoComma(p.high) : '-';
-                    const lowDisplay = (!isMasterHidden && p.low > 0) ? formatNoComma(p.low) : '-';
-                    const hasHl = !isMasterHidden && (p.high > 0 || p.low > 0);
+                    const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
+                    let hlMarkup = '';
+                    if (!isSellHidden && finalSell > 0) {
+                        const hl = getWebPhysicalSellHighLow(p.id, finalSell);
+                        hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}">H: ${formatNoComma(hl.high)}   L: ${formatNoComma(hl.low)}</div>`;
+                    } else {
+                        hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}" style="display:none;"></div>`;
+                    }
 
                     return `
                     <div class="product-row-card" id="row-${p.id}">
                         <div class="prod-info-block">
                             <div class="prod-name-title" id="name-${p.id}">${customName}</div>
-                            ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : `<div class="prod-hl-line">H: -   L: -</div>`}
+                            ${hlMarkup}
                         </div>
                         <div class="price-pill-cell">
                             <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(finalBuy)}</div>
