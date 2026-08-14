@@ -1170,16 +1170,21 @@
                 syncChannel.postMessage({ type: 'SETTINGS_UPDATE', settings: pcState.adminSettings });
             }
 
+            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
             const urls = [
-                'api.php?action=admin-settings',
-                '/api/admin-settings',
-                'https://swastikgold.net/api.php?action=admin-settings'
+                `api.php?action=admin-settings&_nc=${nonce}`,
+                `/api/admin-settings?_nc=${nonce}`,
+                `https://swastikgold.net/api.php?action=admin-settings&_nc=${nonce}`
             ];
             for (const url of urls) {
                 try {
                     await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache'
+                        },
                         body: JSON.stringify(data)
                     });
                 } catch(e) {}
@@ -1187,14 +1192,22 @@
         }
 
         async function fetchAdminSettings() {
+            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
             const urls = [
-                'api.php?action=admin-settings&_=' + Date.now(),
-                '/api/admin-settings?_=' + Date.now(),
-                'https://swastikgold.net/api.php?action=admin-settings&_=' + Date.now()
+                `api.php?action=admin-settings&_nc=${nonce}`,
+                `/api/admin-settings?_nc=${nonce}`,
+                `https://swastikgold.net/api.php?action=admin-settings&_nc=${nonce}`
             ];
             for (const url of urls) {
                 try {
-                    const res = await fetch(url);
+                    const res = await fetch(url, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache'
+                        }
+                    });
                     if (res.ok) {
                         const data = await res.json();
                         pcState.adminSettings = { ...pcState.adminSettings, ...data };

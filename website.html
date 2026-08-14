@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Swastik Gold Jalore - Landscape Bullion Desk</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#070f1e">
@@ -549,6 +552,8 @@
             localStorage.removeItem('sg_session_token');
             checkCustomerAuth();
             if (showAlert) alert("सफलतापूर्वक लॉगआउट हो गया!");
+        }
+
         function getOrCreateWebVisitorId() {
             let vid = localStorage.getItem('sg_visitor_uid');
             if (!vid) {
@@ -678,6 +683,19 @@
         }
 
         function initUniversalStream() {
+            if ('caches' in window) {
+                caches.keys().then((names) => {
+                    for (let name of names) caches.delete(name);
+                }).catch(() => {});
+            }
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    for (let reg of registrations) {
+                        reg.unregister().catch(() => {});
+                    }
+                }).catch(() => {});
+            }
+
             try {
                 const saved = localStorage.getItem('sg_admin_settings_v3');
                 if (saved) webAdminSettings = { ...webAdminSettings, ...JSON.parse(saved) };
@@ -743,19 +761,27 @@
         function startWebPolling() {
             if (webPollingTimer) return;
             pollWebRate();
-            webPollingTimer = setInterval(pollWebRate, 400);
+            webPollingTimer = setInterval(pollWebRate, 250);
         }
 
         async function pollWebRate() {
+            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
             const urls = [
-                'api.php?action=rates-json&_=' + Date.now(),
-                '/api/rates-json?_=' + Date.now(),
-                'https://swastikgold.net/api.php?action=rates-json&_=' + Date.now()
+                `api.php?action=rates-json&_nc=${nonce}`,
+                `/api/rates-json?_nc=${nonce}`,
+                `https://swastikgold.net/api.php?action=rates-json&_nc=${nonce}`
             ];
 
             for (const url of urls) {
                 try {
-                    const res = await fetch(url, { cache: 'no-store' });
+                    const res = await fetch(url, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache'
+                        }
+                    });
                     if (res.ok) {
                         const data = await res.json();
                         if (data && (data.spot || (data.products && data.products.length > 0))) {
@@ -768,7 +794,7 @@
             }
 
             try {
-                const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
+                const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_nc=" + nonce, { mode: 'cors', cache: 'no-store' });
                 if (res.ok) {
                     const rawText = await res.text();
                     if (rawText && rawText.length > 20) {

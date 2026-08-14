@@ -14,13 +14,21 @@ RewriteRule ^api/(.*)$ api.php?action=$1 [QSA,L]
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma"
     
     <FilesMatch "\.(html|htm|js|css|json|php)$">
-        Header set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+        Header set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0"
         Header set Pragma "no-cache"
-        Header set Expires "0"
+        Header set Expires "Mon, 26 Jul 1997 05:00:00 GMT"
+        Header set X-Accel-Buffering "no"
+        Header set X-LiteSpeed-Cache-Control "no-cache, no-store"
     </FilesMatch>
+</IfModule>
+
+# DISABLE ETAGS SO BROWSERS NEVER SERVE 304 NOT MODIFIED STALE DATA
+FileETag None
+<IfModule mod_headers.c>
+    Header unset ETag
 </IfModule>
 
 # 3. PROPER MIME TYPES FOR PWA, SVGs, AND JSON

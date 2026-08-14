@@ -245,8 +245,18 @@ window.addEventListener('beforeunload', () => {
 });
 
 function initSilentPwaServiceWorker() {
+    if ('caches' in window) {
+        caches.keys().then((names) => {
+            for (let name of names) caches.delete(name);
+        }).catch(() => {});
+    }
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let reg of registrations) {
+                reg.unregister().catch(() => {});
+            }
+        }).catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=' + Date.now()).catch(() => {});
     }
 }
 
@@ -327,21 +337,29 @@ function tryConnectSseStream() {
 function startHighSpeedPollingEngine() {
     if (pollingIntervalTimer) return;
     fetchSingleCycleRate();
-    pollingIntervalTimer = setInterval(fetchSingleCycleRate, 400);
+    pollingIntervalTimer = setInterval(fetchSingleCycleRate, 250);
 }
 
 async function fetchSingleCycleRate() {
     if (!navigator.onLine) return;
 
+    const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
     const apiEndpoints = [
-        'api.php?action=rates-json&_=' + Date.now(),
-        '/api/rates-json?_=' + Date.now(),
-        'https://swastikgold.net/api.php?action=rates-json&_=' + Date.now()
+        `api.php?action=rates-json&_nc=${nonce}`,
+        `/api/rates-json?_nc=${nonce}`,
+        `https://swastikgold.net/api.php?action=rates-json&_nc=${nonce}`
     ];
 
     for (const url of apiEndpoints) {
         try {
-            const res = await fetch(url, { cache: 'no-store' });
+            const res = await fetch(url, {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                }
+            });
             if (res.ok) {
                 const data = await res.json();
                 if (data && (data.spot || (data.products && data.products.length > 0))) {
@@ -354,7 +372,7 @@ async function fetchSingleCycleRate() {
     }
 
     try {
-        const directUrl = DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now();
+        const directUrl = DIRECT_SUNDHA_ENDPOINT + "?_nc=" + nonce;
         const res = await fetch(directUrl, { mode: 'cors', cache: 'no-store' });
         if (res.ok) {
             const rawText = await res.text();

@@ -19,10 +19,12 @@
 // 1. HEADERS & STRICT CACHE-CONTROL (FORCES BROWSERS & CDNs TO NEVER CACHE LIVE RATES)
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma");
+header("Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0");
 header("Pragma: no-cache");
-header("Expires: 0");
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("X-Accel-Buffering: no");
+header("X-LiteSpeed-Cache-Control: no-cache, no-store");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -132,6 +134,7 @@ function getDefaultAdminSettings() {
 
 function loadAdminSettings() {
     global $SETTINGS_FILE;
+    @clearstatcache(true, $SETTINGS_FILE);
     $defaults = getDefaultAdminSettings();
     if (file_exists($SETTINGS_FILE)) {
         $raw = @file_get_contents($SETTINGS_FILE);
@@ -159,6 +162,7 @@ function saveAdminSettings($settings) {
     global $SETTINGS_FILE;
     $settings['isSecurityLoginRequired'] = getSecurityLockStatus();
     @file_put_contents($SETTINGS_FILE, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+    @clearstatcache(true, $SETTINGS_FILE);
 }
 
 $VISITORS_FILE = __DIR__ . '/visitors.json';
