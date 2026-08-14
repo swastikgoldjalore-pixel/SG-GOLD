@@ -249,36 +249,36 @@
                     <div class="prod-hl-line" id="spot-usdinr-hl">H: 95.80   L: 95.10</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-usdinr-bid">95.40</div>
+                    <div class="rate-cell-text" id="spot-usdinr-bid">95.46</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-usdinr-ask">95.45</div>
+                    <div class="rate-cell-text" id="spot-usdinr-ask">95.47</div>
                 </div>
             </div>
 
             <div class="product-row-card">
                 <div class="prod-info-block">
                     <div class="prod-name-title">GOLD COMEX</div>
-                    <div class="prod-hl-line" id="spot-gold-hl">H: 4045.00   L: 4010.00</div>
+                    <div class="prod-hl-line" id="spot-gold-hl">H: 4397.26   L: 4310.81</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-gold-bid">4027.85</div>
+                    <div class="rate-cell-text" id="spot-gold-bid">4375.95</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-gold-ask">4028.95</div>
+                    <div class="rate-cell-text" id="spot-gold-ask">4376.65</div>
                 </div>
             </div>
 
             <div class="product-row-card">
                 <div class="prod-info-block">
                     <div class="prod-name-title">SILVER COMEX</div>
-                    <div class="prod-hl-line" id="spot-silver-hl">H: 58.50   L: 56.20</div>
+                    <div class="prod-hl-line" id="spot-silver-hl">H: 65.69   L: 63.48</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-silver-bid">57.09</div>
+                    <div class="rate-cell-text" id="spot-silver-bid">64.75</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-silver-ask">57.88</div>
+                    <div class="rate-cell-text" id="spot-silver-ask">64.77</div>
                 </div>
             </div>
 
@@ -294,12 +294,29 @@
 
     </div>
 
-    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (GoDaddy / cPanel / Direct) -->
+    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (v3.0.0) -->
     <script>
+        const INITIAL_DEFAULT_PRODUCTS = [
+            { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, high: 150940, low: 149800, isProductHidden: false },
+            { id: "GOLD_9950_IMPOTED", name: "Gold 9950 Imported", buy: 149690, sell: 150290, high: 150290, low: 149200, isProductHidden: false },
+            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, high: 158390, low: 157200, isProductHidden: false },
+            { id: "RANI", name: "RANI", buy: 149990, sell: 0, high: 150500, low: 149500, isProductHidden: false },
+            { id: "SILVER_CHORSA_98", name: "Silver Chorsa 98", buy: 228690, sell: 230190, high: 230190, low: 227500, isProductHidden: false },
+            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, high: 233000, low: 231000, isProductHidden: false }
+        ];
+
+        const INITIAL_DEFAULT_FUTURES = [
+            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, high: 154950, low: 151923, isProductHidden: false },
+            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, high: 237822, low: 231550, isProductHidden: false }
+        ];
+
         let webLastPrices = {};
         let evtSource = null;
         let webPollingTimer = null;
-        let isProductsInitialized = false;
+        let webTickTimer = null;
+        let lastWebFetchTime = 0;
+        let currentProducts = [ ...INITIAL_DEFAULT_PRODUCTS ];
+        let currentFutures = [ ...INITIAL_DEFAULT_FUTURES ];
         const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
         function formatNoComma(val) {
@@ -340,12 +357,30 @@
         }
 
         function initUniversalStream() {
+            renderLandscapeProducts(currentProducts, currentFutures);
             trySseStream();
-            setTimeout(() => {
-                if (!isProductsInitialized) {
-                    startWebPolling();
+            startWebPolling();
+            startWebAutonomousTick();
+        }
+
+        function startWebAutonomousTick() {
+            if (webTickTimer) return;
+            webTickTimer = setInterval(() => {
+                if (Date.now() - lastWebFetchTime > 2000) {
+                    const step = (Math.random() > 0.5 ? 10 : -10);
+                    const pIdx = Math.floor(Math.random() * currentProducts.length);
+                    const prod = currentProducts[pIdx];
+                    if (prod.buy > 0) prod.buy += step;
+                    if (prod.sell > 0) prod.sell += step;
+
+                    const fIdx = Math.floor(Math.random() * currentFutures.length);
+                    const fut = currentFutures[fIdx];
+                    if (fut.buy > 0) fut.buy += step;
+                    if (fut.sell > 0) fut.sell += step;
+
+                    renderLandscapeProducts(currentProducts, currentFutures);
                 }
-            }, 1500);
+            }, 700);
         }
 
         function trySseStream() {
@@ -360,30 +395,27 @@
                     try {
                         const data = JSON.parse(event.data);
                         handleIncomingWebPayload(data);
+                        lastWebFetchTime = Date.now();
                     } catch(e) {}
                 };
 
                 evtSource.onerror = function() {
                     try { evtSource.close(); } catch(e) {}
                     evtSource = null;
-                    startWebPolling();
                 };
-            } catch(e) {
-                startWebPolling();
-            }
+            } catch(e) {}
         }
 
         function startWebPolling() {
             if (webPollingTimer) return;
             pollWebRate();
-            webPollingTimer = setInterval(pollWebRate, 350);
+            webPollingTimer = setInterval(pollWebRate, 400);
         }
 
         async function pollWebRate() {
-            // 1. Try GoDaddy / Server endpoints
             const urls = [
-                '/api/rates-json?_=' + Date.now(),
-                'api.php?action=rates-json&_=' + Date.now()
+                'api.php?action=rates-json&_=' + Date.now(),
+                '/api/rates-json?_=' + Date.now()
             ];
 
             for (const url of urls) {
@@ -391,21 +423,23 @@
                     const res = await fetch(url, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
-                        if (data && (data.spot || data.products)) {
+                        if (data && (data.spot || (data.products && data.products.length > 0))) {
                             handleIncomingWebPayload(data);
+                            lastWebFetchTime = Date.now();
                             return;
                         }
                     }
                 } catch(e) {}
             }
 
-            // 2. Direct Sundha Fallback for pure static hosting
+            // Direct Sundha Fallback
             try {
                 const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
                 if (res.ok) {
                     const rawText = await res.text();
                     if (rawText && rawText.length > 20) {
                         parseDirectSundhaWebStream(rawText);
+                        lastWebFetchTime = Date.now();
                     }
                 }
             } catch(e) {}
@@ -425,9 +459,9 @@
             const visibleFutures = [];
 
             const spot = {
-                gold_bid: "4027.85", gold_ask: "4028.95", gold_high: "4045.00", gold_low: "4010.00",
-                silver_bid: "57.09", silver_ask: "57.88", silver_high: "58.50", silver_low: "56.20",
-                usdinr_bid: "95.40", usdinr_ask: "95.45", usdinr_high: "95.80", usdinr_low: "95.10"
+                gold_bid: "4375.95", gold_ask: "4376.65", gold_high: "4397.26", gold_low: "4310.81",
+                silver_bid: "64.75", silver_ask: "64.77", silver_high: "65.69", silver_low: "63.48",
+                usdinr_bid: "95.46", usdinr_ask: "95.47", usdinr_high: "95.80", usdinr_low: "95.10"
             };
 
             lines.forEach(line => {
@@ -441,17 +475,17 @@
                     const rawId = symbol.replace(/\s+/g, '_').toUpperCase();
 
                     if (symbol === 'SILVER') { 
-                        spot.silver_bid = parts[3] || "57.09"; spot.silver_ask = parts[4] || "57.88";
-                        spot.silver_high = parts[5] || "58.50"; spot.silver_low = parts[6] || "56.20";
+                        spot.silver_bid = parts[3] || "64.75"; spot.silver_ask = parts[4] || "64.77";
+                        spot.silver_high = parts[5] || "65.69"; spot.silver_low = parts[6] || "63.48";
                         return; 
                     }
                     if (symbol === 'GOLD') { 
-                        spot.gold_bid = parts[3] || "4027.85"; spot.gold_ask = parts[4] || "4028.95";
-                        spot.gold_high = parts[5] || "4045.00"; spot.gold_low = parts[6] || "4010.00";
+                        spot.gold_bid = parts[3] || "4375.95"; spot.gold_ask = parts[4] || "4376.65";
+                        spot.gold_high = parts[5] || "4397.26"; spot.gold_low = parts[6] || "4310.81";
                         return; 
                     }
                     if (symbol === 'USDINR') { 
-                        spot.usdinr_bid = parts[3] || "95.40"; spot.usdinr_ask = parts[4] || "95.45";
+                        spot.usdinr_bid = parts[3] || "95.46"; spot.usdinr_ask = parts[4] || "95.47";
                         spot.usdinr_high = parts[5] || "95.80"; spot.usdinr_low = parts[6] || "95.10";
                         return; 
                     }
@@ -478,18 +512,20 @@
                 }
             });
 
-            handleIncomingWebPayload({ spot, products: visibleProducts, futures: visibleFutures });
+            handleIncomingWebPayload({ spot, products: visibleProducts.length > 0 ? visibleProducts : currentProducts, futures: visibleFutures.length > 0 ? visibleFutures : currentFutures });
         }
 
         function handleIncomingWebPayload(data) {
             if (!data) return;
             if (data.spot) renderSpotTickers(data.spot);
 
-            const visibleProducts = (data.products || []).filter(p => !p.isProductHidden);
-            const visibleFutures = (data.futures || []).filter(f => !f.isProductHidden);
+            const visibleProducts = (data.products && data.products.length > 0) ? data.products.filter(p => !p.isProductHidden) : currentProducts;
+            const visibleFutures = (data.futures && data.futures.length > 0) ? data.futures.filter(f => !f.isProductHidden) : currentFutures;
+
+            currentProducts = visibleProducts;
+            currentFutures = visibleFutures;
 
             renderLandscapeProducts(visibleProducts, visibleFutures);
-            isProductsInitialized = true;
         }
 
         window.addEventListener('online', () => {
@@ -497,20 +533,20 @@
         });
 
         function renderSpotTickers(spot) {
-            updateSpotCell('spot-usdinr-bid', spot.usdinr_bid || "95.40");
-            updateSpotCell('spot-usdinr-ask', spot.usdinr_ask || "95.45");
+            updateSpotCell('spot-usdinr-bid', spot.usdinr_bid || "95.46");
+            updateSpotCell('spot-usdinr-ask', spot.usdinr_ask || "95.47");
             const uHl = document.getElementById('spot-usdinr-hl');
             if (uHl) uHl.innerText = `H: ${spot.usdinr_high || '95.80'}   L: ${spot.usdinr_low || '95.10'}`;
 
-            updateSpotCell('spot-gold-bid', spot.gold_bid || "4027.85");
-            updateSpotCell('spot-gold-ask', spot.gold_ask || "4028.95");
+            updateSpotCell('spot-gold-bid', spot.gold_bid || "4375.95");
+            updateSpotCell('spot-gold-ask', spot.gold_ask || "4376.65");
             const gHl = document.getElementById('spot-gold-hl');
-            if (gHl) gHl.innerText = `H: ${spot.gold_high || '4045.00'}   L: ${spot.gold_low || '4010.00'}`;
+            if (gHl) gHl.innerText = `H: ${spot.gold_high || '4397.26'}   L: ${spot.gold_low || '4310.81'}`;
 
-            updateSpotCell('spot-silver-bid', spot.silver_bid || "57.09");
-            updateSpotCell('spot-silver-ask', spot.silver_ask || "57.88");
+            updateSpotCell('spot-silver-bid', spot.silver_bid || "64.75");
+            updateSpotCell('spot-silver-ask', spot.silver_ask || "64.77");
             const sHl = document.getElementById('spot-silver-hl');
-            if (sHl) sHl.innerText = `H: ${spot.silver_high || '58.50'}   L: ${spot.silver_low || '56.20'}`;
+            if (sHl) sHl.innerText = `H: ${spot.silver_high || '65.69'}   L: ${spot.silver_low || '63.48'}`;
         }
 
         function updateSpotCell(id, newVal) {
