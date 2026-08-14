@@ -425,56 +425,136 @@
         }
 
         async function fetchSecurityStatus() {
+            const urls = ['/api/security-status?_=' + Date.now(), 'api.php?action=security-status&_=' + Date.now()];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        const data = await res.json();
+                        pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                        updateSecurityButtonUI();
+                        return;
+                    }
+                } catch(e) {}
+            }
+        }
+
+        let pcPollingTimer = null;
+        function initSseStream() {
             try {
-                const res = await fetch('/api/security-status?_=' + Date.now());
+                const sseUrl = (window.location.pathname.endsWith('.php') || window.location.hostname.includes('swastikgold.net')) ? 
+                    'api.php?action=rates-sse' : '/api/rates-sse';
+                const evtSource = new EventSource(sseUrl);
+                evtSource.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleIncomingPcPayload(data);
+                    } catch(e) {}
+                };
+                evtSource.onerror = function() {
+                    try { evtSource.close(); } catch(e) {}
+                    startPcPolling();
+                };
+            } catch(e) {
+                startPcPolling();
+            }
+
+            setTimeout(() => {
+                if (!pcState.products || pcState.products.length === 0) {
+                    startPcPolling();
+                }
+            }, 1500);
+        }
+
+        function startPcPolling() {
+            if (pcPollingTimer) return;
+            pollPcRates();
+            pcPollingTimer = setInterval(pollPcRates, 350);
+        }
+
+        async function pollPcRates() {
+            const urls = ['/api/rates-json?_=' + Date.now(), 'api.php?action=rates-json&_=' + Date.now()];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && (data.spot || data.products)) {
+                            handleIncomingPcPayload(data);
+                            return;
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            // Direct Sundha stream fallback
+            try {
+                const res = await fetch("https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
                 if (res.ok) {
-                    const data = await res.json();
-                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                    updateSecurityButtonUI();
+                    const raw = await res.text();
+                    parseDirectSundhaPcStream(raw);
                 }
             } catch(e) {}
         }
 
-        function initSseStream() {
-            const evtSource = new EventSource('/api/rates-sse');
-            evtSource.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    pcState.products = data.allProducts || data.products || [];
-                    pcState.futures = data.allFutures || data.futures || [];
-                    pcState.guestVisitors = data.guestVisitors || [];
-                    
-                    // ONLY OVERWRITE BANK ACCOUNTS FROM SSE IF OPERATOR IS NOT ACTIVELY DELETING/EDITING!
-                    if (!isUserEditingBanks) {
-                        pcState.bankAccounts = data.bankAccounts || [];
-                        renderBankAccountsEditor();
-                    }
+        function parseDirectSundhaPcStream(raw) {
+            if (!raw) return;
+            const lines = raw.split(/\r?\n/);
+            const prods = [];
+            const futs = [];
+            lines.forEach(l => {
+                const p = l.split('\t').map(x => x.trim());
+                if (p.length >= 4) {
+                    let sym = p[2];
+                    if (!sym || /^\d+$/.test(sym)) sym = p[1];
+                    if (!sym || /^\d+$/.test(sym) || ['SYMBOL','RATE','NAME'].includes(sym.toUpperCase())) return;
+                    if (['SILVER','GOLD','USDINR'].includes(sym.toUpperCase())) return;
+                    const rId = sym.replace(/\s+/g, '_').toUpperCase();
+                    const rawB = parseInt(p[3].replace(/,/g,'')) || 0;
+                    const rawS = parseInt(p[4].replace(/,/g,'')) || 0;
+                    const isF = sym.includes('FUTURE') || sym.includes('MCX');
+                    const obj = { id: rId, name: sym, buy: rawB, sell: rawS, rawBuy: rawB, rawSell: rawS };
+                    if (isF) futs.push(obj);
+                    else prods.push(obj);
+                }
+            });
+            handleIncomingPcPayload({ allProducts: prods, allFutures: futs });
+        }
 
-                    if (data.customers && Array.isArray(data.customers)) {
-                        pcState.customers = data.customers;
-                        renderPcCust();
-                    }
+        function handleIncomingPcPayload(data) {
+            if (!data) return;
+            pcState.products = data.allProducts || data.products || [];
+            pcState.futures = data.allFutures || data.futures || [];
+            pcState.guestVisitors = data.guestVisitors || [];
+            
+            if (!isUserEditingBanks) {
+                pcState.bankAccounts = data.bankAccounts || [];
+                renderBankAccountsEditor();
+            }
 
-                    const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
-                    const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
+            if (data.customers && Array.isArray(data.customers)) {
+                pcState.customers = data.customers;
+                renderPcCust();
+            }
 
-                    const onEl = document.getElementById('onlineCountBadge');
-                    const offEl = document.getElementById('offlineCountBadge');
-                    if (onEl) onEl.innerText = onlineList.length;
-                    if (offEl) offEl.innerText = offlineList.length;
-                    
-                    renderGuestVisitors(pcState.guestVisitors);
+            const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
+            const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
 
-                    if (data.swastikAiReport) {
-                        const comexEl = document.getElementById('aiComexTarget');
-                        const mcxEl = document.getElementById('aiMcxTarget');
-                        if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
-                        if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
-                    }
+            const onEl = document.getElementById('onlineCountBadge');
+            const offEl = document.getElementById('offlineCountBadge');
+            if (onEl) onEl.innerText = onlineList.length;
+            if (offEl) offEl.innerText = offlineList.length;
+            
+            renderGuestVisitors(pcState.guestVisitors);
 
-                    renderPcRates(pcState.products, pcState.futures);
-                } catch(e) {}
-            };
+            if (data.swastikAiReport) {
+                const comexEl = document.getElementById('aiComexTarget');
+                const mcxEl = document.getElementById('aiMcxTarget');
+                if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
+                if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
+            }
+
+            renderPcRates(pcState.products, pcState.futures);
         }
 
         function renderBankAccountsEditor() {
@@ -584,53 +664,60 @@
         }
 
         async function fetchAdminSettings() {
-            try {
-                const res = await fetch('/api/admin-settings?_=' + Date.now());
-                if (res.ok) {
-                    pcState.adminSettings = await res.json();
-                    pcState.customers = pcState.adminSettings.customers || [];
-                    pcState.bankAccounts = pcState.adminSettings.bankAccounts || [];
-                    
-                    const marqueeInput = document.getElementById('pcMarqueeText');
-                    if (marqueeInput && !marqueeInput.matches(':focus')) {
-                        marqueeInput.value = pcState.adminSettings.marqueeText || '';
-                    }
+            const urls = ['/api/admin-settings?_=' + Date.now(), 'api.php?action=admin-settings&_=' + Date.now()];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        pcState.adminSettings = await res.json();
+                        pcState.customers = pcState.adminSettings.customers || [];
+                        pcState.bankAccounts = pcState.adminSettings.bankAccounts || [];
+                        
+                        const marqueeInput = document.getElementById('pcMarqueeText');
+                        if (marqueeInput && !marqueeInput.matches(':focus')) {
+                            marqueeInput.value = pcState.adminSettings.marqueeText || '';
+                        }
 
-                    const popupInput = document.getElementById('pcPopupText');
-                    if (popupInput && !popupInput.matches(':focus')) {
-                        popupInput.value = pcState.adminSettings.popupMsg || '';
-                    }
+                        const popupInput = document.getElementById('pcPopupText');
+                        if (popupInput && !popupInput.matches(':focus')) {
+                            popupInput.value = pcState.adminSettings.popupMsg || '';
+                        }
 
-                    pcState.isMasterHidden = pcState.adminSettings.isMasterHidden || false;
-                    pcState.isFrozen = pcState.adminSettings.isMasterFrozen || false;
-                    
-                    updateControlButtons();
-                    renderPcCust();
-                    renderBankAccountsEditor();
-                }
-            } catch(e) {}
+                        pcState.isMasterHidden = pcState.adminSettings.isMasterHidden || false;
+                        pcState.isFrozen = pcState.adminSettings.isMasterFrozen || false;
+                        
+                        updateControlButtons();
+                        renderPcCust();
+                        renderBankAccountsEditor();
+                        return;
+                    }
+                } catch(e) {}
+            }
         }
 
         /* DEDICATED ATOMIC TOGGLE SECURITY FUNCTION (POST /api/toggle-security) */
         async function toggleSecurityMode() {
             const nextStatus = !pcState.isSecurityLoginRequired;
+            const urls = ['/api/toggle-security', 'api.php?action=toggle-security'];
 
-            try {
-                const res = await fetch('/api/toggle-security', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
-                });
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
+                    });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                    updateSecurityButtonUI();
-                    alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
-                }
-            } catch(e) {
-                alert("सर्वर से कनेक्ट करने में त्रुटि!");
+                    if (res.ok) {
+                        const data = await res.json();
+                        pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                        updateSecurityButtonUI();
+                        alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+                        return;
+                    }
+                } catch(e) {}
             }
+            alert("सर्वर से कनेक्ट करने में त्रुटि!");
         }
 
         function updateSecurityButtonUI() {
@@ -885,21 +972,25 @@
         }
 
         async function updateServerSettings(data) {
-            try {
-                const res = await fetch('/api/admin-settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    const result = await res.json();
-                    pcState.adminSettings = result.settings;
-                    pcState.customers = result.settings.customers || [];
-                    pcState.bankAccounts = result.settings.bankAccounts || [];
-                    renderPcCust();
-                    renderBankAccountsEditor();
-                }
-            } catch(e) {}
+            const urls = ['/api/admin-settings', 'api.php?action=admin-settings'];
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    if (res.ok) {
+                        const result = await res.json();
+                        pcState.adminSettings = result.settings;
+                        pcState.customers = result.settings.customers || [];
+                        pcState.bankAccounts = result.settings.bankAccounts || [];
+                        renderPcCust();
+                        renderBankAccountsEditor();
+                        return;
+                    }
+                } catch(e) {}
+            }
         }
 
         function renderPcCust() {
@@ -928,7 +1019,7 @@
                             `आपकी बुलियन लाइव रेट्स ऐप एवं वेबसाइट की लॉगिन डिटेल्स निम्न प्रकार हैं:\n\n` +
                             `🔑 *User ID:* ${c.id}\n` +
                             `🔒 *Password PIN:* ${pinStr}\n\n` +
-                            `🌐 *Website Link:* https://sgtounch.vercel.app/\n\n` +
+                            `🌐 *Website Link:* https://swastikgold.net/\n\n` +
                             `धन्यवाद!\n` +
                             `*Swastik Gold Jalore - Champalal Soni*\n` +
                             `📞 Contact: 9414152854 / 9772277054`
@@ -970,7 +1061,7 @@
                             `आपकी लॉगिन आईडी एवं पासवर्ड निम्न हैं:\n` +
                             `🔑 User ID: ${c.id}\n` +
                             `🔒 PIN: ${pinStr}\n` +
-                            `🌐 Website: https://sgtounch.vercel.app/`
+                            `🌐 Website: https://swastikgold.net/`
                         );
 
                         return `

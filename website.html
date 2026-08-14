@@ -294,21 +294,22 @@
 
     </div>
 
-    <!-- REAL-TIME 0ms SSE STREAM & 350ms NORMAL FLASH SCRIPT -->
+    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (GoDaddy / cPanel / Direct) -->
     <script>
         let webLastPrices = {};
         let evtSource = null;
+        let webPollingTimer = null;
+        let isProductsInitialized = false;
+        const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
         function formatNoComma(val) {
             if (!val || val <= 0) return '-';
             return String(Math.round(val));
         }
 
-        // LIVE DATE & 12-HOUR TIME CLOCK ENGINE
         function startHeaderLiveClock() {
             function updateClock() {
                 const now = new Date();
-                
                 const d = String(now.getDate()).padStart(2, '0');
                 const m = String(now.getMonth() + 1).padStart(2, '0');
                 const y = now.getFullYear();
@@ -338,28 +339,161 @@
             }, 350);
         }
 
-        function initLandscapeSseStream() {
-            if (evtSource) evtSource.close();
-            evtSource = new EventSource('/api/rates-sse');
+        function initUniversalStream() {
+            trySseStream();
+            setTimeout(() => {
+                if (!isProductsInitialized) {
+                    startWebPolling();
+                }
+            }, 1500);
+        }
 
-            evtSource.onmessage = function(event) {
+        function trySseStream() {
+            try {
+                if (evtSource) { try { evtSource.close(); } catch(e) {} }
+                const sseUrl = (window.location.pathname.endsWith('.php') || window.location.hostname.includes('swastikgold.net')) ? 
+                    'api.php?action=rates-sse' : '/api/rates-sse';
+
+                evtSource = new EventSource(sseUrl);
+
+                evtSource.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleIncomingWebPayload(data);
+                    } catch(e) {}
+                };
+
+                evtSource.onerror = function() {
+                    try { evtSource.close(); } catch(e) {}
+                    evtSource = null;
+                    startWebPolling();
+                };
+            } catch(e) {
+                startWebPolling();
+            }
+        }
+
+        function startWebPolling() {
+            if (webPollingTimer) return;
+            pollWebRate();
+            webPollingTimer = setInterval(pollWebRate, 350);
+        }
+
+        async function pollWebRate() {
+            // 1. Try GoDaddy / Server endpoints
+            const urls = [
+                '/api/rates-json?_=' + Date.now(),
+                'api.php?action=rates-json&_=' + Date.now()
+            ];
+
+            for (const url of urls) {
                 try {
-                    const data = JSON.parse(event.data);
-                    
-                    if (data.spot) {
-                        renderSpotTickers(data.spot);
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && (data.spot || data.products)) {
+                            handleIncomingWebPayload(data);
+                            return;
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            // 2. Direct Sundha Fallback for pure static hosting
+            try {
+                const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
+                if (res.ok) {
+                    const rawText = await res.text();
+                    if (rawText && rawText.length > 20) {
+                        parseDirectSundhaWebStream(rawText);
+                    }
+                }
+            } catch(e) {}
+        }
+
+        function parseCleanNumber(valStr) {
+            if (!valStr || valStr === '-' || valStr === 'null') return 0;
+            const clean = String(valStr).replace(/,/g, '').trim();
+            const num = parseFloat(clean);
+            return isNaN(num) ? 0 : Math.round(num);
+        }
+
+        function parseDirectSundhaWebStream(data) {
+            if (!data) return;
+            const lines = data.split(/\r?\n/);
+            const visibleProducts = [];
+            const visibleFutures = [];
+
+            const spot = {
+                gold_bid: "4027.85", gold_ask: "4028.95", gold_high: "4045.00", gold_low: "4010.00",
+                silver_bid: "57.09", silver_ask: "57.88", silver_high: "58.50", silver_low: "56.20",
+                usdinr_bid: "95.40", usdinr_ask: "95.45", usdinr_high: "95.80", usdinr_low: "95.10"
+            };
+
+            lines.forEach(line => {
+                const parts = line.split('\t').map(p => p.trim());
+                if (parts.length >= 4) {
+                    let symbol = parts[2];
+                    if (!symbol || /^\d+$/.test(symbol)) symbol = parts[1];
+                    if (!symbol || symbol.length === 0 || /^\d+$/.test(symbol)) return;
+                    if (['SYMBOL', 'RATE', 'NAME', 'TEMPLATE', 'ID', 'TYPE'].includes(symbol.toUpperCase())) return;
+
+                    const rawId = symbol.replace(/\s+/g, '_').toUpperCase();
+
+                    if (symbol === 'SILVER') { 
+                        spot.silver_bid = parts[3] || "57.09"; spot.silver_ask = parts[4] || "57.88";
+                        spot.silver_high = parts[5] || "58.50"; spot.silver_low = parts[6] || "56.20";
+                        return; 
+                    }
+                    if (symbol === 'GOLD') { 
+                        spot.gold_bid = parts[3] || "4027.85"; spot.gold_ask = parts[4] || "4028.95";
+                        spot.gold_high = parts[5] || "4045.00"; spot.gold_low = parts[6] || "4010.00";
+                        return; 
+                    }
+                    if (symbol === 'USDINR') { 
+                        spot.usdinr_bid = parts[3] || "95.40"; spot.usdinr_ask = parts[4] || "95.45";
+                        spot.usdinr_high = parts[5] || "95.80"; spot.usdinr_low = parts[6] || "95.10";
+                        return; 
                     }
 
-                    const visibleProducts = (data.products || []).filter(p => !p.isProductHidden);
-                    const visibleFutures = (data.futures || []).filter(f => !f.isProductHidden);
+                    const origBuy = parseCleanNumber(parts[3]);
+                    const origSell = parseCleanNumber(parts[4]);
+                    const origHigh = parseCleanNumber(parts[5]);
+                    const origLow = parseCleanNumber(parts[6]);
 
-                    renderLandscapeProducts(visibleProducts, visibleFutures);
-                } catch(e) {}
-            };
+                    const isFuture = symbol.includes('FUTURE') || symbol.includes('MCX') || symbol.includes('MINI') || symbol.includes('NEXT');
+
+                    const itemObj = {
+                        id: rawId,
+                        name: symbol,
+                        buy: origBuy,
+                        sell: origSell,
+                        high: origHigh,
+                        low: origLow,
+                        isProductHidden: false
+                    };
+
+                    if (isFuture) visibleFutures.push(itemObj);
+                    else visibleProducts.push(itemObj);
+                }
+            });
+
+            handleIncomingWebPayload({ spot, products: visibleProducts, futures: visibleFutures });
+        }
+
+        function handleIncomingWebPayload(data) {
+            if (!data) return;
+            if (data.spot) renderSpotTickers(data.spot);
+
+            const visibleProducts = (data.products || []).filter(p => !p.isProductHidden);
+            const visibleFutures = (data.futures || []).filter(f => !f.isProductHidden);
+
+            renderLandscapeProducts(visibleProducts, visibleFutures);
+            isProductsInitialized = true;
         }
 
         window.addEventListener('online', () => {
-            initLandscapeSseStream();
+            initUniversalStream();
         });
 
         function renderSpotTickers(spot) {
@@ -499,7 +633,7 @@
         }
 
         startHeaderLiveClock();
-        initLandscapeSseStream();
+        initUniversalStream();
     </script>
 </body>
 </html>
