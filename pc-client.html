@@ -88,6 +88,28 @@
         .btn-hide-all { background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; }
         .btn-action-sm { background:#0050b3; color:white; border:none; padding:4px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px; }
 
+        /* ARROW REORDER BUTTONS */
+        .btn-arrow-move {
+            background: #0f1e36;
+            color: #facc15;
+            border: 1.5px solid #facc15;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 900;
+            transition: all 0.15s;
+            margin: 0 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-arrow-move:hover {
+            background: #facc15;
+            color: #040914;
+            transform: scale(1.1);
+        }
+
         /* RESPONSIVE LAYOUT GRID */
         .pc-grid { display:grid; grid-template-columns: 2.4fr 1fr; gap:14px; padding:12px; max-width:1700px; margin:0 auto; }
         
@@ -101,7 +123,7 @@
 
         /* RATES TABLE */
         .table-responsive { width:100%; overflow-x:auto; }
-        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:650px; }
+        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:720px; }
         .pc-table th { background:#172a4a; color:#f59e0b; padding:8px 6px; font-weight:800; border-bottom:2px solid #facc15; }
         .pc-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.08); background:#091322; color:#ffffff; font-weight:600; }
         .pc-table tr:hover td { background:#112238; }
@@ -188,7 +210,7 @@
                 <div class="swastik-logo-icon">卐</div>
                 <div>
                     <h1>SWASTIK GOLD - OPERATOR SOFTWARE DESK</h1>
-                    <p style="font-size:11px;color:#cbd5e1;">Real-Time Sync Engine • swastikgold.net • v3.0.0</p>
+                    <p style="font-size:11px;color:#cbd5e1;">Real-Time Order & Rate Controller • swastikgold.net • v3.0.0</p>
                 </div>
             </div>
             <div class="header-status">
@@ -206,17 +228,21 @@
         <div class="pc-grid">
             <div class="col-left">
                 
-                <!-- LIVE PRODUCTS CONTROL TABLE -->
+                <!-- LIVE PRODUCTS CONTROL TABLE WITH UP/DOWN REORDER ARROWS -->
                 <div class="pc-card">
                     <h3>
-                        <span><i class="fa-solid fa-eye-slash"></i> Physical Product Hide & Premium Offsets Console</span>
-                        <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
+                        <span><i class="fa-solid fa-arrows-up-down"></i> Physical Product Order, Hide & Premium Console</span>
+                        <div style="display:flex;gap:6px;">
+                            <button onclick="resetProductOrder()" class="btn-action-sm" style="background:#475569;font-size:11px;padding:5px 10px;"><i class="fa-solid fa-rotate-left"></i> Reset Order</button>
+                            <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
+                        </div>
                     </h3>
 
                     <div class="table-responsive">
                         <table class="pc-table">
                             <thead>
                                 <tr>
+                                    <th style="color:#facc15;text-align:center;width:75px;">ORDER (⇅)</th>
                                     <th style="color:#ef4444;text-align:center;width:70px;">HIDE ROW</th>
                                     <th>SYMBOL</th>
                                     <th>RENAME NAME</th>
@@ -229,7 +255,7 @@
                                 </tr>
                             </thead>
                             <tbody id="pcRatesRows">
-                                <!-- Dynamic rows rendered here -->
+                                <!-- Dynamic rows rendered here with Up/Down arrows -->
                             </tbody>
                         </table>
                     </div>
@@ -385,6 +411,7 @@
                 hiddenProducts: {},
                 hiddenBuy: {},
                 hiddenSell: {},
+                productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"],
                 marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
                 popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
             },
@@ -431,6 +458,18 @@
                 document.getElementById('operatorAuthModal').classList.remove('hidden');
             }
         });
+
+        function applyProductOrdering(list, orderIds) {
+            if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) return list;
+            return [...list].sort((a, b) => {
+                const idxA = orderIds.indexOf(a.id);
+                const idxB = orderIds.indexOf(b.id);
+                if (idxA === -1 && idxB === -1) return 0;
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+        }
 
         function loadLocalSettings() {
             try {
@@ -538,7 +577,6 @@
             }
         }
 
-        /* 1. DEDICATED ATOMIC TOGGLE SECURITY FUNCTION */
         async function toggleSecurityMode() {
             pcState.isSecurityLoginRequired = !pcState.isSecurityLoginRequired;
             localStorage.setItem('sg_security_lock_v3', String(pcState.isSecurityLoginRequired));
@@ -548,7 +586,6 @@
                 syncChannel.postMessage({ type: 'SECURITY_TOGGLE', isSecurityLoginRequired: pcState.isSecurityLoginRequired });
             }
 
-            // Sync with backend in background
             const urls = ['api.php?action=toggle-security', '/api/toggle-security'];
             for (const url of urls) {
                 try {
@@ -621,7 +658,6 @@
                 } catch(e) {}
             }
 
-            // Direct Sundha stream fallback
             try {
                 const res = await fetch("https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
                 if (res.ok) {
@@ -672,7 +708,6 @@
             }
 
             if (data.customers && Array.isArray(data.customers)) {
-                // Merge customers
                 data.customers.forEach(sc => {
                     const idx = pcState.customers.findIndex(c => c.id === sc.id);
                     if (idx >= 0) pcState.customers[idx] = sc;
@@ -684,12 +719,68 @@
             renderPcRates(pcState.products, pcState.futures);
         }
 
+        /* 1. MOVE ITEM UP IN SEQUENCE */
+        function moveItemUp(id) {
+            let order = pcState.adminSettings.productOrder;
+            const allItems = [...pcState.products, ...pcState.futures];
+            if (!order || order.length === 0) {
+                order = allItems.map(x => x.id);
+            }
+            const idx = order.indexOf(id);
+            if (idx > 0) {
+                const temp = order[idx];
+                order[idx] = order[idx - 1];
+                order[idx - 1] = temp;
+                pcState.adminSettings.productOrder = order;
+                isPcTableBuilt = false;
+                pcState.products = applyProductOrdering(pcState.products, order);
+                pcState.futures = applyProductOrdering(pcState.futures, order);
+                renderPcRates(pcState.products, pcState.futures);
+                updateServerSettings({ productOrder: order });
+            }
+        }
+
+        /* 2. MOVE ITEM DOWN IN SEQUENCE */
+        function moveItemDown(id) {
+            let order = pcState.adminSettings.productOrder;
+            const allItems = [...pcState.products, ...pcState.futures];
+            if (!order || order.length === 0) {
+                order = allItems.map(x => x.id);
+            }
+            const idx = order.indexOf(id);
+            if (idx >= 0 && idx < order.length - 1) {
+                const temp = order[idx];
+                order[idx] = order[idx + 1];
+                order[idx + 1] = temp;
+                pcState.adminSettings.productOrder = order;
+                isPcTableBuilt = false;
+                pcState.products = applyProductOrdering(pcState.products, order);
+                pcState.futures = applyProductOrdering(pcState.futures, order);
+                renderPcRates(pcState.products, pcState.futures);
+                updateServerSettings({ productOrder: order });
+            }
+        }
+
+        /* 3. RESET DEFAULT PRODUCT ORDER */
+        function resetProductOrder() {
+            pcState.adminSettings.productOrder = INITIAL_PC_PRODUCTS.map(p => p.id).concat(INITIAL_PC_FUTURES.map(f => f.id));
+            isPcTableBuilt = false;
+            pcState.products = applyProductOrdering(pcState.products, pcState.adminSettings.productOrder);
+            pcState.futures = applyProductOrdering(pcState.futures, pcState.adminSettings.productOrder);
+            renderPcRates(pcState.products, pcState.futures);
+            updateServerSettings({ productOrder: pcState.adminSettings.productOrder });
+            alert("✔ प्रोडक्ट का क्रम (Order) डिफ़ॉल्ट पर रीसेट कर दिया गया है!");
+        }
+
         function renderPcRates(products, futures) {
             const tbody = document.getElementById('pcRatesRows');
-            const allItems = [...products, ...futures];
+            const orderedOrder = pcState.adminSettings.productOrder || [];
+            const sortedProds = applyProductOrdering(products, orderedOrder);
+            const sortedFuts = applyProductOrdering(futures, orderedOrder);
+            const allItems = applyProductOrdering([...sortedProds, ...sortedFuts], orderedOrder);
 
             if (!isPcTableBuilt || tbody.children.length !== allItems.length) {
-                tbody.innerHTML = allItems.map(p => {
+                tbody.innerHTML = allItems.map((p, idx) => {
                     const isProductHidden = !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id]);
                     const isBuyHidden = !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id]);
                     const isSellHidden = !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id]);
@@ -700,6 +791,10 @@
 
                     return `
                     <tr id="pc-row-${p.id}" class="${isProductHidden ? 'row-hidden' : ''}">
+                        <td style="text-align:center;white-space:nowrap;">
+                            <button type="button" class="btn-arrow-move" onclick="moveItemUp('${p.id}')" title="Move Up (ऊपर करें)"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" class="btn-arrow-move" onclick="moveItemDown('${p.id}')" title="Move Down (नीचे करें)"><i class="fa-solid fa-arrow-down"></i></button>
+                        </td>
                         <td style="text-align:center;background:rgba(239,68,68,0.1);">
                             <input type="checkbox" class="eye-hide-checkbox" id="hideProd-${p.id}" ${isProductHidden ? 'checked' : ''} onchange="toggleInstantProductHide('${p.id}')">
                         </td>
@@ -750,7 +845,6 @@
                     else rowEl.classList.remove('row-hidden');
                 }
 
-                // FREEZE RULE: If frozen and not future, keep frozen price!
                 let rawBuy = p.rawBuy || p.buy;
                 let rawSell = p.rawSell || p.sell;
 
@@ -765,7 +859,6 @@
                 const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : 0;
                 const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : 0;
 
-                // HIDE PHYSICAL RULE: Show '-' on prices, but do NOT remove row
                 const isPriceHiddenByMaster = !isFuture && pcState.isMasterHidden;
 
                 if (buyEl) {
@@ -847,7 +940,6 @@
             previewLiveCalculatedRates(itemId);
         }
 
-        /* 2. SAVE ALL PRODUCT OVERRIDES (Renames & Premiums) */
         async function saveAllProductOverrides() {
             const renames = {};
             const premiumsBuy = {};
@@ -886,10 +978,9 @@
             };
 
             await updateServerSettings(updatedSettings);
-            alert("✔ उत्पाद के नाम, प्रीमियम और हाइड सेटिंग्स सफलतापूर्वक सेव एवं सिंक हो गए!");
+            alert("✔ उत्पाद के नाम, क्रम (Order), प्रीमियम और हाइड सेटिंग्स सफलतापूर्वक सेव एवं सिंक हो गए!");
         }
 
-        /* 3. HIDE PHYSICAL BUTTON (Exact Rule: Hide prices only, keep rows visible) */
         async function togglePcMasterHide() {
             pcState.isMasterHidden = !pcState.isMasterHidden;
             await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
@@ -897,11 +988,9 @@
             renderPcRates(pcState.products, pcState.futures);
         }
 
-        /* 4. FREEZE PHYSICAL BUTTON (Exact Rule: Freeze physical prices, keep futures live) */
         async function togglePcFreeze() {
             pcState.isFrozen = !pcState.isFrozen;
             if (pcState.isFrozen) {
-                // Snapshot current physical prices
                 pcState.frozenPhysicalPrices = {};
                 pcState.products.forEach(p => {
                     pcState.frozenPhysicalPrices[p.id] = { buy: p.buy, sell: p.sell };
@@ -987,13 +1076,13 @@
                         localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
                         renderPcCust();
                         renderBankAccountsEditor();
+                        renderPcRates(pcState.products, pcState.futures);
                         return;
                     }
                 } catch(e) {}
             }
         }
 
-        /* 5. DEDICATED 3-TAB CUSTOMER MANAGEMENT */
         function switchCustTab(tabType) {
             document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
             document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
@@ -1017,7 +1106,6 @@
             if (appBadge) appBadge.innerText = approvedList.length;
             if (reqBadge) reqBadge.innerText = pendingList.length;
 
-            // TAB 1: APPROVED REGISTERED CUSTOMERS
             if (approvedTbody) {
                 if (approvedList.length === 0) {
                     approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:10px;">कोई स्वीकृत कस्टमर नहीं है</td></tr>`;
@@ -1059,7 +1147,6 @@
                 }
             }
 
-            // TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER
             if (requestTbody) {
                 if (pendingList.length === 0) {
                     requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px;">वर्तमान में कोई नई रजिस्ट्रेशन रिक्वेस्ट पेंडिंग नहीं है</td></tr>`;
@@ -1107,7 +1194,12 @@
             const target = custs.find(x => x.id === id);
             if (target) {
                 target.status = status;
-                if (status === 'BLOCKED') target.activeSession = null;
+                if (status === 'BLOCKED') {
+                    target.activeSession = null;
+                    if (syncChannel) {
+                        syncChannel.postMessage({ type: 'FORCE_LOGOUT_CUSTOMER', customerId: id, reason: 'BLOCKED' });
+                    }
+                }
                 localStorage.setItem('sg_customers_v3', JSON.stringify(custs));
                 
                 if (syncChannel) {
@@ -1124,12 +1216,14 @@
             if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को डिलीट/रिजेक्ट करना चाहते हैं?`)) return;
             pcState.customers = pcState.customers.filter(x => x.id !== id);
             localStorage.setItem('sg_customers_v3', JSON.stringify(pcState.customers));
+            if (syncChannel) {
+                syncChannel.postMessage({ type: 'FORCE_LOGOUT_CUSTOMER', customerId: id, reason: 'DELETED' });
+            }
             await updateServerSettings({ customers: pcState.customers });
             renderPcCust();
             alert(`कस्टमर ID ${id} रिजेक्ट/डिलीट कर दिया गया है!`);
         }
 
-        /* TAB 3: GUEST & ONLINE VISITORS RENDERER */
         function renderGuestVisitors(visitors) {
             const tbody = document.getElementById('guestVisitorRows');
             if (!tbody) return;
@@ -1173,7 +1267,6 @@
             if (offEl) offEl.innerText = offlineCount;
         }
 
-        /* 6. BANK ACCOUNTS MANAGEMENT */
         function renderBankAccountsEditor() {
             const container = document.getElementById('bankAccountsContainer');
             if (!container) return;

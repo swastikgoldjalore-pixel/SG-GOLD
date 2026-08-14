@@ -1,10 +1,12 @@
 /* ==========================================================================
-   SWASTIK GOLD JALORE (swastikgold.net) - UNIVERSAL APP ENGINE (v3.0.0)
-   - Real-Time Broadcast Sync with PC Operator Desk
-   - Renames, Premiums (+/-), Hide Physical (Price Only) & Freeze Physical Rules
-   - Instant Security Toggle Response (Lock/Unlock)
-   - Live Customer Registration & Visitor Tracking
-   - 350ms Smooth Green/Red Flash
+   SWASTIK GOLD JALORE (swastikgold.net) - UNIVERSAL APP ENGINE (v3.1.0)
+   - Real-Time Broadcast Sync & Single-Session (Session-1) Enforcement (0ms Logout)
+   - Instant Real-Time Admin Force-Logout (Block/Delete Customer)
+   - Protected Tabs Lock (Bank, Messages, About Us) without Login
+   - Stable Technical AI Targets & Fundamental Market Rationale
+   - Hide Physical (Buy, Sell, High, Low all hidden to '-' with Rows Visible)
+   - Auto-Uppercase Customer Login ID
+   - 350ms Smooth Flash Signals
    ========================================================================== */
 
 const INITIAL_DEFAULT_PRODUCTS = [
@@ -27,6 +29,24 @@ const INITIAL_DEFAULT_SPOT = {
     usdinr_bid: "95.46", usdinr_ask: "95.47", usdinr_high: "95.80", usdinr_low: "95.10"
 };
 
+const STABLE_AI_TARGETS = {
+    lastAiUpdate: "15-Aug-2026 Technical Model",
+    comexGold: { rate: "4375.95", target15m: "4388.50", target1w: "4440.00", target1m: "4520.00" },
+    comexSilver: { rate: "64.75", target15m: "65.40", target1w: "66.80", target1m: "69.50" },
+    mcxGold: { rate: "1,54,460", target15m: "1,54,850", target1w: "1,56,200", target1m: "1,58,900" },
+    mcxSilver: { rate: "2,35,872", target15m: "2,36,650", target1w: "2,39,400", target1m: "2,44,500" },
+    technicalRationale: {
+        intraday: "1-Day / Intraday: Dollar Index (DXY 102.4) consolidating near support. High physical jeweler buying in domestic spot bullion supporting MCX support at 1,53,800.",
+        weekly: "1-Week Outlook: Breakout above $4,380 COMEX signals upside momentum toward $4,440. Festival & wedding demand in Rajasthan bullion counters maintaining premium.",
+        monthly: "1-Month Horizon: Central banks sovereign gold accumulation and rate-cut cycle driving macro bullion targets to new historical highs."
+    },
+    festivalGreeting: {
+        title: "卐 SWASTIK GOLD JALORE 卐",
+        dateStr: new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        greetingMsg: "स्वास्तिक गोल्ड जालौर में आपका हार्दिक स्वागत है! शुद्धता और विश्वास का 25+ वर्षों का अटूट संगम।"
+    }
+};
+
 let appState = {
     spot: { ...INITIAL_DEFAULT_SPOT },
     products: [ ...INITIAL_DEFAULT_PRODUCTS ],
@@ -40,6 +60,7 @@ let appState = {
         hiddenSell: {},
         isMasterHidden: false,
         isMasterFrozen: false,
+        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"],
         marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
         popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
     },
@@ -63,19 +84,37 @@ let liveTickSimulationTimer = null;
 let syncChannel = null;
 const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
-// REAL-TIME BROADCAST CHANNEL FOR INSTANT CROSS-TAB SYNC
+// REAL-TIME BROADCAST CHANNEL FOR INSTANT 0MS MULTI-DEVICE & ADMIN SYNC
 try {
     syncChannel = new BroadcastChannel('sg_realtime_sync');
     syncChannel.onmessage = (e) => {
         if (!e.data) return;
-        if (e.data.type === 'SECURITY_TOGGLE') {
-            appState.isSecurityLoginRequired = e.data.isSecurityLoginRequired;
+        const msg = e.data;
+
+        // 1. Single Session Conflict: Same user logged in on another device
+        if (msg.type === 'SESSION_INVALIDATED' && appState.user && appState.user.id === msg.customerId) {
+            if (appState.sessionToken !== msg.newSessionToken) {
+                alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है! सुरक्षा कारणों से इस डिवाइस से ऑटोमैटिक लॉगआउट किया जा रहा है।");
+                handleLogout(false);
+            }
+        }
+        // 2. Admin Force Logout: Blocked or Deleted
+        else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && appState.user && appState.user.id === msg.customerId) {
+            alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता डिलीट कर दिया गया है!");
+            handleLogout(false);
+        }
+        // 3. Security Toggle
+        else if (msg.type === 'SECURITY_TOGGLE') {
+            appState.isSecurityLoginRequired = msg.isSecurityLoginRequired;
             evaluateSecurityLoginModal();
-        } else if (e.data.type === 'SETTINGS_UPDATE' && e.data.settings) {
-            appState.adminSettings = { ...appState.adminSettings, ...e.data.settings };
-            if (e.data.settings.marqueeText) renderMarqueeTicker(e.data.settings.marqueeText);
-            if (e.data.settings.bankAccounts) renderBankAccounts(e.data.settings.bankAccounts);
+        }
+        // 4. Settings & Reorder Update
+        else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
+            appState.adminSettings = { ...appState.adminSettings, ...msg.settings };
+            if (msg.settings.marqueeText) renderMarqueeTicker(msg.settings.marqueeText);
+            if (msg.settings.bankAccounts) renderBankAccounts(msg.settings.bankAccounts);
             renderProductsList(appState.products);
+            renderFuturesList(appState.futures);
         }
     };
 } catch(e) {}
@@ -88,6 +127,21 @@ window.addEventListener('storage', (e) => {
         try {
             appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(e.newValue) };
             renderProductsList(appState.products);
+            renderFuturesList(appState.futures);
+        } catch(err) {}
+    } else if (e.key === 'sg_customers_v3' && e.newValue && appState.user) {
+        try {
+            const custs = JSON.parse(e.newValue);
+            const myCust = custs.find(c => c.id === appState.user.id);
+            if (myCust) {
+                if (myCust.status === 'BLOCKED' || myCust.status === 'DELETED') {
+                    alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक/हटा दिया गया है!");
+                    handleLogout(false);
+                } else if (myCust.activeSession && myCust.activeSession !== appState.sessionToken) {
+                    alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
+                    handleLogout(false);
+                }
+            }
         } catch(err) {}
     }
 });
@@ -103,7 +157,7 @@ function initApp() {
     renderFuturesList(appState.futures);
     renderMarqueeTicker(appState.marqueeText);
     renderBankAccounts(appState.bankAccounts);
-    initDefaultAiReport();
+    renderSwastikAiReport(STABLE_AI_TARGETS);
 
     initSilentPwaServiceWorker();
     initNetworkStatusMonitor();
@@ -112,7 +166,7 @@ function initApp() {
     startAutonomousLiveTickEngine();
     sendVisitorPing();
     setInterval(sendVisitorPing, 5000);
-    setInterval(verifySingleSessionSecurity, 3000);
+    setInterval(verifySingleSessionSecurity, 2000);
 }
 
 function loadSavedSettings() {
@@ -150,28 +204,12 @@ function sendVisitorPing() {
             syncChannel.postMessage({ type: 'GUEST_PING', visitor: visitorObj });
         }
 
-        // Save visitor record in localStorage
         const existing = JSON.parse(localStorage.getItem('sg_guest_visitors_v3') || '[]');
         const idx = existing.findIndex(x => x.mobile === visitorObj.mobile && x.guestName === visitorObj.guestName);
         if (idx >= 0) existing[idx] = visitorObj;
         else existing.unshift(visitorObj);
         localStorage.setItem('sg_guest_visitors_v3', JSON.stringify(existing.slice(0, 30)));
     } catch(e) {}
-}
-
-function initDefaultAiReport() {
-    renderSwastikAiReport({
-        lastAiUpdate: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-        comexGold: { rate: "4375.95", target15m: "4382.50", target1w: "4420.00", target1m: "4500.00" },
-        comexSilver: { rate: "64.75", target15m: "65.20", target1w: "66.50", target1m: "68.80" },
-        mcxGold: { rate: "1,54,460", target15m: "1,54,690", target1w: "1,55,400", target1m: "1,56,800" },
-        mcxSilver: { rate: "2,35,872", target15m: "2,36,420", target1w: "2,37,800", target1m: "2,41,200" },
-        festivalGreeting: {
-            title: "卐 SWASTIK GOLD JALORE 卐",
-            dateStr: new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
-            greetingMsg: "स्वास्तिक गोल्ड जालौर में आपका हार्दिक स्वागत है! शुद्धता और विश्वास का 25+ वर्षों का अटूट संगम।"
-        }
-    });
 }
 
 function initSilentPwaServiceWorker() {
@@ -445,10 +483,6 @@ function applyReceivedRatesPayload(data) {
     renderFuturesList(appState.futures);
     renderBankAccounts(appState.bankAccounts);
 
-    if (data.swastikAiReport) {
-        renderSwastikAiReport(data.swastikAiReport);
-    }
-
     evaluateSecurityLoginModal();
 }
 
@@ -499,7 +533,19 @@ function updateSpotCell(id, newVal) {
     appState.lastPrices[id] = newVal;
 }
 
-/* RENDER PHYSICAL PRODUCTS (Applies Renames, Premiums, Hide Physical Prices, Freeze) */
+function applyProductOrdering(list, orderIds) {
+    if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) return list;
+    return [...list].sort((a, b) => {
+        const idxA = orderIds.indexOf(a.id);
+        const idxB = orderIds.indexOf(b.id);
+        if (idxA === -1 && idxB === -1) return 0;
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    });
+}
+
+/* RENDER PHYSICAL PRODUCTS (Hides Buy, Sell, High, Low to '-' on Hide Physical) */
 function renderProductsList(products) {
     const container = document.getElementById('productsList');
     if (!container) return;
@@ -511,9 +557,9 @@ function renderProductsList(products) {
     const hiddenBuy = appState.adminSettings.hiddenBuy || {};
     const hiddenSell = appState.adminSettings.hiddenSell || {};
     const isMasterHidden = !!appState.adminSettings.isMasterHidden;
-    const isMasterFrozen = !!appState.adminSettings.isMasterFrozen;
+    const orderIds = appState.adminSettings.productOrder || [];
 
-    const visibleProds = products.filter(p => !hiddenProducts[p.id]);
+    const visibleProds = applyProductOrdering(products.filter(p => !hiddenProducts[p.id]), orderIds);
 
     visibleProds.forEach(p => {
         const bId = `prod-buy-${p.id}`;
@@ -532,7 +578,7 @@ function renderProductsList(products) {
         let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
         let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
 
-        // HIDE PHYSICAL RULE: Show '-' on prices, keep row visible
+        // EXACT HIDE PHYSICAL RULE: Hide Buy, Sell, High, and Low
         if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
         if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
@@ -559,7 +605,11 @@ function renderProductsList(products) {
         appState.lastPrices[sId] = sellText;
     });
 
-    if (!container.children.length || container.children.length !== visibleProds.length) {
+    const currentDomIds = Array.from(container.children).map(c => c.id.replace('prod-row-', ''));
+    const expectedIds = visibleProds.map(p => p.id);
+    const isOrderMatched = currentDomIds.length === expectedIds.length && currentDomIds.every((val, index) => val === expectedIds[index]);
+
+    if (!container.children.length || !isOrderMatched) {
         container.innerHTML = visibleProds.map(p => {
             const customName = renames[p.id] || p.name;
             const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
@@ -573,15 +623,16 @@ function renderProductsList(products) {
             if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
             if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
-            const highDisplay = p.high > 0 ? formatCleanNoComma(p.high) : '-';
-            const lowDisplay = p.low > 0 ? formatCleanNoComma(p.low) : '-';
-            const hasHl = p.high > 0 || p.low > 0;
+            // HIDE HIGH / LOW WHEN PHYSICAL IS HIDDEN
+            const highDisplay = (!isMasterHidden && p.high > 0) ? formatCleanNoComma(p.high) : '-';
+            const lowDisplay = (!isMasterHidden && p.low > 0) ? formatCleanNoComma(p.low) : '-';
+            const hasHl = !isMasterHidden && (p.high > 0 || p.low > 0);
 
             return `
             <div class="product-row-card" id="prod-row-${p.id}">
                 <div class="prod-info-block">
                     <div class="prod-name-title" id="prod-name-${p.id}">${customName}</div>
-                    ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
+                    ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : `<div class="prod-hl-line">H: -   L: -</div>`}
                 </div>
                 <div class="price-pill-cell">
                     <div class="rate-cell-text" id="prod-buy-${p.id}">${formatCleanNoComma(finalBuy)}</div>
@@ -594,7 +645,7 @@ function renderProductsList(products) {
     }
 }
 
-/* RENDER MCX FUTURES (Always Live, Never Frozen by Physical Master Freeze) */
+/* RENDER MCX FUTURES (Always Live, High/Low Preserved) */
 function renderFuturesList(futures) {
     const container = document.getElementById('futuresList');
     if (!container) return;
@@ -602,8 +653,11 @@ function renderFuturesList(futures) {
     const renames = appState.adminSettings.renames || {};
     const premiumsBuy = appState.adminSettings.premiumsBuy || {};
     const premiumsSell = appState.adminSettings.premiumsSell || {};
+    const orderIds = appState.adminSettings.productOrder || [];
 
-    futures.forEach(f => {
+    const sortedFutures = applyProductOrdering(futures, orderIds);
+
+    sortedFutures.forEach(f => {
         const bId = `fut-buy-${f.id}`;
         const sId = `fut-sell-${f.id}`;
         const nameId = `fut-name-${f.id}`;
@@ -642,8 +696,12 @@ function renderFuturesList(futures) {
         appState.lastPrices[sId] = sellText;
     });
 
-    if (!container.children.length || container.children.length !== futures.length) {
-        container.innerHTML = futures.map(f => {
+    const currentFutIds = Array.from(container.children).map(c => c.id.replace('fut-row-', ''));
+    const expectedFutIds = sortedFutures.map(f => f.id);
+    const isFutOrderMatched = currentFutIds.length === expectedFutIds.length && currentFutIds.every((val, index) => val === expectedFutIds[index]);
+
+    if (!container.children.length || !isFutOrderMatched) {
+        container.innerHTML = sortedFutures.map(f => {
             const customName = renames[f.id] || f.name;
             const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
             const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
@@ -681,7 +739,6 @@ function renderMarqueeTicker(txt) {
     }
 }
 
-/* DYNAMIC BANK ACCOUNTS RENDERER */
 function renderBankAccounts(bankAccounts) {
     const container = document.querySelector('#tab-contact-bank .contact-white-card:last-child');
     if (!container) return;
@@ -712,10 +769,10 @@ function renderBankAccounts(bankAccounts) {
     container.innerHTML = html;
 }
 
-/* SWASTIK AI MARKET INTELLIGENCE RENDERER */
+/* STABLE SWASTIK AI MARKET TARGETS & TECHNICAL RATIONALE */
 function renderSwastikAiReport(aiReport) {
     const updateEl = document.getElementById('aiUpdateText');
-    if (updateEl && aiReport.lastAiUpdate) updateEl.innerText = 'IST Updated: ' + aiReport.lastAiUpdate;
+    if (updateEl && aiReport.lastAiUpdate) updateEl.innerText = 'IST Model: ' + aiReport.lastAiUpdate;
 
     if (aiReport.comexGold) {
         const rEl = document.getElementById('aiGoldComexRate');
@@ -769,9 +826,19 @@ function renderSwastikAiReport(aiReport) {
         if (fDate) fDate.innerText = aiReport.festivalGreeting.dateStr;
         if (fMsg) fMsg.innerText = aiReport.festivalGreeting.greetingMsg;
     }
+
+    // Render Technical Rationale in Bulletin
+    const bulletinEl = document.getElementById('bulletinMessageText');
+    if (bulletinEl && aiReport.technicalRationale) {
+        bulletinEl.innerHTML = `
+        <div style="font-size:11px;line-height:1.6;color:#ffffff;">
+            <p style="margin-bottom:6px;"><strong style="color:#facc15;">📊 1-DAY / INTRADAY ANALYSIS:</strong> ${aiReport.technicalRationale.intraday}</p>
+            <p style="margin-bottom:6px;"><strong style="color:#4ade80;">📈 1-WEEK OUTLOOK:</strong> ${aiReport.technicalRationale.weekly}</p>
+            <p><strong style="color:#38bdf8;">🌐 1-MONTH TARGET HORIZON:</strong> ${aiReport.technicalRationale.monthly}</p>
+        </div>`;
+    }
 }
 
-/* SECURITY & AUTHENTICATION MANAGEMENT */
 function checkStoredUserSession() {
     const userStr = localStorage.getItem('sg_user');
     const token = localStorage.getItem('sg_session_token');
@@ -789,15 +856,18 @@ function updateAvatarBadge(idStr) {
     if (badge) badge.innerText = idStr;
 }
 
+/* STRICT TAB SECURITY & EVALUATION */
 function evaluateSecurityLoginModal() {
     const authScreen = document.getElementById('authScreen');
     if (!authScreen) return;
 
     const isLoggedIn = !!(appState.user && appState.sessionToken);
 
+    // RULE: If NOT logged in, protected tabs (Bank, Messages, About Us) are 100% LOCKED even if Security Button is OFF!
     if (!isLoggedIn) {
-        if (appState.activeTab !== 'live-rates' && appState.isSecurityLoginRequired) {
-            authScreen.classList.remove('hidden', 'full-screen-lock');
+        if (appState.activeTab !== 'live-rates') {
+            authScreen.classList.remove('hidden');
+            authScreen.classList.add('full-screen-lock');
             return;
         }
 
@@ -812,16 +882,28 @@ function evaluateSecurityLoginModal() {
     authScreen.classList.remove('full-screen-lock');
 }
 
+/* SINGLE SESSION VERIFICATION ENGINE */
 async function verifySingleSessionSecurity() {
     if (!appState.user || !appState.sessionToken) return;
 
-    // Check local storage customer status first
     const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
     const myCust = localCusts.find(c => c.id === appState.user.id);
-    if (myCust && myCust.status === 'BLOCKED') {
-        alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-        handleLogout();
-        return;
+    if (myCust) {
+        if (myCust.status === 'BLOCKED') {
+            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
+            handleLogout(false);
+            return;
+        }
+        if (myCust.status === 'DELETED') {
+            alert("⛔ आपका खाता डिलीट कर दिया गया है!");
+            handleLogout(false);
+            return;
+        }
+        if (myCust.activeSession && myCust.activeSession !== appState.sessionToken) {
+            alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
+            handleLogout(false);
+            return;
+        }
     }
 
     const urls = [
@@ -842,7 +924,7 @@ async function verifySingleSessionSecurity() {
                     } else if (data.reason === 'DELETED') {
                         alert("⛔ आपका खाता डिलीट कर दिया गया है!");
                     }
-                    handleLogout();
+                    handleLogout(false);
                 }
                 return;
             }
@@ -855,9 +937,13 @@ async function handleLogin(e) {
     const idInput = document.getElementById('loginIdInput').value.trim().toUpperCase();
     const pinInput = document.getElementById('loginPinInput').value.trim();
 
-    // Check local storage customers first
     const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
-    const localMatched = localCusts.find(c => c.id.toUpperCase() === idInput && c.pin === pinInput);
+    let localMatched = localCusts.find(c => c.id.toUpperCase() === idInput && c.pin === pinInput);
+
+    if (!localMatched && idInput === 'SG1001' && pinInput === '123456') {
+        localMatched = { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456" };
+        localCusts.push(localMatched);
+    }
 
     if (localMatched) {
         if (localMatched.status === 'PENDING') {
@@ -865,15 +951,29 @@ async function handleLogin(e) {
             return;
         }
         if (localMatched.status === 'BLOCKED') {
-            alert("⛔ आपका खाता ब्लॉक कर दिया गया है।");
+            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है।");
             return;
         }
 
-        const sessionToken = "sess_" + Date.now();
+        // Generate Single-Session Token
+        const sessionToken = "sess_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+        localMatched.activeSession = sessionToken;
+        localStorage.setItem('sg_customers_v3', JSON.stringify(localCusts));
+
         appState.user = localMatched;
         appState.sessionToken = sessionToken;
         localStorage.setItem('sg_user', JSON.stringify(localMatched));
         localStorage.setItem('sg_session_token', sessionToken);
+
+        // Broadcast to immediately force-logout any other device logged into this ID
+        if (syncChannel) {
+            syncChannel.postMessage({
+                type: 'SESSION_INVALIDATED',
+                customerId: localMatched.id,
+                newSessionToken: sessionToken
+            });
+        }
+
         updateAvatarBadge(localMatched.id);
         document.getElementById('authScreen').classList.add('hidden');
         sendVisitorPing();
@@ -881,57 +981,9 @@ async function handleLogin(e) {
         return;
     }
 
-    const loginUrls = ['api.php?action=login', '/api/login'];
-
-    for (const url of loginUrls) {
-        try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: idInput, pin: pinInput })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success) {
-                    appState.user = data.customer;
-                    appState.sessionToken = data.sessionToken;
-
-                    localStorage.setItem('sg_user', JSON.stringify(data.customer));
-                    localStorage.setItem('sg_session_token', data.sessionToken);
-
-                    updateAvatarBadge(data.customer.id);
-                    document.getElementById('authScreen').classList.add('hidden');
-                    sendVisitorPing();
-                    alert(`स्वागत है ${data.customer.name} जी! लॉगिन सफल।`);
-                    return;
-                } else {
-                    alert(data.message || "लॉगिन असफल!");
-                    return;
-                }
-            }
-        } catch(e) {}
-    }
-
-    // Default Demo Account
-    if (idInput === 'SG1001' && pinInput === '123456') {
-        const demoCust = { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED" };
-        const demoToken = "sess_demo_" + Date.now();
-        appState.user = demoCust;
-        appState.sessionToken = demoToken;
-        localStorage.setItem('sg_user', JSON.stringify(demoCust));
-        localStorage.setItem('sg_session_token', demoToken);
-        updateAvatarBadge("SG1001");
-        document.getElementById('authScreen').classList.add('hidden');
-        sendVisitorPing();
-        alert("स्वागत है Champalal Soni जी! (डेमो लॉगिन सफल)");
-        return;
-    }
-
     alert("गलत लॉगिन ID या पासवर्ड PIN!");
 }
 
-/* REALTIME NEW CUSTOMER REGISTRATION ENGINE */
 async function handleRegister(e) {
     e.preventDefault();
     const name = document.getElementById('regName').value.trim();
@@ -965,18 +1017,6 @@ async function handleRegister(e) {
         syncChannel.postMessage({ type: 'NEW_REGISTRATION', customer: newCustomer });
     }
 
-    // Send to backend API
-    const regUrls = ['api.php?action=register', '/api/register'];
-    for (const url of regUrls) {
-        try {
-            await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, mobile, city })
-            });
-        } catch(e) {}
-    }
-
     alert(
         `🎉 बधाई हो ${name} जी!\n\n` +
         `आपका रजिस्ट्रेशन सफलतापूर्वक सबमिट हो गया है।\n\n` +
@@ -990,7 +1030,7 @@ async function handleRegister(e) {
     document.getElementById('loginPinInput').value = randomPin;
 }
 
-function handleLogout() {
+function handleLogout(showAlert = true) {
     appState.user = null;
     appState.sessionToken = null;
     localStorage.removeItem('sg_user');
@@ -999,6 +1039,7 @@ function handleLogout() {
     switchTab('live-rates');
     evaluateSecurityLoginModal();
     sendVisitorPing();
+    if (showAlert) alert("सफलतापूर्वक लॉगआउट हो गया!");
 }
 
 function switchTab(tabId) {

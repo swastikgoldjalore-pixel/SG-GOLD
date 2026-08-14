@@ -269,6 +269,10 @@ function computeLiveRatesPayload() {
                 if (!$isFuture) {
                     if (!empty($settings['isMasterHidden']) || !empty($settings['hiddenBuy'][$rawId])) $finalBuy = 0;
                     if (!empty($settings['isMasterHidden']) || !empty($settings['hiddenSell'][$rawId])) $finalSell = 0;
+                    if (!empty($settings['isMasterHidden'])) {
+                        $finalHigh = 0;
+                        $finalLow = 0;
+                    }
                 }
 
                 $itemObj = [
@@ -276,8 +280,8 @@ function computeLiveRatesPayload() {
                     'name' => $displayName,
                     'buy' => $finalBuy,
                     'sell' => $finalSell,
-                    'high' => $isEntireProductHidden ? 0 : $finalHigh,
-                    'low' => $isEntireProductHidden ? 0 : $finalLow,
+                    'high' => ($isEntireProductHidden || !empty($settings['isMasterHidden'])) ? 0 : $finalHigh,
+                    'low' => ($isEntireProductHidden || !empty($settings['isMasterHidden'])) ? 0 : $finalLow,
                     'buyPremium' => $buyPrem,
                     'sellPremium' => $sellPrem,
                     'isProductHidden' => $isEntireProductHidden,

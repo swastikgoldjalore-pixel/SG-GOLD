@@ -38,6 +38,39 @@
             padding: 0;
         }
 
+        /* CUSTOMER LOGIN MODAL OVERLAY FOR LANDSCAPE PORTAL */
+        .web-auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 15, 30, 0.96);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        .web-auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: #0c182b;
+            border: 2px solid #facc15;
+            border-radius: 16px;
+            padding: 30px 24px;
+            box-shadow: 0 16px 45px rgba(0,0,0,0.85);
+            text-align: center;
+        }
+
+        .web-auth-title { color: #f59e0b; font-size: 20px; font-weight: 900; margin-bottom: 2px; font-family:'Cinzel Decorative', serif; }
+        .web-auth-sub { color: #94a3b8; font-size: 11px; font-weight: 700; margin-bottom: 20px; }
+
+        .web-input-group { margin-bottom: 14px; text-align: left; }
+        .web-input-group label { display: block; color: #facc15; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+        .web-input-field { width: 100%; padding: 11px 12px; background: #070f1e; border: 1.5px solid #1e293b; border-radius: 6px; color: #ffffff; font-weight: 700; font-size: 14px; outline: none; text-transform: uppercase; }
+        .web-input-field:focus { border-color: #facc15; }
+
+        .btn-web-login { width: 100%; padding: 12px; background: #facc15; color: #000000; border: none; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 6px; }
+
         /* HEADER WITH PURE SWASTIK LOGO ICON */
         .site-header {
             background: #0c182b;
@@ -90,6 +123,19 @@
         .header-controls { display: flex; gap: 10px; align-items: center; }
         .btn-outline-app { background: transparent; color: #f59e0b; border: 2px solid #facc15; padding: 6px 14px; border-radius: 18px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
         .btn-gold-desk { background: #facc15; color: #0c182b; border: none; padding: 6px 16px; border-radius: 18px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; box-shadow: 0 4px 12px rgba(250,204,21,0.3); }
+
+        .user-pill-badge {
+            background: #172a4a;
+            color: #facc15;
+            border: 1px solid #facc15;
+            padding: 5px 12px;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
 
         /* TICKER BANNER (SOLID BLACK TEXT ON YELLOW) */
         .ticker-bar {
@@ -184,9 +230,38 @@
         }
 
         .landscape-footer-mark span.swastik-mark { font-size: 20px; color: #d97706; font-weight: 900; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
+
+    <!-- CUSTOMER AUTHENTICATION LOGIN MODAL FOR LANDSCAPE PORTAL -->
+    <div id="webAuthModal" class="web-auth-overlay hidden">
+        <div class="web-auth-card">
+            <div style="font-size:36px;color:#facc15;font-weight:900;margin-bottom:4px;">卐</div>
+            <h2 class="web-auth-title">SWASTIK GOLD</h2>
+            <p class="web-auth-sub">Landscape Customer Live Rates Portal</p>
+
+            <form onsubmit="handleWebLogin(event)">
+                <div class="web-input-group">
+                    <label><i class="fa-solid fa-user-shield"></i> कस्टमर User ID (Capital Letters)</label>
+                    <input type="text" id="webLoginId" placeholder="जैसे: SG1001" maxlength="10" required oninput="this.value = this.value.toUpperCase()" class="web-input-field">
+                </div>
+                <div class="web-input-group">
+                    <label><i class="fa-solid fa-key"></i> पासवर्ड (PIN)</label>
+                    <input type="password" id="webLoginPin" placeholder="6-Digit PIN" maxlength="10" required class="web-input-field" style="text-transform:none;">
+                </div>
+                <button type="submit" class="btn-web-login">
+                    <i class="fa-solid fa-lock-open"></i> UNLOCK LIVE RATE BOARD
+                </button>
+            </form>
+
+            <div style="margin-top:14px;font-size:11px;color:#cbd5e1;">
+                नया खाता चाहिए? <a href="index.html" style="color:#facc15;font-weight:800;text-decoration:none;">मोबाइल ऐप पर रजिस्टर करें</a>
+            </div>
+        </div>
+    </div>
 
     <!-- 1. PC HEADER WITH DATE & 12-HOUR LIVE CLOCK -->
     <header class="site-header">
@@ -204,6 +279,11 @@
         </div>
 
         <div class="header-controls">
+            <div id="userBadgeBox" class="user-pill-badge hidden">
+                <i class="fa-solid fa-user-check"></i>
+                <span id="userBadgeName">SG1001</span>
+                <button onclick="handleWebLogout()" style="background:none;border:none;color:#f87171;margin-left:6px;cursor:pointer;font-size:12px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
             <a href="index.html" class="btn-outline-app"><i class="fa-solid fa-mobile-screen"></i> Mobile App</a>
             <a href="pc-client.html" class="btn-gold-desk"><i class="fa-solid fa-lock"></i> Admin</a>
         </div>
@@ -292,7 +372,7 @@
 
     </div>
 
-    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (v3.0.0) -->
+    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (v3.1.0) -->
     <script>
         const INITIAL_DEFAULT_PRODUCTS = [
             { id: "GOLD_999_KD", name: "Gold 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
@@ -313,6 +393,8 @@
         let webPollingTimer = null;
         let webTickTimer = null;
         let lastWebFetchTime = 0;
+        let currentUser = null;
+        let currentSessionToken = null;
         let currentProducts = [ ...INITIAL_DEFAULT_PRODUCTS ];
         let currentFutures = [ ...INITIAL_DEFAULT_FUTURES ];
         let webAdminSettings = {
@@ -323,16 +405,27 @@
             hiddenBuy: {},
             hiddenSell: {},
             isMasterHidden: false,
-            isMasterFrozen: false
+            isMasterFrozen: false,
+            productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"]
         };
         const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
-        // Real-Time Broadcast Channel
+        // Real-Time Broadcast Channel for Zero-Latency Sync & Instant 0ms Logout
         try {
             const syncChannel = new BroadcastChannel('sg_realtime_sync');
             syncChannel.onmessage = (e) => {
-                if (e.data && e.data.type === 'SETTINGS_UPDATE' && e.data.settings) {
-                    webAdminSettings = { ...webAdminSettings, ...e.data.settings };
+                if (!e.data) return;
+                const msg = e.data;
+                if (msg.type === 'SESSION_INVALIDATED' && currentUser && currentUser.id === msg.customerId) {
+                    if (currentSessionToken !== msg.newSessionToken) {
+                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है! सुरक्षा कारणों से इस डिवाइस से ऑटोमैटिक लॉगआउट किया जा रहा है।");
+                        handleWebLogout(false);
+                    }
+                } else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && currentUser && currentUser.id === msg.customerId) {
+                    alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता डिलीट कर दिया गया है!");
+                    handleWebLogout(false);
+                } else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
+                    webAdminSettings = { ...webAdminSettings, ...msg.settings };
                     renderLandscapeProducts(currentProducts, currentFutures);
                 }
             };
@@ -344,17 +437,115 @@
                     webAdminSettings = { ...webAdminSettings, ...JSON.parse(e.newValue) };
                     renderLandscapeProducts(currentProducts, currentFutures);
                 } catch(err) {}
+            } else if (e.key === 'sg_customers_v3' && e.newValue && currentUser) {
+                try {
+                    const custs = JSON.parse(e.newValue);
+                    const myCust = custs.find(c => c.id === currentUser.id);
+                    if (myCust) {
+                        if (myCust.status === 'BLOCKED' || myCust.status === 'DELETED') {
+                            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक/हटा दिया गया है!");
+                            handleWebLogout(false);
+                        } else if (myCust.activeSession && myCust.activeSession !== currentSessionToken) {
+                            alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
+                            handleWebLogout(false);
+                        }
+                    }
+                } catch(err) {}
             }
         });
 
+        function checkCustomerAuth() {
+            const userStr = localStorage.getItem('sg_user');
+            const token = localStorage.getItem('sg_session_token');
+            if (userStr && token) {
+                try {
+                    currentUser = JSON.parse(userStr);
+                    currentSessionToken = token;
+                    document.getElementById('webAuthModal').classList.add('hidden');
+                    const badge = document.getElementById('userBadgeBox');
+                    const badgeName = document.getElementById('userBadgeName');
+                    if (badge && badgeName) {
+                        badgeName.innerText = `${currentUser.id} (${currentUser.name})`;
+                        badge.classList.remove('hidden');
+                    }
+                    return true;
+                } catch(e) {}
+            }
+
+            document.getElementById('webAuthModal').classList.remove('hidden');
+            const badge = document.getElementById('userBadgeBox');
+            if (badge) badge.classList.add('hidden');
+            return false;
+        }
+
+        function handleWebLogin(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('webLoginId').value.trim().toUpperCase();
+            const pinInput = document.getElementById('webLoginPin').value.trim();
+
+            const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
+            let matched = localCusts.find(c => c.id.toUpperCase() === idInput && c.pin === pinInput);
+
+            if (!matched && idInput === 'SG1001' && pinInput === '123456') {
+                matched = { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456" };
+                localCusts.push(matched);
+            }
+
+            if (matched) {
+                if (matched.status === 'PENDING') {
+                    alert("⏳ आपका खाता अभी एडमिन अप्रूवल के लिए पेंडिंग है।");
+                    return;
+                }
+                if (matched.status === 'BLOCKED') {
+                    alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है।");
+                    return;
+                }
+
+                const sessionToken = "sess_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+                matched.activeSession = sessionToken;
+                localStorage.setItem('sg_customers_v3', JSON.stringify(localCusts));
+
+                currentUser = matched;
+                currentSessionToken = sessionToken;
+                localStorage.setItem('sg_user', JSON.stringify(matched));
+                localStorage.setItem('sg_session_token', sessionToken);
+
+                try {
+                    const syncChannel = new BroadcastChannel('sg_realtime_sync');
+                    syncChannel.postMessage({
+                        type: 'SESSION_INVALIDATED',
+                        customerId: matched.id,
+                        newSessionToken: sessionToken
+                    });
+                } catch(err) {}
+
+                checkCustomerAuth();
+                sendWebsiteVisitorPing();
+                alert(`स्वागत है ${matched.name} जी! लॉगिन सफल।`);
+                return;
+            }
+
+            alert("गलत लॉगिन ID या पासवर्ड PIN!");
+        }
+
+        function handleWebLogout(showAlert = true) {
+            currentUser = null;
+            currentSessionToken = null;
+            localStorage.removeItem('sg_user');
+            localStorage.removeItem('sg_session_token');
+            checkCustomerAuth();
+            if (showAlert) alert("सफलतापूर्वक लॉगआउट हो गया!");
+        }
+
         function sendWebsiteVisitorPing() {
             try {
+                const isUserLoggedIn = !!(currentUser && currentUser.name);
                 const visitorObj = {
-                    guestName: "Guest Visitor",
-                    mobile: "Not Registered",
+                    guestName: isUserLoggedIn ? currentUser.name : "Landscape Visitor",
+                    mobile: isUserLoggedIn ? currentUser.mobile : "Not Registered",
                     ip: "127.0.0.1",
                     device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
-                    city: "Jalore Region",
+                    city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore Region",
                     page: "Website Live Board (website.html)",
                     status: "ONLINE",
                     pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
@@ -412,6 +603,7 @@
                 if (saved) webAdminSettings = { ...webAdminSettings, ...JSON.parse(saved) };
             } catch(e) {}
 
+            checkCustomerAuth();
             renderLandscapeProducts(currentProducts, currentFutures);
             trySseStream();
             startWebPolling();
@@ -493,7 +685,6 @@
                 } catch(e) {}
             }
 
-            // Direct Sundha Fallback
             try {
                 const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
                 if (res.ok) {
@@ -630,7 +821,19 @@
             webLastPrices[id] = newVal;
         }
 
-        /* RENDER LANDSCAPE PRODUCTS WITH RENAMES, PREMIUMS & HIDE RULES */
+        function applyProductOrdering(list, orderIds) {
+            if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) return list;
+            return [...list].sort((a, b) => {
+                const idxA = orderIds.indexOf(a.id);
+                const idxB = orderIds.indexOf(b.id);
+                if (idxA === -1 && idxB === -1) return 0;
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+        }
+
+        /* RENDER LANDSCAPE PRODUCTS WITH RENAMES, PREMIUMS, SEQUENCE ORDER & HIDE RULES */
         function renderLandscapeProducts(products, futures) {
             const leftContainer = document.getElementById('leftProdContainer');
             const rightContainer = document.getElementById('rightFutContainer');
@@ -642,8 +845,10 @@
             const hiddenBuy = webAdminSettings.hiddenBuy || {};
             const hiddenSell = webAdminSettings.hiddenSell || {};
             const isMasterHidden = !!webAdminSettings.isMasterHidden;
+            const orderIds = webAdminSettings.productOrder || [];
 
-            const visibleProds = products.filter(p => !hiddenProducts[p.id]);
+            const visibleProds = applyProductOrdering(products.filter(p => !hiddenProducts[p.id]), orderIds);
+            const visibleFutures = applyProductOrdering(futures.filter(f => !hiddenProducts[f.id]), orderIds);
 
             visibleProds.forEach(p => {
                 const bId = `buy-${p.id}`;
@@ -688,7 +893,7 @@
                 webLastPrices[sId] = sellText;
             });
 
-            futures.forEach(f => {
+            visibleFutures.forEach(f => {
                 const bId = `buy-${f.id}`;
                 const sId = `sell-${f.id}`;
                 const nameId = `name-${f.id}`;
@@ -727,7 +932,11 @@
                 webLastPrices[sId] = sellText;
             });
 
-            if (!leftContainer.children.length || leftContainer.children.length !== visibleProds.length) {
+            const currentLeftIds = Array.from(leftContainer.children).map(c => c.id.replace('row-', ''));
+            const expectedLeftIds = visibleProds.map(p => p.id);
+            const isLeftOrderMatched = currentLeftIds.length === expectedLeftIds.length && currentLeftIds.every((val, index) => val === expectedLeftIds[index]);
+
+            if (!leftContainer.children.length || !isLeftOrderMatched) {
                 leftContainer.innerHTML = visibleProds.map(p => {
                     const customName = renames[p.id] || p.name;
                     const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
@@ -741,15 +950,16 @@
                     if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
                     if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
-                    const highDisplay = p.high > 0 ? formatNoComma(p.high) : '-';
-                    const lowDisplay = p.low > 0 ? formatNoComma(p.low) : '-';
-                    const hasHl = p.high > 0 || p.low > 0;
+                    // HIDE HIGH / LOW WHEN PHYSICAL IS HIDDEN
+                    const highDisplay = (!isMasterHidden && p.high > 0) ? formatNoComma(p.high) : '-';
+                    const lowDisplay = (!isMasterHidden && p.low > 0) ? formatNoComma(p.low) : '-';
+                    const hasHl = !isMasterHidden && (p.high > 0 || p.low > 0);
 
                     return `
                     <div class="product-row-card" id="row-${p.id}">
                         <div class="prod-info-block">
                             <div class="prod-name-title" id="name-${p.id}">${customName}</div>
-                            ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
+                            ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : `<div class="prod-hl-line">H: -   L: -</div>`}
                         </div>
                         <div class="price-pill-cell">
                             <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(finalBuy)}</div>
@@ -761,8 +971,12 @@
                 }).join('');
             }
 
-            if (!rightContainer.children.length || rightContainer.children.length !== futures.length) {
-                rightContainer.innerHTML = futures.map(f => {
+            const currentRightIds = Array.from(rightContainer.children).map(c => c.id.replace('row-', ''));
+            const expectedRightIds = visibleFutures.map(f => f.id);
+            const isRightOrderMatched = currentRightIds.length === expectedRightIds.length && currentRightIds.every((val, index) => val === expectedRightIds[index]);
+
+            if (!rightContainer.children.length || !isRightOrderMatched) {
+                rightContainer.innerHTML = visibleFutures.map(f => {
                     const customName = renames[f.id] || f.name;
                     const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
                     const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
