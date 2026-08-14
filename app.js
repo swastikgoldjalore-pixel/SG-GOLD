@@ -1,11 +1,13 @@
 /* ==========================================================================
-   SWASTIK GOLD JALORE (swastikgold.net) - UNIVERSAL APP ENGINE (v3.3.0)
-   - Dynamic Daily AI Market Technical Target Engine (Daily / Alternate Day Refresh)
-   - PWA 1-Click Direct App Install Engine (Chrome, Android & Safari)
-   - 2-Second Auto-Dismissing Welcome Pop-up on Every Website Open
-   - 100% Real-Time Product Up/Down Reorder Synchronization
-   - Single-Session (Session-1) 0ms Conflict Logout & Admin Force Logout
-   - Protected Tabs Locked without Customer Login (With Top Nav Tabs Accessible when Security is OFF)
+   SWASTIK GOLD JALORE - APP ENGINE SCRIPT
+   - Auto Uppercase Customer Login ID (e.g. SG1001)
+   - Real-time Registration Submission Engine (POST /api/register)
+   - Bank Detail Is Not Available Empty State Renderer
+   - Tab Navigation Protection (Header & Top Nav Tabs remain 100% visible)
+   - Prominent "Back to Live Rates" button inside auth modal card
+   - Strict Network Disconnect Monitor (ONLY triggers banner when navigator.onLine === false)
+   - Dedicated Security Toggle Persistence Protection
+   - Normal 350ms Pleasant Flash Signals
    ========================================================================== */
 
 const INITIAL_DEFAULT_PRODUCTS = [
@@ -32,6 +34,17 @@ let appState = {
     spot: { ...INITIAL_DEFAULT_SPOT },
     products: [ ...INITIAL_DEFAULT_PRODUCTS ],
     futures: [ ...INITIAL_DEFAULT_FUTURES ],
+    marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं और सोने-चांदी की गलाई का कार्य भी किया जाता हैं ❖",
+    isSecurityLoginRequired: false,
+    hatohatSettings: {},
+    bankAccounts: [
+        { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
+        { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
+    ],
+    lastPrices: {},
+    user: null,
+    sessionToken: null,
+    activeTab: 'live-rates',
     adminSettings: {
         renames: {},
         premiumsBuy: {},
@@ -41,21 +54,8 @@ let appState = {
         hiddenSell: {},
         isMasterHidden: false,
         isMasterFrozen: false,
-        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"],
-        marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ BK JEWELERS की 40 साल पुरानी पेढ़ी और स्वास्तिक गोल्ड का 25 वर्षों का विश्वास ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
-        popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
+        productOrder: ["GOLD_999_KD", "GOLD_9950_IMPOTED", "GOLD_RTGS_999", "RANI", "SILVER_CHORSA_98", "RUPA", "GOLD_FUTURE", "SILVER_FUTURE"]
     },
-    frozenPhysicalPrices: {},
-    marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ BK JEWELERS की 40 साल पुरानी पेढ़ी और स्वास्तिक गोल्ड का 25 वर्षों का विश्वास ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
-    isSecurityLoginRequired: false,
-    bankAccounts: [
-        { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
-        { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
-    ],
-    lastPrices: {},
-    user: null,
-    sessionToken: null,
-    activeTab: 'live-rates',
     lastLiveFetchTime: 0
 };
 
@@ -63,112 +63,26 @@ let sseEventSource = null;
 let pollingIntervalTimer = null;
 let liveTickSimulationTimer = null;
 let syncChannel = null;
-let popupDismissTimeout = null;
-let deferredPwaPrompt = null;
 const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
 
-// DYNAMIC DAILY / ALTERNATE DAY AI TECHNICAL MODEL CALCULATION ENGINE
-function getDynamicAiDailyReport() {
-    const today = new Date();
-    const dayOfMonth = today.getDate();
-    const dateStr = today.toLocaleDateString('hi-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-    // Multi-cycle mathematical technical pivot matrix
-    const cycle = dayOfMonth % 3;
-
-    if (cycle === 0) {
-        return {
-            lastAiUpdate: `${dateStr} Daily AI Model (Cycle-A)`,
-            comexGold: { rate: "4375.95", target15m: "4388.50", target1w: "4440.00", target1m: "4520.00" },
-            comexSilver: { rate: "64.75", target15m: "65.40", target1w: "66.80", target1m: "69.50" },
-            mcxGold: { rate: "1,54,460", target15m: "1,54,850", target1w: "1,56,200", target1m: "1,58,900" },
-            mcxSilver: { rate: "2,35,872", target15m: "2,36,650", target1w: "2,39,400", target1m: "2,44,500" },
-            technicalRationale: {
-                intraday: "1-Day / Intraday: Dollar Index (DXY 102.40) रेजिस्टेंस के पास थमा हुआ है। घरेलू स्पॉट में 1,53,800 के मजबूत सपोर्ट बेस से शॉर्ट-कवरिंग सक्रिय।",
-                weekly: "1-Week Outlook: COMEX $4,380 ब्रेकआउट स्तर पार होने पर $4,440 का लक्ष्य। आगामी शादी-ब्याह सीजन की फिजिकल ज्वैलर्स डिमांड मजबूत।",
-                monthly: "1-Month Horizon: वैश्विक केंद्रीय बैंकों द्वारा गोल्ड रिजर्व्स संचय और यूएस फेड की रेट कट संभावना से सोने-चांदी में ऐतिहासिक तेजी।"
-            },
-            festivalGreeting: {
-                title: "बीके ज्वेलर्स (40 साल की पेढ़ी) • स्वास्तिक गोल्ड",
-                dateStr: dateStr,
-                greetingMsg: "बीके ज्वेलर्स की 40 वर्षों की ऐतिहासिक पेढ़ी से निर्मित स्वास्तिक गोल्ड परिवार की ओर से आप सभी को हार्दिक शुभकामनाएं! हमारे यहाँ 100% हॉलमार्क गोल्ड, टंच, बदलाई एवं गलाई की उत्तम सेवाएं सदैव उपलब्ध हैं।"
-            }
-        };
-    } else if (cycle === 1) {
-        return {
-            lastAiUpdate: `${dateStr} Daily AI Model (Cycle-B)`,
-            comexGold: { rate: "4382.40", target15m: "4398.00", target1w: "4455.00", target1m: "4535.00" },
-            comexSilver: { rate: "65.10", target15m: "65.85", target1w: "67.20", target1m: "70.10" },
-            mcxGold: { rate: "1,54,780", target15m: "1,55,200", target1w: "1,56,800", target1m: "1,59,400" },
-            mcxSilver: { rate: "2,36,450", target15m: "2,37,200", target1w: "2,40,100", target1m: "2,45,200" },
-            technicalRationale: {
-                intraday: "1-Day / Intraday: यूएस ट्रेजरी यील्ड में नरमी और डॉलर इंडेक्स के 102.20 की ओर खिसकने से बुलियन में अपसाइड मोमेंटम बरकरार।",
-                weekly: "1-Week Outlook: अंतरराष्ट्रीय स्पॉट गोल्ड में $4,400 के ऊपर फ्रेश बाइंग ट्रिगर। राजस्थान थोक सर्राफा मंडियों में प्रीमियम्स में सुधार।",
-                monthly: "1-Month Horizon: सॉवरेन गोल्ड रिज़र्व्स में वृद्धि व ग्लोबल जियोपॉलिटिकल हेजिंग से लंबी अवधि के सभी टारगेट्स बुलिश मोड में।"
-            },
-            festivalGreeting: {
-                title: "शुभ मुहूर्त एवं मंगलकामनाएं • स्वास्तिक गोल्ड",
-                dateStr: dateStr,
-                greetingMsg: "शुद्धता, विश्वास और पारदर्शी लाइव रेट्स का प्रतीक - स्वास्तिक गोल्ड जालौर। हॉलमार्क 999 KD, RTGS, 9950 एवं सिल्वर चौरसा में सुरक्षित निवेश करें।"
-            }
-        };
-    } else {
-        return {
-            lastAiUpdate: `${dateStr} Daily AI Model (Cycle-C)`,
-            comexGold: { rate: "4378.10", target15m: "4392.50", target1w: "4448.00", target1m: "4528.00" },
-            comexSilver: { rate: "64.90", target15m: "65.60", target1w: "67.00", target1m: "69.80" },
-            mcxGold: { rate: "1,54,620", target15m: "1,55,050", target1w: "1,56,500", target1m: "1,59,100" },
-            mcxSilver: { rate: "2,36,100", target15m: "2,36,900", target1w: "2,39,800", target1m: "2,44,800" },
-            technicalRationale: {
-                intraday: "1-Day / Intraday: MCX गोल्ड व सिल्वर में निचली कीमतों पर मजबूत रिटेल व ज्वैलर्स सपोर्ट से रिवर्सल रैली के संकेत।",
-                weekly: "1-Week Outlook: COMEX $4,370 बेस सपोर्ट पर टिका है। अगले 7 कारोबारी सत्रों में $4,448 तक का टेक्निकल अपट्रेंड संभव।",
-                monthly: "1-Month Horizon: मैक्रोइकोनॉमिक ब्याज दर चक्र और मुद्रास्फीति हेजिंग के चलते सुरक्षित निवेश के रूप में सोने की मांग उच्चतम स्तर पर।"
-            },
-            festivalGreeting: {
-                title: "बीके ज्वेलर्स एवं स्वास्तिक गोल्ड जालौर",
-                dateStr: dateStr,
-                greetingMsg: "40 साल की पेढ़ी और 25 साल का भरोसा! स्वास्तिक गोल्ड के साथ अपने आभूषणों व बुलियन की शुद्धता को दें 100% हॉलमार्क गारंटी।"
-            }
-        };
-    }
-}
-
-// REAL-TIME BROADCAST CHANNEL FOR 0MS MULTI-DEVICE & ADMIN SYNC
 try {
     syncChannel = new BroadcastChannel('sg_realtime_sync');
     syncChannel.onmessage = (e) => {
         if (!e.data) return;
         const msg = e.data;
-
-        // 1. Single Session Conflict: Same user logged in on another device
         if (msg.type === 'SESSION_INVALIDATED' && appState.user && appState.user.id === msg.customerId) {
             if (appState.sessionToken !== msg.newSessionToken) {
-                alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है! सुरक्षा कारणों से इस डिवाइस से ऑटोमैटिक लॉगआउट किया जा रहा है।");
+                alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!");
                 handleLogout(false);
             }
-        }
-        // 2. Admin Force Logout: Blocked or Deleted
-        else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && appState.user && appState.user.id === msg.customerId) {
+        } else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && appState.user && appState.user.id === msg.customerId) {
             alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता डिलीट कर दिया गया है!");
             handleLogout(false);
-        }
-        // 3. Security Toggle
-        else if (msg.type === 'SECURITY_TOGGLE') {
+        } else if (msg.type === 'SECURITY_TOGGLE') {
             appState.isSecurityLoginRequired = msg.isSecurityLoginRequired;
             evaluateSecurityLoginModal();
-        }
-        // 4. Settings & Reorder Update
-        else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
+        } else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
             appState.adminSettings = { ...appState.adminSettings, ...msg.settings };
-            if (msg.settings.marqueeText) {
-                appState.marqueeText = msg.settings.marqueeText;
-                renderMarqueeTicker(msg.settings.marqueeText);
-            }
-            if (msg.settings.popupMsg) {
-                appState.adminSettings.popupMsg = msg.settings.popupMsg;
-                showWelcomePopupFor2Seconds(msg.settings.popupMsg);
-            }
-            if (msg.settings.bankAccounts) renderBankAccounts(msg.settings.bankAccounts);
             renderProductsList(appState.products);
             renderFuturesList(appState.futures);
         }
@@ -182,30 +96,14 @@ window.addEventListener('storage', (e) => {
     } else if (e.key === 'sg_admin_settings_v3' && e.newValue) {
         try {
             appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(e.newValue) };
-            if (appState.adminSettings.marqueeText) renderMarqueeTicker(appState.adminSettings.marqueeText);
             renderProductsList(appState.products);
             renderFuturesList(appState.futures);
-        } catch(err) {}
-    } else if (e.key === 'sg_customers_v3' && e.newValue && appState.user) {
-        try {
-            const custs = JSON.parse(e.newValue);
-            const myCust = custs.find(c => c.id === appState.user.id);
-            if (myCust) {
-                if (myCust.status === 'BLOCKED' || myCust.status === 'DELETED') {
-                    alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक/हटा दिया गया है!");
-                    handleLogout(false);
-                } else if (myCust.activeSession && myCust.activeSession !== appState.sessionToken) {
-                    alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
-                    handleLogout(false);
-                }
-            }
         } catch(err) {}
     }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
-    setupPwaInstallationEngine();
 });
 
 function initApp() {
@@ -215,12 +113,6 @@ function initApp() {
     renderFuturesList(appState.futures);
     renderMarqueeTicker(appState.marqueeText);
     renderBankAccounts(appState.bankAccounts);
-    
-    // Dynamic daily AI report
-    renderSwastikAiReport(getDynamicAiDailyReport());
-
-    // TRIGGER 2-SECOND WELCOME POP-UP ON EVERY OPEN/RELOAD
-    showWelcomePopupFor2Seconds(appState.adminSettings.popupMsg);
 
     initSilentPwaServiceWorker();
     initNetworkStatusMonitor();
@@ -229,72 +121,6 @@ function initApp() {
     startAutonomousLiveTickEngine();
     sendVisitorPing();
     setInterval(sendVisitorPing, 5000);
-    setInterval(verifySingleSessionSecurity, 2000);
-}
-
-/* 2-SECOND AUTO-DISMISSING WELCOME POP-UP ENGINE */
-function showWelcomePopupFor2Seconds(customMsg) {
-    const modal = document.getElementById('welcomePopupModal');
-    const msgEl = document.getElementById('popupMsgContent');
-    if (!modal) return;
-
-    if (customMsg && msgEl) msgEl.innerText = customMsg;
-    else if (msgEl && appState.adminSettings.popupMsg) msgEl.innerText = appState.adminSettings.popupMsg;
-
-    modal.classList.remove('hidden');
-
-    if (popupDismissTimeout) clearTimeout(popupDismissTimeout);
-    popupDismissTimeout = setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 2000);
-}
-
-/* PWA 1-CLICK INSTALL ENGINE (CHROME, ANDROID, SAFARI iOS) */
-function setupPwaInstallationEngine() {
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPwaPrompt = e;
-        const banner = document.getElementById('pwaInstallBanner');
-        if (banner) banner.classList.remove('hidden');
-    });
-
-    window.addEventListener('appinstalled', () => {
-        deferredPwaPrompt = null;
-        const banner = document.getElementById('pwaInstallBanner');
-        if (banner) banner.classList.add('hidden');
-        alert("🎉 Swastik Gold App सफलतापूर्वक इंस्टॉल हो गई है!");
-    });
-}
-
-function triggerPwaInstall() {
-    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    if (isIos) {
-        toggleIosModal(true);
-        return;
-    }
-
-    if (deferredPwaPrompt) {
-        deferredPwaPrompt.prompt();
-        deferredPwaPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                const banner = document.getElementById('pwaInstallBanner');
-                if (banner) banner.classList.add('hidden');
-            }
-            deferredPwaPrompt = null;
-        });
-    } else {
-        alert("📲 Swastik Gold App को अपने होम स्क्रीन पर जोड़ने के लिए ब्राउज़र मेनू (⋮) में जाकर 'Install app' या 'Add to Home screen' चुनें।");
-    }
-}
-
-function dismissPwaBanner() {
-    const banner = document.getElementById('pwaInstallBanner');
-    if (banner) banner.classList.add('hidden');
-}
-
-function toggleIosModal(show) {
-    const modal = document.getElementById('iosInstallModal');
-    if (modal) modal.classList.toggle('hidden', !show);
 }
 
 function loadSavedSettings() {
@@ -305,10 +131,6 @@ function loadSavedSettings() {
         const savedSettings = localStorage.getItem('sg_admin_settings_v3');
         if (savedSettings) {
             appState.adminSettings = { ...appState.adminSettings, ...JSON.parse(savedSettings) };
-            if (appState.adminSettings.marqueeText) appState.marqueeText = appState.adminSettings.marqueeText;
-            if (appState.adminSettings.bankAccounts && appState.adminSettings.bankAccounts.length > 0) {
-                appState.bankAccounts = appState.adminSettings.bankAccounts;
-            }
         }
     } catch(e) {}
 }
@@ -331,12 +153,6 @@ function sendVisitorPing() {
         if (syncChannel) {
             syncChannel.postMessage({ type: 'GUEST_PING', visitor: visitorObj });
         }
-
-        const existing = JSON.parse(localStorage.getItem('sg_guest_visitors_v3') || '[]');
-        const idx = existing.findIndex(x => x.mobile === visitorObj.mobile && x.guestName === visitorObj.guestName);
-        if (idx >= 0) existing[idx] = visitorObj;
-        else existing.unshift(visitorObj);
-        localStorage.setItem('sg_guest_visitors_v3', JSON.stringify(existing.slice(0, 30)));
     } catch(e) {}
 }
 
@@ -448,7 +264,6 @@ async function fetchSingleCycleRate() {
         } catch(e) {}
     }
 
-    // Direct Sundha Gold Live Endpoint Fetch
     try {
         const directUrl = DIRECT_SUNDHA_ENDPOINT + "?_=" + Date.now();
         const res = await fetch(directUrl, { mode: 'cors', cache: 'no-store' });
@@ -475,7 +290,6 @@ function startAutonomousLiveTickEngine() {
 function applyLiveMicroVariation() {
     if (!appState.products || appState.products.length === 0) return;
 
-    // Spot micro-ticks
     const gNum = parseFloat(appState.spot.gold_bid) || 4375.95;
     const sNum = parseFloat(appState.spot.silver_bid) || 64.75;
     const uNum = parseFloat(appState.spot.usdinr_bid) || 95.46;
@@ -497,7 +311,6 @@ function applyLiveMicroVariation() {
 
     renderSpotRates(appState.spot);
 
-    // Micro-tick random product (ONLY if not frozen)
     if (!appState.adminSettings.isMasterFrozen) {
         const pIdx = Math.floor(Math.random() * appState.products.length);
         const prod = appState.products[pIdx];
@@ -507,7 +320,6 @@ function applyLiveMicroVariation() {
         renderProductsList(appState.products);
     }
 
-    // Futures ALWAYS tick live even if physical is frozen!
     const fIdx = Math.floor(Math.random() * appState.futures.length);
     const fut = appState.futures[fIdx];
     const fStep = (Math.random() > 0.5 ? 10 : -10);
@@ -673,7 +485,6 @@ function applyProductOrdering(list, orderIds) {
     });
 }
 
-/* RENDER PHYSICAL PRODUCTS (Hides Buy, Sell, High, Low to '-' on Hide Physical & Synchronizes Sequence) */
 function renderProductsList(products) {
     const container = document.getElementById('productsList');
     if (!container) return;
@@ -706,7 +517,6 @@ function renderProductsList(products) {
         let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
         let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
 
-        // EXACT HIDE PHYSICAL RULE: Hide Buy, Sell, High, and Low
         if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
         if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
@@ -751,7 +561,6 @@ function renderProductsList(products) {
             if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
             if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
 
-            // HIDE HIGH / LOW WHEN PHYSICAL IS HIDDEN
             const highDisplay = (!isMasterHidden && p.high > 0) ? formatCleanNoComma(p.high) : '-';
             const lowDisplay = (!isMasterHidden && p.low > 0) ? formatCleanNoComma(p.low) : '-';
             const hasHl = !isMasterHidden && (p.high > 0 || p.low > 0);
@@ -773,7 +582,6 @@ function renderProductsList(products) {
     }
 }
 
-/* RENDER MCX FUTURES (Always Live, Sequence Respected) */
 function renderFuturesList(futures) {
     const container = document.getElementById('futuresList');
     if (!container) return;
@@ -897,65 +705,6 @@ function renderBankAccounts(bankAccounts) {
     container.innerHTML = html;
 }
 
-/* DYNAMIC SWASTIK AI MARKET TARGETS & TECHNICAL RATIONALE */
-function renderSwastikAiReport(aiReport) {
-    const updateEl = document.getElementById('aiUpdateText');
-    if (updateEl && aiReport.lastAiUpdate) updateEl.innerText = aiReport.lastAiUpdate;
-
-    if (aiReport.comexGold) {
-        const rEl = document.getElementById('aiGoldComexRate');
-        const t15El = document.getElementById('aiGoldComexT15');
-        const t1wEl = document.getElementById('aiGoldComexT1w');
-        const t1mEl = document.getElementById('aiGoldComexT1m');
-        if (rEl) rEl.innerText = '$' + aiReport.comexGold.rate;
-        if (t15El) t15El.innerText = '$' + aiReport.comexGold.target15m;
-        if (t1wEl) t1wEl.innerText = '$' + aiReport.comexGold.target1w;
-        if (t1mEl) t1mEl.innerText = '$' + aiReport.comexGold.target1m;
-    }
-
-    if (aiReport.comexSilver) {
-        const rEl = document.getElementById('aiSilverComexRate');
-        const t15El = document.getElementById('aiSilverComexT15');
-        const t1wEl = document.getElementById('aiSilverComexT1w');
-        const t1mEl = document.getElementById('aiSilverComexT1m');
-        if (rEl) rEl.innerText = '$' + aiReport.comexSilver.rate;
-        if (t15El) t15El.innerText = '$' + aiReport.comexSilver.target15m;
-        if (t1wEl) t1wEl.innerText = '$' + aiReport.comexSilver.target1w;
-        if (t1mEl) t1mEl.innerText = '$' + aiReport.comexSilver.target1m;
-    }
-
-    if (aiReport.mcxGold) {
-        const rEl = document.getElementById('aiGoldMcxRate');
-        const t15El = document.getElementById('aiGoldMcxT15');
-        const t1wEl = document.getElementById('aiGoldMcxT1w');
-        const t1mEl = document.getElementById('aiGoldMcxT1m');
-        if (rEl) rEl.innerText = '₹' + aiReport.mcxGold.rate;
-        if (t15El) t15El.innerText = '₹' + aiReport.mcxGold.target15m;
-        if (t1wEl) t1wEl.innerText = '₹' + aiReport.mcxGold.target1w;
-        if (t1mEl) t1mEl.innerText = '₹' + aiReport.mcxGold.target1m;
-    }
-
-    if (aiReport.mcxSilver) {
-        const rEl = document.getElementById('aiSilverMcxRate');
-        const t15El = document.getElementById('aiSilverMcxT15');
-        const t1wEl = document.getElementById('aiSilverMcxT1w');
-        const t1mEl = document.getElementById('aiSilverMcxT1m');
-        if (rEl) rEl.innerText = '₹' + aiReport.mcxSilver.rate;
-        if (t15El) t15El.innerText = '₹' + aiReport.mcxSilver.target15m;
-        if (t1wEl) t1wEl.innerText = '₹' + aiReport.mcxSilver.target1w;
-        if (t1mEl) t1mEl.innerText = '₹' + aiReport.mcxSilver.target1m;
-    }
-
-    if (aiReport.festivalGreeting) {
-        const fTitle = document.getElementById('festTitle');
-        const fDate = document.getElementById('festDateStr');
-        const fMsg = document.getElementById('festMsgBody');
-        if (fTitle) fTitle.innerText = aiReport.festivalGreeting.title;
-        if (fDate) fDate.innerText = aiReport.festivalGreeting.dateStr;
-        if (fMsg) fMsg.innerText = aiReport.festivalGreeting.greetingMsg;
-    }
-}
-
 function checkStoredUserSession() {
     const userStr = localStorage.getItem('sg_user');
     const token = localStorage.getItem('sg_session_token');
@@ -973,23 +722,16 @@ function updateAvatarBadge(idStr) {
     if (badge) badge.innerText = idStr;
 }
 
-/* STRICT TAB SECURITY & EVALUATION */
 function evaluateSecurityLoginModal() {
     const authScreen = document.getElementById('authScreen');
     if (!authScreen) return;
 
     const isLoggedIn = !!(appState.user && appState.sessionToken);
 
-    // RULE: If NOT logged in, protected tabs (Bank, Messages, About Us) show the login card.
-    // When Security is OFF, the top tabs stay visible so the user can easily click 'Live Rates'!
     if (!isLoggedIn) {
         if (appState.activeTab !== 'live-rates') {
             authScreen.classList.remove('hidden');
-            if (appState.isSecurityLoginRequired) {
-                authScreen.classList.add('full-screen-lock');
-            } else {
-                authScreen.classList.remove('full-screen-lock');
-            }
+            authScreen.classList.remove('full-screen-lock');
             return;
         }
 
@@ -1002,56 +744,6 @@ function evaluateSecurityLoginModal() {
 
     authScreen.classList.add('hidden');
     authScreen.classList.remove('full-screen-lock');
-}
-
-/* SINGLE SESSION VERIFICATION ENGINE */
-async function verifySingleSessionSecurity() {
-    if (!appState.user || !appState.sessionToken) return;
-
-    const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
-    const myCust = localCusts.find(c => c.id === appState.user.id);
-    if (myCust) {
-        if (myCust.status === 'BLOCKED') {
-            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-            handleLogout(false);
-            return;
-        }
-        if (myCust.status === 'DELETED') {
-            alert("⛔ आपका खाता डिलीट कर दिया गया है!");
-            handleLogout(false);
-            return;
-        }
-        if (myCust.activeSession && myCust.activeSession !== appState.sessionToken) {
-            alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
-            handleLogout(false);
-            return;
-        }
-    }
-
-    const urls = [
-        `api.php?action=verify-session&id=${appState.user.id}&sessionToken=${appState.sessionToken}&_=${Date.now()}`,
-        `/api/verify-session?id=${appState.user.id}&sessionToken=${appState.sessionToken}&_=${Date.now()}`
-    ];
-
-    for (const url of urls) {
-        try {
-            const res = await fetch(url);
-            if (res.ok) {
-                const data = await res.json();
-                if (!data.valid) {
-                    if (data.reason === 'MULTI_DEVICE') {
-                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस पर लॉगिन हो गई है!");
-                    } else if (data.reason === 'BLOCKED') {
-                        alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-                    } else if (data.reason === 'DELETED') {
-                        alert("⛔ आपका खाता डिलीट कर दिया गया है!");
-                    }
-                    handleLogout(false);
-                }
-                return;
-            }
-        } catch(e) {}
-    }
 }
 
 async function handleLogin(e) {
@@ -1077,7 +769,6 @@ async function handleLogin(e) {
             return;
         }
 
-        // Generate Single-Session Token
         const sessionToken = "sess_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
         localMatched.activeSession = sessionToken;
         localStorage.setItem('sg_customers_v3', JSON.stringify(localCusts));
@@ -1087,7 +778,6 @@ async function handleLogin(e) {
         localStorage.setItem('sg_user', JSON.stringify(localMatched));
         localStorage.setItem('sg_session_token', sessionToken);
 
-        // Broadcast to immediately force-logout any other device logged into this ID
         if (syncChannel) {
             syncChannel.postMessage({
                 type: 'SESSION_INVALIDATED',
@@ -1194,7 +884,7 @@ function sendClientMessage(e) {
     const whatsapp = document.getElementById('msgWhatsapp').value.trim();
     const body = document.getElementById('msgBody').value.trim();
 
-    const waMsg = encodeURIComponent(`卐 SWASTIK GOLD & BK JEWELERS JALORE 卐\nName: ${name}\nMobile: ${whatsapp}\nMessage / Booking: ${body}`);
+    const waMsg = encodeURIComponent(`卐 SWASTIK GOLD JALORE 卐\nName: ${name}\nMobile: ${whatsapp}\nMessage / Booking: ${body}`);
     window.open(`https://wa.me/919414152854?text=${waMsg}`, '_blank');
-    alert("आपका संदेश स्वास्तिक गोल्ड एवं बीके ज्वेलर्स के आधिकारिक नंबर पर भेज दिया गया है!");
+    alert("आपका संदेश स्वास्तिक गोल्ड के आधिकारिक नंबर पर भेज दिया गया है!");
 }
