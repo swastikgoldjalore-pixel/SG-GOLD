@@ -335,7 +335,8 @@ async function fetchSingleCycleRate() {
 
     const apiEndpoints = [
         'api.php?action=rates-json&_=' + Date.now(),
-        '/api/rates-json?_=' + Date.now()
+        '/api/rates-json?_=' + Date.now(),
+        'https://swastikgold.net/api.php?action=rates-json&_=' + Date.now()
     ];
 
     for (const url of apiEndpoints) {
@@ -493,6 +494,19 @@ function parseClientSideSundhaStream(data) {
 
 function applyReceivedRatesPayload(data) {
     if (!data) return;
+
+    if (data.adminSettings && typeof data.adminSettings === 'object') {
+        appState.adminSettings = { ...appState.adminSettings, ...data.adminSettings };
+    }
+    if (data.renames) appState.adminSettings.renames = { ...(appState.adminSettings.renames || {}), ...data.renames };
+    if (data.premiumsBuy) appState.adminSettings.premiumsBuy = { ...(appState.adminSettings.premiumsBuy || {}), ...data.premiumsBuy };
+    if (data.premiumsSell) appState.adminSettings.premiumsSell = { ...(appState.adminSettings.premiumsSell || {}), ...data.premiumsSell };
+    if (data.hiddenProducts) appState.adminSettings.hiddenProducts = { ...(appState.adminSettings.hiddenProducts || {}), ...data.hiddenProducts };
+    if (data.hiddenBuy) appState.adminSettings.hiddenBuy = { ...(appState.adminSettings.hiddenBuy || {}), ...data.hiddenBuy };
+    if (data.hiddenSell) appState.adminSettings.hiddenSell = { ...(appState.adminSettings.hiddenSell || {}), ...data.hiddenSell };
+    if (data.productOrder) appState.adminSettings.productOrder = data.productOrder;
+    if (data.isMasterHidden !== undefined) appState.adminSettings.isMasterHidden = data.isMasterHidden;
+    if (data.isMasterFrozen !== undefined) appState.adminSettings.isMasterFrozen = data.isMasterFrozen;
 
     if (data.spot) appState.spot = data.spot;
     if (data.products && data.products.length > 0) appState.products = data.products;

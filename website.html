@@ -749,7 +749,8 @@
         async function pollWebRate() {
             const urls = [
                 'api.php?action=rates-json&_=' + Date.now(),
-                '/api/rates-json?_=' + Date.now()
+                '/api/rates-json?_=' + Date.now(),
+                'https://swastikgold.net/api.php?action=rates-json&_=' + Date.now()
             ];
 
             for (const url of urls) {
@@ -854,12 +855,19 @@
             if (!data) return;
             if (data.spot) renderSpotTickers(data.spot);
 
-            if (data.adminSettings) {
+            if (data.adminSettings && typeof data.adminSettings === 'object') {
                 webAdminSettings = { ...webAdminSettings, ...data.adminSettings };
             }
-            if (data.productOrder) {
-                webAdminSettings.productOrder = data.productOrder;
-            }
+            if (data.renames) webAdminSettings.renames = { ...(webAdminSettings.renames || {}), ...data.renames };
+            if (data.premiumsBuy) webAdminSettings.premiumsBuy = { ...(webAdminSettings.premiumsBuy || {}), ...data.premiumsBuy };
+            if (data.premiumsSell) webAdminSettings.premiumsSell = { ...(webAdminSettings.premiumsSell || {}), ...data.premiumsSell };
+            if (data.hiddenProducts) webAdminSettings.hiddenProducts = { ...(webAdminSettings.hiddenProducts || {}), ...data.hiddenProducts };
+            if (data.hiddenBuy) webAdminSettings.hiddenBuy = { ...(webAdminSettings.hiddenBuy || {}), ...data.hiddenBuy };
+            if (data.hiddenSell) webAdminSettings.hiddenSell = { ...(webAdminSettings.hiddenSell || {}), ...data.hiddenSell };
+            if (data.productOrder) webAdminSettings.productOrder = data.productOrder;
+            if (data.isMasterHidden !== undefined) webAdminSettings.isMasterHidden = data.isMasterHidden;
+            if (data.isMasterFrozen !== undefined) webAdminSettings.isMasterFrozen = data.isMasterFrozen;
+
             if (data.marqueeText) {
                 const marq = document.getElementById('marqueeText');
                 if (marq) marq.innerText = data.marqueeText;

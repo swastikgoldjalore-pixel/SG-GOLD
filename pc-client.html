@@ -1170,7 +1170,11 @@
                 syncChannel.postMessage({ type: 'SETTINGS_UPDATE', settings: pcState.adminSettings });
             }
 
-            const urls = ['api.php?action=admin-settings', '/api/admin-settings'];
+            const urls = [
+                'api.php?action=admin-settings',
+                '/api/admin-settings',
+                'https://swastikgold.net/api.php?action=admin-settings'
+            ];
             for (const url of urls) {
                 try {
                     await fetch(url, {
@@ -1183,7 +1187,11 @@
         }
 
         async function fetchAdminSettings() {
-            const urls = ['api.php?action=admin-settings&_=' + Date.now(), '/api/admin-settings?_=' + Date.now()];
+            const urls = [
+                'api.php?action=admin-settings&_=' + Date.now(),
+                '/api/admin-settings?_=' + Date.now(),
+                'https://swastikgold.net/api.php?action=admin-settings&_=' + Date.now()
+            ];
             for (const url of urls) {
                 try {
                     const res = await fetch(url);

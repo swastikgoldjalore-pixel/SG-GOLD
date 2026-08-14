@@ -139,9 +139,15 @@ function loadAdminSettings() {
             $parsed = @json_decode($raw, true);
             if (is_array($parsed)) {
                 $merged = array_merge($defaults, $parsed);
-                if (isset($parsed['bankAccounts']) && is_array($parsed['bankAccounts'])) {
-                    $merged['bankAccounts'] = $parsed['bankAccounts'];
-                }
+                if (isset($parsed['renames']) && is_array($parsed['renames'])) $merged['renames'] = $parsed['renames'];
+                if (isset($parsed['premiumsBuy']) && is_array($parsed['premiumsBuy'])) $merged['premiumsBuy'] = $parsed['premiumsBuy'];
+                if (isset($parsed['premiumsSell']) && is_array($parsed['premiumsSell'])) $merged['premiumsSell'] = $parsed['premiumsSell'];
+                if (isset($parsed['hiddenProducts']) && is_array($parsed['hiddenProducts'])) $merged['hiddenProducts'] = $parsed['hiddenProducts'];
+                if (isset($parsed['hiddenBuy']) && is_array($parsed['hiddenBuy'])) $merged['hiddenBuy'] = $parsed['hiddenBuy'];
+                if (isset($parsed['hiddenSell']) && is_array($parsed['hiddenSell'])) $merged['hiddenSell'] = $parsed['hiddenSell'];
+                if (isset($parsed['productOrder']) && is_array($parsed['productOrder'])) $merged['productOrder'] = $parsed['productOrder'];
+                if (isset($parsed['bankAccounts']) && is_array($parsed['bankAccounts'])) $merged['bankAccounts'] = $parsed['bankAccounts'];
+                if (isset($parsed['customers']) && is_array($parsed['customers'])) $merged['customers'] = $parsed['customers'];
                 return $merged;
             }
         }
@@ -152,7 +158,87 @@ function loadAdminSettings() {
 function saveAdminSettings($settings) {
     global $SETTINGS_FILE;
     $settings['isSecurityLoginRequired'] = getSecurityLockStatus();
-    @file_put_contents($SETTINGS_FILE, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    @file_put_contents($SETTINGS_FILE, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+}
+
+$VISITORS_FILE = __DIR__ . '/visitors.json';
+
+function getLiveGuestVisitors() {
+    global $VISITORS_FILE;
+    $visitors = [];
+    if (file_exists($VISITORS_FILE)) {
+        $data = @file_get_contents($VISITORS_FILE);
+        if ($data) {
+            $parsed = @json_decode($data, true);
+            if (is_array($parsed)) $visitors = $parsed;
+        }
+    }
+    if (empty($visitors)) {
+        $visitors = [
+            [
+                'visitorId' => "V_CHAMPALAL_01",
+                'guestName' => "Champalal Soni",
+                'mobile' => "9414152854",
+                'ip' => "127.0.0.1",
+                'device' => "Desktop PC",
+                'city' => "Jalore",
+                'page' => "Mobile App / Website",
+                'status' => 'ONLINE',
+                'pingTime' => date("h:i A"),
+                'firstVisited' => date("d M Y"),
+                'lastPing' => round(microtime(true) * 1000)
+            ]
+        ];
+    }
+    return $visitors;
+}
+
+function recordVisitorPing($visitor) {
+    global $VISITORS_FILE;
+    $visitors = getLiveGuestVisitors();
+    $nowMs = round(microtime(true) * 1000);
+    $vid = isset($visitor['visitorId']) && !empty($visitor['visitorId']) ? trim($visitor['visitorId']) : ('V_' . substr(md5(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'), 0, 8));
+    $ip = isset($visitor['ip']) && !empty($visitor['ip']) ? $visitor['ip'] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1');
+    $name = isset($visitor['guestName']) && !empty($visitor['guestName']) ? trim($visitor['guestName']) : 'Guest Visitor';
+    $mobile = isset($visitor['mobile']) && !empty($visitor['mobile']) ? trim($visitor['mobile']) : 'Not Registered';
+    $device = isset($visitor['device']) && !empty($visitor['device']) ? $visitor['device'] : 'Mobile Smartphone';
+    $city = isset($visitor['city']) && !empty($visitor['city']) ? $visitor['city'] : 'Jalore Region';
+    $page = isset($visitor['page']) && !empty($visitor['page']) ? $visitor['page'] : 'Live Rates Desk';
+    $reqStatus = (isset($visitor['status']) && in_array(strtoupper(trim($visitor['status'])), ['ONLINE', 'OFFLINE'])) ? strtoupper(trim($visitor['status'])) : 'ONLINE';
+
+    $foundIdx = -1;
+    foreach ($visitors as $idx => $v) {
+        if ((isset($v['visitorId']) && $v['visitorId'] === $vid) || 
+            ($mobile !== 'Not Registered' && isset($v['mobile']) && $v['mobile'] === $mobile) ||
+            ($v['ip'] === $ip && $v['device'] === $device)) {
+            $foundIdx = $idx;
+            break;
+        }
+    }
+
+    $entry = [
+        'visitorId' => $vid,
+        'guestName' => $name,
+        'mobile' => $mobile,
+        'ip' => $ip,
+        'device' => $device,
+        'city' => $city,
+        'page' => $page,
+        'status' => $reqStatus,
+        'pingTime' => date("h:i A, d M"),
+        'firstVisited' => ($foundIdx >= 0 && !empty($visitors[$foundIdx]['firstVisited'])) ? $visitors[$foundIdx]['firstVisited'] : date("d M Y, h:i A"),
+        'lastPing' => $nowMs
+    ];
+
+    if ($foundIdx >= 0) {
+        $visitors[$foundIdx] = $entry;
+    } else {
+        array_unshift($visitors, $entry);
+    }
+
+    // Retain full year-round visitor history without deletion
+    @file_put_contents($VISITORS_FILE, json_encode($visitors, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+    return $visitors;
 }
 
 // 3. FESTIVAL GREETING ENGINE
@@ -417,91 +503,19 @@ function computeLiveRatesPayload() {
         'festivalGreeting' => getTodayFestivalGreeting()
     ];
 
-$VISITORS_FILE = __DIR__ . '/visitors.json';
-
-function getLiveGuestVisitors() {
-    global $VISITORS_FILE;
-    $visitors = [];
-    if (file_exists($VISITORS_FILE)) {
-        $data = @file_get_contents($VISITORS_FILE);
-        if ($data) {
-            $parsed = @json_decode($data, true);
-            if (is_array($parsed)) $visitors = $parsed;
-        }
-    }
-    if (empty($visitors)) {
-        $visitors = [
-            [
-                'visitorId' => "V_CHAMPALAL_01",
-                'guestName' => "Champalal Soni",
-                'mobile' => "9414152854",
-                'ip' => "127.0.0.1",
-                'device' => "Desktop PC",
-                'city' => "Jalore",
-                'page' => "Mobile App / Website",
-                'status' => 'ONLINE',
-                'pingTime' => date("h:i A"),
-                'firstVisited' => date("d M Y"),
-                'lastPing' => round(microtime(true) * 1000)
-            ]
-        ];
-    }
-    return $visitors;
-}
-
-function recordVisitorPing($visitor) {
-    global $VISITORS_FILE;
-    $visitors = getLiveGuestVisitors();
-    $nowMs = round(microtime(true) * 1000);
-    $vid = isset($visitor['visitorId']) && !empty($visitor['visitorId']) ? trim($visitor['visitorId']) : ('V_' . substr(md5(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'), 0, 8));
-    $ip = isset($visitor['ip']) && !empty($visitor['ip']) ? $visitor['ip'] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1');
-    $name = isset($visitor['guestName']) && !empty($visitor['guestName']) ? trim($visitor['guestName']) : 'Guest Visitor';
-    $mobile = isset($visitor['mobile']) && !empty($visitor['mobile']) ? trim($visitor['mobile']) : 'Not Registered';
-    $device = isset($visitor['device']) && !empty($visitor['device']) ? $visitor['device'] : 'Mobile Smartphone';
-    $city = isset($visitor['city']) && !empty($visitor['city']) ? $visitor['city'] : 'Jalore Region';
-    $page = isset($visitor['page']) && !empty($visitor['page']) ? $visitor['page'] : 'Live Rates Desk';
-
-    $foundIdx = -1;
-    foreach ($visitors as $idx => $v) {
-        if ((isset($v['visitorId']) && $v['visitorId'] === $vid) || 
-            ($mobile !== 'Not Registered' && isset($v['mobile']) && $v['mobile'] === $mobile) ||
-            ($v['ip'] === $ip && $v['device'] === $device)) {
-            $foundIdx = $idx;
-            break;
-        }
-    }
-
-    $entry = [
-        'visitorId' => $vid,
-        'guestName' => $name,
-        'mobile' => $mobile,
-        'ip' => $ip,
-        'device' => $device,
-        'city' => $city,
-        'page' => $page,
-        'status' => 'ONLINE',
-        'pingTime' => date("h:i A, d M"),
-        'firstVisited' => ($foundIdx >= 0 && !empty($visitors[$foundIdx]['firstVisited'])) ? $visitors[$foundIdx]['firstVisited'] : date("d M Y, h:i A"),
-        'lastPing' => $nowMs
-    ];
-
-    if ($foundIdx >= 0) {
-        $visitors[$foundIdx] = $entry;
-    } else {
-        array_unshift($visitors, $entry);
-    }
-
-    // Retain full year-round visitor history without deletion
-    @file_put_contents($VISITORS_FILE, json_encode($visitors, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    return $visitors;
-}
-
     return [
         'spot' => $spot,
         'products' => $visibleProducts,
         'futures' => $visibleFutures,
         'allProducts' => $allProducts,
         'allFutures' => $allFutures,
+        'adminSettings' => $settings,
+        'renames' => isset($settings['renames']) ? $settings['renames'] : [],
+        'premiumsBuy' => isset($settings['premiumsBuy']) ? $settings['premiumsBuy'] : [],
+        'premiumsSell' => isset($settings['premiumsSell']) ? $settings['premiumsSell'] : [],
+        'hiddenProducts' => isset($settings['hiddenProducts']) ? $settings['hiddenProducts'] : [],
+        'hiddenBuy' => isset($settings['hiddenBuy']) ? $settings['hiddenBuy'] : [],
+        'hiddenSell' => isset($settings['hiddenSell']) ? $settings['hiddenSell'] : [],
         'marqueeText' => isset($settings['marqueeText']) ? $settings['marqueeText'] : "नमस्कार, SWASTIK GOLD में आपका स्वागत है।",
         'bulletinMsg' => isset($settings['bulletinMsg']) ? $settings['bulletinMsg'] : "Swastik Gold Jalore में आपका हार्दिक स्वागत है। किसी भी जानकारी हेतु संपर्क करें।",
         'productOrder' => isset($settings['productOrder']) ? $settings['productOrder'] : [],
