@@ -59,10 +59,10 @@ function setSecurityLockStatus($val) {
 
 function getDefaultAdminSettings() {
     return [
-        'popupMsg' => "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM.",
-        'broadcastMsg' => "Swastik Gold में मेसेज सेवाएं भी उपलब्ध है जिसके जरिए आप Swastik Gold से हमेशा जुड़े रहेंगे धन्यवाद",
+        'popupMsg' => "Swastik Gold Jalore mein aapka swagat hai. BK Jewelers (40 saal ki pedhi) & Swastik Gold (25 saal ka vishwas). Booking: 10:00 AM to 8:00 PM.",
+        'broadcastMsg' => "बीके ज्वेलर्स (40 साल की पेढ़ी) से निर्मित स्वास्तिक गोल्ड जालौर में आपका स्वागत है। हमारे यहाँ 100% हॉलमार्क बुलियन, टंच, बदलाई एवं गलाई की सेवाएं उपलब्ध हैं।",
         'broadcastDate' => date("d M Y, h:i a"),
-        'marqueeText' => "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
+        'marqueeText' => "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ BK JEWELERS की 40 साल पुरानी पेढ़ी और स्वास्तिक गोल्ड का 25 वर्षों का विश्वास ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
         'isMasterHidden' => false,
         'isMasterFrozen' => false,
         'hatohatSettings' => [

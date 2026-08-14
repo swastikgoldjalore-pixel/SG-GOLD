@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="goldGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff59d" />
+      <stop offset="30%" stop-color="#facc15" />
+      <stop offset="70%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="bgGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001e3d" />
+      <stop offset="50%" stop-color="#070f1e" />
+      <stop offset="100%" stop-color="#000b18" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="36" fill="url(#bgGrad192)" />
+  <rect x="5" y="5" width="182" height="182" rx="32" fill="none" stroke="url(#goldGrad192)" stroke-width="5" />
+  <text x="50%" y="44" text-anchor="middle" fill="url(#goldGrad192)" font-family="sans-serif" font-size="24" font-weight="900">卐</text>
+  <text x="50%" y="108" text-anchor="middle" fill="url(#goldGrad192)" font-family="'Cinzel Decorative', Georgia, serif" font-size="74" font-weight="900" letter-spacing="-1">SG</text>
+  <text x="50%" y="146" text-anchor="middle" fill="url(#goldGrad192)" font-family="'Cinzel Decorative', Georgia, sans-serif" font-size="19" font-weight="900" letter-spacing="1">SWASTIK GOLD</text>
+  <text x="50%" y="168" text-anchor="middle" fill="#cbd5e1" font-family="'Open Sans', Arial, sans-serif" font-size="10" font-weight="800" letter-spacing="2">JALORE BULLION</text>
+</svg>
