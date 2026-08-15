@@ -1,9 +1,9 @@
 {
-  "popupMsg": "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM.",
+  "popupMsg": "विशेष सूचना: कल सुबह 11:00 बजे से बुकिंग प्रारंभ होगी।",
   "broadcastMsg": "Swastik Gold में मेसेज सेवाएं भी उपलब्ध है जिसके जरिए आप Swastik Gold से हमेशा जुड़े रहेंगे धन्यवाद",
   "broadcastDate": "15 Aug 2026, 08:20:39 pm",
-  "marqueeText": "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
-  "bulletinMsg": "Swastik Gold Jalore में आपका हार्दिक स्वागत है। बुलियन रेट्स एवं डिलीवरी संबंधी किसी भी जानकारी हेतु संपर्क करें। धन्यवाद!",
+  "marqueeText": "🔥 नमस्कार! SWASTIK GOLD JALORE में आपका हार्दिक स्वागत है ❖ शुद्ध सोना और चांदी के लाइव रेट्स ❖",
+  "bulletinMsg": "स्वास्तिक गोल्ड जालोर: आज का मार्केट अपडेट एवं ट्रेंड सकारात्मक है।",
   "isMasterHidden": false,
   "isMasterFrozen": false,
   "frozenPhysicalPrices": {},
@@ -43,20 +43,14 @@
     "SILVER_FUTURE"
   ],
   "renames": {
-    "RANI": "RANI",
-    "RUPA": "RUPA",
-    "SILVER_CHORSA_98": "SILVER Chorsa 98",
-    "GOLD_9950_IMPOTED": "GOLD 995 IMPORTED",
-    "GOLD_999_KD": "GOLD 999 KD",
-    "GOLD_RTGS_999": "GOLD RTGS 999",
-    "GOLD_FUTURE": "GOLD FUTURE",
-    "SILVER_FUTURE": "SILVER FUTURE"
+    "RUPA": "RUPA FINE 999",
+    "RANI": "RANI PURE 995"
   },
   "premiumsBuy": {
-    "RANI": 0
+    "RANI": 250
   },
   "premiumsSell": {
-    "RANI": 0
+    "RANI": 300
   },
   "hiddenProducts": {},
   "hiddenBuy": {},
@@ -70,6 +64,24 @@
       "status": "APPROVED",
       "pin": "123456",
       "activeSession": null
+    },
+    {
+      "id": "SG1002",
+      "name": "Ramesh Kumar",
+      "mobile": "9828855443",
+      "city": "Ahore",
+      "status": "APPROVED",
+      "pin": "743196",
+      "activeSession": "sess_1786810123068_oiv8gd2"
+    },
+    {
+      "id": "SG1003",
+      "name": "Lalit Soni",
+      "mobile": "9829769592",
+      "city": "Jalore",
+      "status": "APPROVED",
+      "pin": "851769",
+      "activeSession": "sess_1786810182689_7d7qkcg"
     }
   ],
   "providerConfig": {

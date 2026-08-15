@@ -385,13 +385,14 @@ function startAutonomousLiveTickEngine() {
 function applyLiveMicroVariation() {
     if (!appState.products || appState.products.length === 0) return;
 
-    const gNum = parseFloat(appState.spot.gold_bid) || 4375.95;
-    const sNum = parseFloat(appState.spot.silver_bid) || 64.75;
+    // Only micro-tick spot international benchmarks if network is idle
+    const gNum = parseFloat(appState.spot.gold_bid) || 4376.15;
+    const sNum = parseFloat(appState.spot.silver_bid) || 64.71;
     const uNum = parseFloat(appState.spot.usdinr_bid) || 95.46;
 
-    const gDelta = (Math.random() - 0.49) * 0.35;
-    const sDelta = (Math.random() - 0.49) * 0.04;
-    const uDelta = (Math.random() - 0.49) * 0.01;
+    const gDelta = (Math.random() - 0.5) * 0.15;
+    const sDelta = (Math.random() - 0.5) * 0.02;
+    const uDelta = (Math.random() - 0.5) * 0.005;
 
     const newG = Math.max(4000, gNum + gDelta);
     const newS = Math.max(50, sNum + sDelta);
@@ -401,26 +402,10 @@ function applyLiveMicroVariation() {
     appState.spot.gold_ask = (newG + 0.70).toFixed(2);
     appState.spot.silver_bid = newS.toFixed(2);
     appState.spot.silver_ask = (newS + 0.02).toFixed(2);
-    appState.spot.usdinr_bid = newU.toFixed(2);
-    appState.spot.usdinr_ask = (newU + 0.01).toFixed(2);
+    appState.spot.usdinr_bid = newU.toFixed(3);
+    appState.spot.usdinr_ask = (newU + 0.01).toFixed(3);
 
     renderSpotRates(appState.spot);
-
-    if (!appState.adminSettings.isMasterFrozen) {
-        const pIdx = Math.floor(Math.random() * appState.products.length);
-        const prod = appState.products[pIdx];
-        const step = (Math.random() > 0.5 ? 10 : -10);
-        if (prod.rawBuy > 0) prod.rawBuy += step;
-        if (prod.rawSell > 0) prod.rawSell += step;
-        renderProductsList(appState.products);
-    }
-
-    const fIdx = Math.floor(Math.random() * appState.futures.length);
-    const fut = appState.futures[fIdx];
-    const fStep = (Math.random() > 0.5 ? 10 : -10);
-    if (fut.rawBuy > 0) fut.rawBuy += fStep;
-    if (fut.rawSell > 0) fut.rawSell += fStep;
-    renderFuturesList(appState.futures);
 }
 
 function parseCleanNumber(valStr) {
@@ -517,7 +502,12 @@ function applyReceivedRatesPayload(data) {
     if (data.spot) appState.spot = data.spot;
     if (data.products && data.products.length > 0) appState.products = data.products;
     if (data.futures && data.futures.length > 0) appState.futures = data.futures;
-    if (data.marqueeText) appState.marqueeText = data.marqueeText;
+    
+    if (data.marqueeText) {
+        appState.marqueeText = data.marqueeText;
+    } else if (data.adminSettings && data.adminSettings.marqueeText) {
+        appState.marqueeText = data.adminSettings.marqueeText;
+    }
 
     if (typeof data.isSecurityLoginRequired === 'boolean') {
         appState.isSecurityLoginRequired = data.isSecurityLoginRequired;
@@ -863,9 +853,10 @@ function renderFuturesList(futures) {
 }
 
 function renderMarqueeTicker(txt) {
+    if (!txt) return;
     const el = document.getElementById('marqueeText');
-    if (el && el.innerText !== txt && txt && txt.length > 5) {
-        el.innerText = txt;
+    if (el && el.textContent.trim() !== txt.trim()) {
+        el.textContent = txt.trim();
     }
 }
 

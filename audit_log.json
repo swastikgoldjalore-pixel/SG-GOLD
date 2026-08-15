@@ -1,5 +1,42 @@
 [
   {
+    "id": "AUD_1786808098630_iwme",
+    "timestamp": "2026-08-15T15:34:58.630Z",
+    "istTime": "15 Aug 2026, 09:04:58 pm",
+    "event": "ADMIN_LOGIN_SUCCESS",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "role": "SUPER ADMIN",
+      "must_change_password": false,
+      "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.26100.8972"
+    }
+  },
+  {
+    "id": "AUD_1786808098488_1anb",
+    "timestamp": "2026-08-15T15:34:58.488Z",
+    "istTime": "15 Aug 2026, 09:04:58 pm",
+    "event": "ADMIN_PASSWORD_CHANGED",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "message": "Admin password updated successfully. must_change_password flag cleared."
+    }
+  },
+  {
+    "id": "AUD_1786808098155_yss9",
+    "timestamp": "2026-08-15T15:34:58.155Z",
+    "istTime": "15 Aug 2026, 09:04:58 pm",
+    "event": "ADMIN_LOGIN_SUCCESS",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "role": "SUPER ADMIN",
+      "must_change_password": true,
+      "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.26100.8972"
+    }
+  },
+  {
     "id": "AUD_1786805463315_t8k4",
     "timestamp": "2026-08-15T14:51:03.315Z",
     "istTime": "15 Aug 2026, 08:21:03 pm",

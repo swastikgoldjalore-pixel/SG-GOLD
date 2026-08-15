@@ -775,10 +775,9 @@
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
 
             const endpoints = [
-                '/api/admin/login',
                 'api.php?action=admin-login',
+                '/api/admin/login',
                 'http://localhost:8080/api/admin/login',
-                'http://127.0.0.1:8080/api/admin/login',
                 'https://swastikgold.net/api.php?action=admin-login'
             ];
 
@@ -823,33 +822,8 @@
             }
 
             if (!loginSucceeded) {
-                // Offline fallback credential check
-                if (u.toLowerCase() === 'paliwal9824' && (p === 'Rathore9824' || p === 'SuperSecureSwastik@2026')) {
-                    const fallbackUser = {
-                        id: 'ADM_SUPER_001',
-                        username: 'Paliwal9824',
-                        role: 'SUPER ADMIN',
-                        displayName: 'Super Admin (Paliwal)',
-                        must_change_password: (p === 'Rathore9824')
-                    };
-                    adminToken = 'sg_adm_local_' + Date.now();
-                    currentUser = fallbackUser;
-                    localStorage.setItem('sg_admin_token', adminToken);
-                    localStorage.setItem('sg_cached_admin', JSON.stringify(fallbackUser));
-
-                    updateAdminProfileUI(fallbackUser);
-                    document.getElementById('operatorAuthModal').classList.add('hidden');
-
-                    if (fallbackUser.must_change_password) {
-                        document.getElementById('forcePasswordChangeModal').classList.remove('hidden');
-                    } else {
-                        initPcPanel();
-                    }
-                    loginSucceeded = true;
-                } else {
-                    errBox.innerText = 'गलत यूजरनेम या पासवर्ड!';
-                    errBox.style.display = 'block';
-                }
+                errBox.innerText = 'गलत यूजरनेम या पासवर्ड, अथवा सर्वर से संपर्क नहीं हो सका!';
+                errBox.style.display = 'block';
             }
 
             submitBtn.disabled = false;
@@ -875,11 +849,13 @@
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Updating Password...`;
 
             const endpoints = [
-                '/api/admin/change-password',
                 'api.php?action=admin-change-password',
+                '/api/admin/change-password',
                 'http://localhost:8080/api/admin/change-password',
-                'http://127.0.0.1:8080/api/admin/change-password'
+                'https://swastikgold.net/api.php?action=admin-change-password'
             ];
+
+            let changedSuccessfully = false;
 
             for (const url of endpoints) {
                 try {
@@ -894,19 +870,31 @@
                     if (res.ok) {
                         const data = await res.json();
                         if (data.success) {
-                            alert('✔ पासवर्ड सफलतापूर्वक बदल दिया गया है!');
+                            if (currentUser) currentUser.must_change_password = false;
+                            localStorage.setItem('sg_cached_admin', JSON.stringify(currentUser));
+                            alert('✔ पासवर्ड सफलतापूर्वक बदल दिया गया है और सर्वर पर सुरक्षित सेव हो गया है!');
                             document.getElementById('forcePasswordChangeModal').classList.add('hidden');
                             initPcPanel();
+                            changedSuccessfully = true;
+                            break;
+                        } else {
+                            errBox.innerText = data.message || 'वर्तमान पासवर्ड गलत है!';
+                            errBox.style.display = 'block';
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> UPDATE & PROCEED TO DESK`;
                             return;
                         }
                     }
                 } catch (e) {}
             }
 
-            // Local fallback
-            alert('✔ पासवर्ड सफलतापूर्वक अपडेट हो गया!');
-            document.getElementById('forcePasswordChangeModal').classList.add('hidden');
-            initPcPanel();
+            if (!changedSuccessfully) {
+                errBox.innerText = 'सर्वर पर पासवर्ड अपडेट नहीं हो सका! कृपया कनेक्शन जांचें।';
+                errBox.style.display = 'block';
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> UPDATE & PROCEED TO DESK`;
         }
 
         async function logoutOperator() {
@@ -979,6 +967,25 @@
             if (data.isMasterHidden !== undefined) pcState.isMasterHidden = data.isMasterHidden;
             if (data.isMasterFrozen !== undefined) pcState.isFrozen = data.isMasterFrozen;
             updateControlButtons();
+
+            // Populate Marquee, Popup, and Bulletin in Admin Desk if not currently focused by admin
+            const marqVal = data.marqueeText || (data.adminSettings && data.adminSettings.marqueeText);
+            const mEl = document.getElementById('pcMarqueeText');
+            if (mEl && marqVal && document.activeElement !== mEl) {
+                mEl.value = marqVal;
+            }
+
+            const popVal = data.popupMsg || (data.adminSettings && data.adminSettings.popupMsg);
+            const pEl = document.getElementById('pcPopupText');
+            if (pEl && popVal && document.activeElement !== pEl) {
+                pEl.value = popVal;
+            }
+
+            const bulVal = data.bulletinMsg || (data.adminSettings && data.adminSettings.bulletinMsg);
+            const bEl = document.getElementById('pcBulletinText');
+            if (bEl && bulVal && document.activeElement !== bEl) {
+                bEl.value = bulVal;
+            }
 
             if (data.guestVisitors && Array.isArray(data.guestVisitors)) {
                 pcState.guestVisitors = data.guestVisitors;
@@ -1256,12 +1263,12 @@
         }
 
         async function saveAllProductOverrides() {
-            const renames = {};
-            const premiumsBuy = {};
-            const premiumsSell = {};
-            const hiddenProducts = {};
-            const hiddenBuy = {};
-            const hiddenSell = {};
+            const renames = { ...(pcState.adminSettings.renames || {}) };
+            const premiumsBuy = { ...(pcState.adminSettings.premiumsBuy || {}) };
+            const premiumsSell = { ...(pcState.adminSettings.premiumsSell || {}) };
+            const hiddenProducts = { ...(pcState.adminSettings.hiddenProducts || {}) };
+            const hiddenBuy = { ...(pcState.adminSettings.hiddenBuy || {}) };
+            const hiddenSell = { ...(pcState.adminSettings.hiddenSell || {}) };
 
             const allItems = [...pcState.products, ...pcState.futures];
             allItems.forEach(p => {
@@ -1276,12 +1283,12 @@
                 if (premBuyEl && premBuyEl.value.trim() !== '') premiumsBuy[p.id] = parseInt(premBuyEl.value) || 0;
                 if (premSellEl && premSellEl.value.trim() !== '') premiumsSell[p.id] = parseInt(premSellEl.value) || 0;
                 
-                if (hideProdEl && hideProdEl.checked) hiddenProducts[p.id] = true;
-                if (hideBuyEl && hideBuyEl.checked) hiddenBuy[p.id] = true;
-                if (hideSellEl && hideSellEl.checked) hiddenSell[p.id] = true;
+                if (hideProdEl) hiddenProducts[p.id] = hideProdEl.checked;
+                if (hideBuyEl) hiddenBuy[p.id] = hideBuyEl.checked;
+                if (hideSellEl) hiddenSell[p.id] = hideSellEl.checked;
             });
 
-            await updateServerSettings({
+            const isSaved = await updateServerSettings({
                 renames,
                 premiumsBuy,
                 premiumsSell,
@@ -1290,7 +1297,11 @@
                 hiddenSell
             });
 
-            alert("✔ सेटिंग्स और प्रीमियम 0ms लेटेंसी के साथ सभी डिवाइसों पर सिंक हो गए!");
+            if (isSaved) {
+                alert("✔ सभी प्रोडक्ट नाम, प्रीमियम (+/-) और सेटिंग्स सर्वर पर सेव हो गए और सभी डिवाइसों पर सिंक हो गए!");
+            } else {
+                alert("⚠️ सेटिंग्स लोकल सेव हो गई हैं, कृपया सर्वर कनेक्शन जांचें।");
+            }
         }
 
         async function togglePcMasterHide() {
@@ -1335,19 +1346,22 @@
             updateSecurityButtonUI();
 
             const urls = [
-                '/api/toggle-security',
                 'api.php?action=toggle-security',
-                'http://localhost:8080/api/toggle-security'
+                '/api/toggle-security',
+                'http://localhost:8080/api/toggle-security',
+                'https://swastikgold.net/api.php?action=toggle-security'
             ];
 
             for (const url of urls) {
                 try {
-                    await fetch(url, {
+                    const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ isSecurityLoginRequired: pcState.isSecurityLoginRequired })
                     });
-                    break;
+                    if (res.ok) {
+                        break;
+                    }
                 } catch (e) {}
             }
 
@@ -1355,7 +1369,7 @@
                 syncChannel.postMessage({ type: 'SECURITY_TOGGLE', isSecurityLoginRequired: pcState.isSecurityLoginRequired });
             }
 
-            alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+            alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब सभी डिवाइसों में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब सभी डिवाइसों में लाइव रेट्स डायरेक्ट खुलेंगी!");
         }
 
         function updateSecurityButtonUI() {
@@ -1381,29 +1395,36 @@
             }
 
             const urls = [
-                '/api/admin-settings',
                 'api.php?action=admin-settings',
+                '/api/admin-settings',
                 'http://localhost:8080/api/admin-settings',
                 'https://swastikgold.net/api.php?action=admin-settings'
             ];
 
+            let isSavedOnServer = false;
             for (const url of urls) {
                 try {
-                    await fetch(url, {
+                    const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
-                    break;
+                    if (res.ok) {
+                        isSavedOnServer = true;
+                        break;
+                    }
                 } catch (e) {}
             }
+
+            return isSavedOnServer;
         }
 
         async function fetchAdminSettings() {
             const urls = [
-                '/api/admin-settings?_=' + Date.now(),
                 'api.php?action=admin-settings&_=' + Date.now(),
-                'http://localhost:8080/api/admin-settings?_=' + Date.now()
+                '/api/admin-settings?_=' + Date.now(),
+                'http://localhost:8080/api/admin-settings?_=' + Date.now(),
+                'https://swastikgold.net/api.php?action=admin-settings&_=' + Date.now()
             ];
 
             for (const url of urls) {
@@ -1423,22 +1444,25 @@
         async function savePcMarqueeText() {
             const txt = document.getElementById('pcMarqueeText').value.trim();
             if (!txt) return;
-            await updateServerSettings({ marqueeText: txt });
-            alert("मार्की टिकर सफलतापूर्वक सेव हो गया!");
+            const ok = await updateServerSettings({ marqueeText: txt });
+            if (ok) alert("✔ मार्की टिकर सफलतापूर्वक सभी डिवाइसों और वेबसाइट पर लाइव हो गया!");
+            else alert("⚠️ मार्की टिकर लोकल सेव हो गया!");
         }
 
         async function savePcPopupMsg() {
             const msg = document.getElementById('pcPopupText').value.trim();
             if (!msg) return;
-            await updateServerSettings({ popupMsg: msg });
-            alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
+            const ok = await updateServerSettings({ popupMsg: msg });
+            if (ok) alert("✔ पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
+            else alert("⚠️ पॉप-अप मैसेज लोकल सेव हो गया!");
         }
 
         async function savePcBulletinMsg() {
             const txt = document.getElementById('pcBulletinText').value.trim();
             if (!txt) return;
-            await updateServerSettings({ bulletinMsg: txt });
-            alert("बुलेटिन संदेश सफलतापूर्वक लाइव हो गया!");
+            const ok = await updateServerSettings({ bulletinMsg: txt });
+            if (ok) alert("✔ बुलेटिन संदेश सफलतापूर्वक लाइव हो गया!");
+            else alert("⚠️ बुलेटिन संदेश लोकल सेव हो गया!");
         }
 
         // 4. CUSTOMER MANAGEMENT
@@ -1522,15 +1546,15 @@
                             <td><strong style="color:#4ade80;">${c.mobile}</strong></td>
                             <td>${c.city}</td>
                             <td><span class="pin-code">${c.pin || '123456'}</span></td>
-                            <td><strong style="color:#facc15;">⏳ PENDING</strong></td>
+                            <td><strong style="color:#f59e0b;">${c.status}</strong></td>
                             <td>
-                                <a href="https://wa.me/91${c.mobile}?text=${encodeURIComponent(`स्वास्तिक गोल्ड में आपका स्वागत है!\nUser ID: ${c.id}\nPIN: ${c.pin || '123456'}`)}" target="_blank" class="btn-wa-share">
+                                <a href="https://wa.me/91${c.mobile}?text=${encodeURIComponent(`स्वास्तिक गोल्ड:\nआपका खाता स्वीकृत (Approved) हो गया है!\nUser ID: ${c.id}\nPIN: ${c.pin || '123456'}\nhttps://swastikgold.net/`)}" target="_blank" class="btn-wa-share">
                                     <i class="fa-brands fa-whatsapp"></i> Share
                                 </a>
                             </td>
                             <td>
-                                <button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')"><i class="fa-solid fa-check"></i> APPROVE</button>
-                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-xmark"></i></button>
+                                <button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')">Approve</button>
+                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `).join('');
@@ -1568,7 +1592,7 @@
             let onlineCount = 0, offlineCount = 0;
 
             tbody.innerHTML = visitors.map(v => {
-                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 15000));
+                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 45000));
                 if (isOnline) onlineCount++; else offlineCount++;
 
                 return `
@@ -1653,9 +1677,10 @@
         // 6. SYMBOL MAPPINGS MODAL
         async function loadSymbolMappings() {
             const urls = [
-                '/api/admin/symbol-mapping',
                 'api.php?action=admin-symbol-mapping',
-                'http://localhost:8080/api/admin/symbol-mapping'
+                '/api/admin/symbol-mapping',
+                'http://localhost:8080/api/admin/symbol-mapping',
+                'https://swastikgold.net/api.php?action=admin-symbol-mapping'
             ];
             for (const url of urls) {
                 try {
@@ -1694,9 +1719,10 @@
             });
 
             const urls = [
-                '/api/admin/symbol-mapping',
                 'api.php?action=admin-symbol-mapping',
-                'http://localhost:8080/api/admin/symbol-mapping'
+                '/api/admin/symbol-mapping',
+                'http://localhost:8080/api/admin/symbol-mapping',
+                'https://swastikgold.net/api.php?action=admin-symbol-mapping'
             ];
 
             for (const url of urls) {
@@ -1724,9 +1750,10 @@
         // 7. AUDIT LOG MODAL
         async function viewAuditLogs() {
             const urls = [
-                '/api/admin/audit-logs',
                 'api.php?action=admin-audit-logs',
-                'http://localhost:8080/api/admin/audit-logs'
+                '/api/admin/audit-logs',
+                'http://localhost:8080/api/admin/audit-logs',
+                'https://swastikgold.net/api.php?action=admin-audit-logs'
             ];
             for (const url of urls) {
                 try {

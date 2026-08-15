@@ -920,6 +920,9 @@ function broadcastSsePayload() {
         isSecurityLoginRequired: currentSecStatus,
         isMasterHidden: globalAdminSettings.isMasterHidden,
         isMasterFrozen: globalAdminSettings.isMasterFrozen,
+        marqueeText: globalAdminSettings.marqueeText || '',
+        popupMsg: globalAdminSettings.popupMsg || '',
+        bulletinMsg: globalAdminSettings.bulletinMsg || '',
         hatohat: globalAdminSettings.hatohatSettings,
         bankAccounts: globalAdminSettings.bankAccounts || [],
         customers: globalAdminSettings.customers || [],
@@ -1066,6 +1069,9 @@ const server = http.createServer((req, res) => {
             isSecurityLoginRequired: currentSecStatus,
             isMasterHidden: globalAdminSettings.isMasterHidden,
             isMasterFrozen: globalAdminSettings.isMasterFrozen,
+            marqueeText: globalAdminSettings.marqueeText || '',
+            popupMsg: globalAdminSettings.popupMsg || '',
+            bulletinMsg: globalAdminSettings.bulletinMsg || '',
             hatohat: globalAdminSettings.hatohatSettings,
             bankAccounts: globalAdminSettings.bankAccounts || [],
             customers: globalAdminSettings.customers || [],
@@ -1105,6 +1111,9 @@ const server = http.createServer((req, res) => {
             isSecurityLoginRequired: getSecurityLockStatus(),
             isMasterHidden: globalAdminSettings.isMasterHidden,
             isMasterFrozen: globalAdminSettings.isMasterFrozen,
+            marqueeText: globalAdminSettings.marqueeText || '',
+            popupMsg: globalAdminSettings.popupMsg || '',
+            bulletinMsg: globalAdminSettings.bulletinMsg || '',
             hatohat: globalAdminSettings.hatohatSettings,
             bankAccounts: globalAdminSettings.bankAccounts || [],
             customers: globalAdminSettings.customers || [],
@@ -1131,7 +1140,10 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN LOGIN
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/login' && req.method === 'POST') {
+    // -------------------------------------------------------------
+    // API: ADMIN LOGIN
+    // -------------------------------------------------------------
+    if ((pathname === '/api/admin/login' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-login') && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk; });
         req.on('end', () => {
@@ -1156,7 +1168,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN VERIFY TOKEN
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/verify-token' && req.method === 'GET') {
+    if ((pathname === '/api/admin/verify-token' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-verify') && req.method === 'GET') {
         const token = extractToken();
         const session = adminAuth.validateSession(token);
         if (!session) {
@@ -1172,7 +1184,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN CHANGE PASSWORD (MANDATORY ON FIRST LOGIN)
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/change-password' && req.method === 'POST') {
+    if ((pathname === '/api/admin/change-password' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-change-password') && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk; });
         req.on('end', () => {
@@ -1193,7 +1205,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN LOGOUT & LOGOUT ALL DEVICES
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/logout' && req.method === 'POST') {
+    if ((pathname === '/api/admin/logout' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-logout') && req.method === 'POST') {
         const token = extractToken();
         const result = adminAuth.logout(token);
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1201,7 +1213,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (pathname === '/api/admin/logout-all' && req.method === 'POST') {
+    if ((pathname === '/api/admin/logout-all' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-logout-all') && req.method === 'POST') {
         const token = extractToken();
         const result = adminAuth.logoutAllDevices(token);
         res.writeHead(result.status || 200, { 'Content-Type': 'application/json' });
@@ -1212,7 +1224,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN DIAGNOSTICS & STATUS
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/api-status') {
+    if (pathname === '/api/admin/api-status' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-api-status') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(marketDataProvider.getDiagnostics()));
         return;
@@ -1221,7 +1233,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: ADMIN AUDIT LOGS
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/audit-logs') {
+    if (pathname === '/api/admin/audit-logs' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-audit-logs') {
         const token = extractToken();
         const session = adminAuth.validateSession(token);
         if (!session) {
@@ -1237,7 +1249,7 @@ const server = http.createServer((req, res) => {
     // -------------------------------------------------------------
     // API: SYMBOL MAPPINGS (GET & UPDATE)
     // -------------------------------------------------------------
-    if (pathname === '/api/admin/symbol-mapping') {
+    if (pathname === '/api/admin/symbol-mapping' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'admin-symbol-mapping') {
         if (req.method === 'GET') {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: true, mappings: activeSymbolMappings }));
@@ -1518,6 +1530,26 @@ const server = http.createServer((req, res) => {
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ valid: true, status: customer.status }));
+        return;
+    }
+
+    // -------------------------------------------------------------
+    // API: VISITOR PING
+    // -------------------------------------------------------------
+    if ((pathname === '/api/visitor-ping' || pathname === '/api.php' && parsedUrl.searchParams.get('action') === 'visitor-ping') && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', () => {
+            try {
+                const v = JSON.parse(body);
+                if (v && v.visitorId) {
+                    v.lastPing = Date.now();
+                    guestHistoryMap.set(v.visitorId, { ...(guestHistoryMap.get(v.visitorId) || {}), ...v });
+                }
+            } catch (e) {}
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true }));
+        });
         return;
     }
 

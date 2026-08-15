@@ -2,17 +2,17 @@
   {
     "id": "ADM_SUPER_001",
     "username": "Paliwal9824",
-    "passwordHash": "$scrypt-argon2id$v=1$N=16384,r=8,p=1$40486b55489f3f4c36fc24ff611f99f120f39ba5fd766202002867f77a1b5eb7$ba8546daf5ea02b1806a6fbebe32e62e676da212e9991913682d1a4f9c7c06ee6f24a6cbcc4d8c7c2c58d9761bd604326813d6cb60fbc86d2fd598db6ce6f53f",
+    "passwordHash": "$scrypt-argon2id$v=1$N=16384,r=8,p=1$b02e9e3c6dc4b04c013b099937d9ba6c8265bbb60d665b090ea439dbb885a31d$dec8d639f1f447cad87919a8f088505415fee5150ebffe285ae7f6feffc3da1ef3be8424e23fb5d9db0c41a470f29c8a71150169b59e77e2e366ff07dfc453e1",
     "role": "SUPER ADMIN",
     "displayName": "Super Admin (Paliwal)",
-    "must_change_password": true,
+    "must_change_password": false,
     "is_active": true,
     "created_at": "2026-08-15T14:07:33.088Z",
     "provisioned_at_ist": "15 Aug 2026, 07:37:33 pm",
-    "last_login_at": "2026-08-15T14:51:03.313Z",
+    "last_login_at": "2026-08-15T15:34:58.627Z",
     "two_factor_enabled": false,
-    "last_login_ist": "15 Aug 2026, 08:21:03 pm",
-    "password_changed_at": "2026-08-15T14:28:12.312Z",
-    "password_changed_ist": "15 Aug 2026, 07:58:12 pm"
+    "last_login_ist": "15 Aug 2026, 09:04:58 pm",
+    "password_changed_at": "2026-08-15T15:34:58.487Z",
+    "password_changed_ist": "15 Aug 2026, 09:04:58 pm"
   }
 ]
