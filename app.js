@@ -38,6 +38,7 @@ function initApp() {
     initNetworkStatusMonitor();
     checkStoredUserSession();
     fetchInitialRatesSnapshot();
+    startFallbackPolling();
     initRealtimeSseStream();
     setInterval(verifySingleSessionSecurity, 1500);
 }

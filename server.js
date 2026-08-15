@@ -67,21 +67,6 @@ function setSecurityLockStatusSync(val) {
 
 setSecurityLockStatusSync(getSecurityLockStatus());
 
-// DEFAULT INITIAL LIVE FALLBACK PRODUCTS TO GUARANTEE 100% IMMEDIATE DISPLAY
-const INITIAL_DEFAULT_PRODUCTS = [
-    { id: "SILVER_CHORSA_98", name: "SILVER CHORSA 98", buy: 232100, sell: 233600, high: 233600, low: 232100, buyPremium: 0, sellPremium: 0, isProductHidden: false },
-    { id: "GOLD_9950_IMPOTED", name: "GOLD 9950 IMPOTED", buy: 149590, sell: 150190, high: 150290, low: 149590, buyPremium: 0, sellPremium: 0, isProductHidden: false },
-    { id: "GOLD_999_KD", name: "GOLD 999 KD", buy: 150240, sell: 150840, high: 150940, low: 150240, buyPremium: 0, sellPremium: 0, isProductHidden: false },
-    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 157800, sell: 158390, high: 158390, low: 157800, buyPremium: 0, sellPremium: 0, isProductHidden: false },
-    { id: "RANI", name: "RANI", buy: 149890, sell: 150490, high: 150490, low: 149890, buyPremium: 0, sellPremium: 0, isProductHidden: false },
-    { id: "RUPA", name: "RUPA", buy: 232100, sell: 233600, high: 233600, low: 232100, buyPremium: 0, sellPremium: 0, isProductHidden: false }
-];
-
-const INITIAL_DEFAULT_FUTURES = [
-    { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, high: 237822, low: 231550, buyPremium: 0, sellPremium: 0 },
-    { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, high: 155000, low: 154000, buyPremium: 0, sellPremium: 0 }
-];
-
 let rawSundhaApiResponse = "";
 let parsedLiveRates = {
     spot: { 
@@ -89,10 +74,10 @@ let parsedLiveRates = {
         silver_bid: "64.71", silver_ask: "64.74", silver_high: "65.69", silver_low: "63.48",
         usdinr_bid: "95.46", usdinr_ask: "95.46", usdinr_high: "95.44", usdinr_low: "95.36"
     },
-    products: INITIAL_DEFAULT_PRODUCTS,
-    futures: INITIAL_DEFAULT_FUTURES,
-    allProducts: INITIAL_DEFAULT_PRODUCTS,
-    allFutures: INITIAL_DEFAULT_FUTURES,
+    products: [],
+    futures: [],
+    allProducts: [],
+    allFutures: [],
     marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
     lastUpdated: Date.now(),
     apiStatus: "CONNECTED_LIVE"
@@ -357,7 +342,13 @@ function trackGuestVisitor(req) {
     } catch(e) {}
 }
 
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+// HIGH PERFORMANCE KEEPALIVE HTTPS AGENT FOR SUNDHA GOLD LIVE API STREAMING
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+    keepAlive: true,
+    maxSockets: 50,
+    keepAliveMsecs: 3000
+});
 
 function parseCleanNumber(valStr) {
     if (!valStr || valStr === '-' || valStr === 'null' || valStr === 'undefined') return 0;
@@ -366,22 +357,38 @@ function parseCleanNumber(valStr) {
     return isNaN(num) ? 0 : Math.round(num);
 }
 
+let isApiFetching = false;
+
 function fetchSundhaGoldLiveApi() {
+    if (isApiFetching) return;
+    isApiFetching = true;
+
     try {
         const url = SUNDHA_API_ENDPOINT + "?_=" + Date.now();
-        https.get(url, { agent: httpsAgent }, (res) => {
+        const req = https.get(url, { agent: httpsAgent, timeout: 2500 }, (res) => {
             let data = '';
             res.on('data', chunk => { data += chunk; });
             res.on('end', () => {
+                isApiFetching = false;
                 if (data && data.length > 20) {
                     rawSundhaApiResponse = data;
                     parseRawSundhaTabStream(data);
                 }
             });
-        }).on('error', () => {
+        });
+
+        req.on('error', () => {
+            isApiFetching = false;
             parsedLiveRates.apiStatus = "RECONNECTING";
         });
-    } catch(e) {}
+
+        req.on('timeout', () => {
+            req.destroy();
+            isApiFetching = false;
+        });
+    } catch(e) {
+        isApiFetching = false;
+    }
 }
 
 function parseRawSundhaTabStream(data) {
@@ -404,7 +411,7 @@ function parseRawSundhaTabStream(data) {
 
                 const rawId = symbol.replace(/\s+/g, '_').toUpperCase();
 
-                // SPOT TICKERS ALWAYS UPDATE
+                // SPOT TICKERS ALWAYS UPDATE LIVE FROM API
                 if (symbol === 'SILVER') { 
                     parsedLiveRates.spot.silver_bid = parts[3] || "64.71";
                     parsedLiveRates.spot.silver_ask = parts[4] || "64.74";
@@ -522,7 +529,8 @@ function broadcastSsePayload() {
     } catch(e) {}
 }
 
-setInterval(fetchSundhaGoldLiveApi, 100);
+// POLL LIVE SUNDHA API EVERY 500 MILLISECONDS WITH REUSEABLE SOCKET POOL
+setInterval(fetchSundhaGoldLiveApi, 500);
 fetchSundhaGoldLiveApi();
 
 const server = http.createServer((req, res) => {
@@ -531,6 +539,7 @@ const server = http.createServer((req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        res.setHeader('Access-Control-Max-Age', '86400');
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, post-check=0, pre-check=0');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
@@ -568,11 +577,13 @@ const server = http.createServer((req, res) => {
             return;
         }
 
-        // 1. SSE REAL-TIME PUSH
+        // 1. SSE REAL-TIME PUSH WITH APACHE NO-BUFFERING HEADER
         if (req.url.startsWith('/api/rates-sse')) {
             res.writeHead(200, {
-                'Content-Type': 'text/event-stream',
+                'Content-Type': 'text/event-stream; charset=utf-8',
+                'Cache-Control': 'no-cache, no-transform',
                 'Connection': 'keep-alive',
+                'X-Accel-Buffering': 'no',
                 'Access-Control-Allow-Origin': '*'
             });
 
@@ -685,7 +696,7 @@ const server = http.createServer((req, res) => {
                         name: String(name).trim(),
                         mobile: String(mobile).trim(),
                         city: String(city).trim(),
-                        status: "PENDING", // PENDING APPROVAL IN ADMIN DESK
+                        status: "PENDING",
                         pin: randomPin,
                         activeSession: null
                     };
@@ -790,7 +801,7 @@ const server = http.createServer((req, res) => {
                             setSecurityLockStatusSync(data.isSecurityLoginRequired);
                         }
                         
-                        delete data.isSecurityLoginRequired; // Protect security mode from generic mutations
+                        delete data.isSecurityLoginRequired;
 
                         globalAdminSettings = { ...globalAdminSettings, ...data };
                         saveSettingsToDisk();
