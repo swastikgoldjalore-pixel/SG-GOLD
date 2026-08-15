@@ -88,28 +88,6 @@
         .btn-hide-all { background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; }
         .btn-action-sm { background:#0050b3; color:white; border:none; padding:4px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px; }
 
-        /* ARROW REORDER BUTTONS */
-        .btn-arrow-move {
-            background: #0f1e36;
-            color: #facc15;
-            border: 1.5px solid #facc15;
-            padding: 3px 7px;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: 900;
-            transition: all 0.15s;
-            margin: 0 2px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-arrow-move:hover {
-            background: #facc15;
-            color: #040914;
-            transform: scale(1.1);
-        }
-
         /* RESPONSIVE LAYOUT GRID */
         .pc-grid { display:grid; grid-template-columns: 2.4fr 1fr; gap:14px; padding:12px; max-width:1700px; margin:0 auto; }
         
@@ -123,7 +101,7 @@
 
         /* RATES TABLE */
         .table-responsive { width:100%; overflow-x:auto; }
-        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:720px; }
+        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:650px; }
         .pc-table th { background:#172a4a; color:#f59e0b; padding:8px 6px; font-weight:800; border-bottom:2px solid #facc15; }
         .pc-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.08); background:#091322; color:#ffffff; font-weight:600; }
         .pc-table tr:hover td { background:#112238; }
@@ -141,10 +119,10 @@
         .cust-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.05); color:#e2e8f0; }
 
         .pin-code { background:#070f1e; color:#facc15; padding:2px 6px; border-radius:4px; font-weight:800; font-family:monospace; }
-        .rename-input { width:140px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
+        .rename-input { width:115px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
         
-        .prem-buy-input { width:65px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
-        .prem-sell-input { width:65px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
+        .prem-buy-input { width:60px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
+        .prem-sell-input { width:60px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
 
         .eye-hide-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #dc2626; vertical-align: middle; }
 
@@ -167,80 +145,12 @@
 
         .cust-tab-btn { background:#070f1e; color:#94a3b8; border:1px solid #1e293b; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; }
         .cust-tab-btn.active { background:#facc15; color:#000000; font-weight:800; }
-        /* INDEPENDENT SMOOTH SCROLLING CONTAINER FOR CUSTOMERS & GUESTS */
-        .cust-scroll-container {
-            max-height: 420px;
-            overflow-y: auto;
-            overflow-x: auto;
-            border: 1.5px solid #1e293b;
-            border-radius: 8px;
-            background: #091322;
-            scrollbar-width: thin;
-            scrollbar-color: #facc15 #070f1e;
-        }
-        .cust-scroll-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .cust-scroll-container::-webkit-scrollbar-track {
-            background: #070f1e;
-            border-radius: 4px;
-        }
-        .cust-scroll-container::-webkit-scrollbar-thumb {
-            background: #facc15;
-            border-radius: 4px;
-        }
-        .cust-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #eab308;
-        }
-        .cust-table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: #172a4a !important;
-            border-bottom: 2px solid #facc15 !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-        }
+        .cust-tab-btn.btn-request-highlight { background:#d97706; color:#ffffff; animation: pulseGlow 1.5s infinite; }
 
-        /* SEARCH ENGINE BAR FOR CUSTOMERS */
-        .cust-search-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            background: #070f1e;
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1.5px solid #facc15;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-        }
-        .cust-search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .cust-search-input::placeholder {
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .btn-clear-search {
-            background: #1e293b;
-            color: #facc15;
-            border: 1px solid #334155;
-            padding: 4px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-        .btn-clear-search:hover {
-            background: #dc2626;
-            color: #ffffff;
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
 
         .hidden { display: none !important; }
@@ -253,7 +163,7 @@
         <div class="admin-auth-card">
             <div style="font-size:32px;color:#facc15;font-weight:900;margin-bottom:4px;">🔒</div>
             <h2 class="admin-auth-title">ADMIN DESK ACCESS LOGIN</h2>
-            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v3.0.0)</p>
+            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v2.9.0)</p>
 
             <form onsubmit="handleOperatorLogin(event)">
                 <div class="admin-input-group">
@@ -278,13 +188,13 @@
                 <div class="swastik-logo-icon">卐</div>
                 <div>
                     <h1>SWASTIK GOLD - OPERATOR SOFTWARE DESK</h1>
-                    <p style="font-size:11px;color:#cbd5e1;">Real-Time Order & Rate Controller • swastikgold.net • v3.0.0</p>
+                    <p style="font-size:11px;color:#cbd5e1;">SSE 0ms Latency Engine • IST Timezone • v2.9.0 Latest Release</p>
                 </div>
             </div>
             <div class="header-status">
-                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-off" onclick="toggleSecurityMode()">
+                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-on" onclick="toggleSecurityMode()">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span id="securityBtnText">🔓 SECURITY OFF: Direct Open (No Login Required)</span>
+                    <span id="securityBtnText">🔒 SECURITY ON: Require Customer Login</span>
                 </button>
 
                 <button id="pcMasterHideBtn" class="btn-hide-all" onclick="togglePcMasterHide()"><i class="fa-solid fa-eye-slash"></i> Hide Physical</button>
@@ -296,21 +206,17 @@
         <div class="pc-grid">
             <div class="col-left">
                 
-                <!-- LIVE PRODUCTS CONTROL TABLE WITH UP/DOWN REORDER ARROWS -->
+                <!-- LIVE PRODUCTS CONTROL TABLE -->
                 <div class="pc-card">
                     <h3>
-                        <span><i class="fa-solid fa-arrows-up-down"></i> Physical Product Order, Hide & Premium Console</span>
-                        <div style="display:flex;gap:6px;">
-                            <button onclick="resetProductOrder()" class="btn-action-sm" style="background:#475569;font-size:11px;padding:5px 10px;"><i class="fa-solid fa-rotate-left"></i> Reset Order</button>
-                            <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
-                        </div>
+                        <span><i class="fa-solid fa-eye-slash"></i> Physical Product Hide & Premium Offsets Console</span>
+                        <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
                     </h3>
 
                     <div class="table-responsive">
                         <table class="pc-table">
                             <thead>
                                 <tr>
-                                    <th style="color:#facc15;text-align:center;width:75px;">ORDER (⇅)</th>
                                     <th style="color:#ef4444;text-align:center;width:70px;">HIDE ROW</th>
                                     <th>SYMBOL</th>
                                     <th>RENAME NAME</th>
@@ -323,7 +229,7 @@
                                 </tr>
                             </thead>
                             <tbody id="pcRatesRows">
-                                <!-- Dynamic rows rendered here with Up/Down arrows -->
+                                <!-- Dynamic rows rendered here -->
                             </tbody>
                         </table>
                     </div>
@@ -351,83 +257,70 @@
                             <button class="cust-tab-btn" id="tabBtnGuest" onclick="switchCustTab('guest')"><i class="fa-solid fa-wifi"></i> 🟢 Live Online (<span id="onlineCountBadge">0</span>) | 🔴 Offline Visitors (<span id="offlineCountBadge">0</span>)</button>
                         </div>
                     </h3>
-
-                    <!-- LIVE INSTANT SEARCH ENGINE FOR CUSTOMERS & GUESTS -->
-                    <div class="cust-search-box">
-                        <i class="fa-solid fa-magnifying-glass" style="color:#facc15;font-size:14px;"></i>
-                        <input type="text" id="custSearchInput" placeholder="🔍 Search Customer by Name, Mobile Number, City, or ID (e.g. SG1001, Champalal, 94141...)" oninput="filterAllCustTables()" class="cust-search-input">
-                        <button type="button" onclick="clearCustSearch()" class="btn-clear-search"><i class="fa-solid fa-xmark"></i> Clear</button>
-                    </div>
                     
                     <!-- TAB 1: APPROVED REGISTERED CUSTOMERS -->
                     <div id="paneApprovedCust" class="table-responsive">
-                        <div class="cust-scroll-container">
-                            <table class="cust-table">
-                                <thead>
-                                    <tr>
-                                        <th>CUSTOMER ID</th>
-                                        <th>FULL NAME</th>
-                                        <th>MOBILE</th>
-                                        <th>CITY</th>
-                                        <th>PASSWORD (PIN)</th>
-                                        <th>STATUS</th>
-                                        <th>WHATSAPP SHARE</th>
-                                        <th>ACTIONS</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pcApprovedCustRows">
-                                    <!-- Dynamic approved registered customers -->
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="cust-table">
+                            <thead>
+                                <tr>
+                                    <th>CUSTOMER ID</th>
+                                    <th>FULL NAME</th>
+                                    <th>MOBILE</th>
+                                    <th>CITY</th>
+                                    <th>PASSWORD (PIN)</th>
+                                    <th>STATUS</th>
+                                    <th>WHATSAPP SHARE</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pcApprovedCustRows">
+                                <!-- Dynamic approved registered customers -->
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER -->
                     <div id="paneRequestCust" class="table-responsive hidden">
                         <p style="font-size:11px;color:#facc15;margin-bottom:8px;">⏳ स्वास्तिक गोल्ड मोबाइल ऐप या वेबसाइट द्वारा नए रजिस्टर हुए ग्राहकों की पेंडिंग रिक्वेस्ट की लिस्ट (1-Click Approve):</p>
-                        <div class="cust-scroll-container">
-                            <table class="cust-table">
-                                <thead>
-                                    <tr>
-                                        <th>REQUEST ID</th>
-                                        <th>APPLICANT NAME</th>
-                                        <th>MOBILE NUMBER</th>
-                                        <th>CITY</th>
-                                        <th>GENERATED PIN</th>
-                                        <th>STATUS</th>
-                                        <th>WHATSAPP SHARE</th>
-                                        <th>1-CLICK APPROVAL ACTIONS</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pcRequestCustRows">
-                                    <!-- Dynamic registration requests -->
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="cust-table">
+                            <thead>
+                                <tr>
+                                    <th>REQUEST ID</th>
+                                    <th>APPLICANT NAME</th>
+                                    <th>MOBILE NUMBER</th>
+                                    <th>CITY</th>
+                                    <th>GENERATED PIN</th>
+                                    <th>STATUS</th>
+                                    <th>WHATSAPP SHARE</th>
+                                    <th>1-CLICK APPROVAL ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pcRequestCustRows">
+                                <!-- Dynamic registration requests -->
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- TAB 3: LIVE ONLINE VS OFFLINE GUEST VISITORS -->
                     <div id="paneGuestVisitors" class="table-responsive hidden">
                         <p style="font-size:11px;color:#facc15;margin-bottom:8px;">🟢 जो ग्राहक ऑनलाइन लाइव रेट्स देख रहे हैं या पहले देख कर ऑफलाइन हो चुके हैं, उनके रियल नाम व मोबाइल नंबर की लिस्ट:</p>
-                        <div class="cust-scroll-container">
-                            <table class="cust-table">
-                                <thead>
-                                    <tr>
-                                        <th>STATUS</th>
-                                        <th>REAL CUSTOMER NAME</th>
-                                        <th>REAL MOBILE NUMBER</th>
-                                        <th>VISITOR IP</th>
-                                        <th>DEVICE TYPE</th>
-                                        <th>CITY / LOCATION</th>
-                                        <th>ACTIVE PAGE</th>
-                                        <th>LAST ACTIVE PING</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="guestVisitorRows">
-                                    <!-- Dynamic guest visitors -->
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="cust-table">
+                            <thead>
+                                <tr>
+                                    <th>STATUS</th>
+                                    <th>REAL CUSTOMER NAME</th>
+                                    <th>REAL MOBILE NUMBER</th>
+                                    <th>VISITOR IP</th>
+                                    <th>DEVICE TYPE</th>
+                                    <th>CITY / LOCATION</th>
+                                    <th>ACTIVE PAGE</th>
+                                    <th>LAST ACTIVE PING</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guestVisitorRows">
+                                <!-- Dynamic guest visitors -->
+                            </tbody>
+                        </table>
                     </div>
 
                 </div>
@@ -443,20 +336,13 @@
                     <button onclick="savePcMarqueeText()" class="btn-live" style="width:100%;margin-top:6px;background:#facc15;color:black;"><i class="fa-solid fa-floppy-disk"></i> Save Marquee Ticker</button>
                 </div>
 
-                <!-- SWASTIK LIVE PERSONAL DESK BULLETIN NOTICE CONTROL -->
-                <div class="pc-card" style="border-color:#0284c7;">
-                    <h3 style="color:#38bdf8;"><i class="fa-solid fa-bullhorn"></i> Swastik Live Personal Desk Bulletin Notice</h3>
-                    <textarea id="pcBulletinText" rows="3" style="width:100%;padding:8px;border-radius:6px;background:#070f1e;color:white;border:1px solid #1e293b;font-size:12px;" placeholder="Swastik Gold Jalore में आपका हार्दिक स्वागत है..."></textarea>
-                    <button onclick="savePcBulletinMsg()" class="btn-live" style="width:100%;margin-top:6px;background:#38bdf8;color:#0f172a;font-weight:700;"><i class="fa-solid fa-paper-plane"></i> Publish Bulletin to Personal Desk</button>
-                </div>
-
                 <!-- SWASTIK AI MARKET TARGET PREVIEW -->
                 <div class="pc-card" style="border-color:#6366f1;">
                     <h3 style="color:#818cf8;"><i class="fa-solid fa-brain"></i> Swastik AI Market Analysis (IST)</h3>
                     <div id="pcAiReportPreview" style="font-size:11px;color:#cbd5e1;line-height:1.5;">
-                        <p style="color:#4ade80;font-weight:700;">✔ 1-Day AI Target Engine Active (99.2% Accuracy)</p>
-                        <p>COMEX Gold Target: <strong id="aiComexTarget">$4394.45 (1-Day)</strong></p>
-                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹1,55,080 (1-Day)</strong></p>
+                        <p style="color:#4ade80;font-weight:700;">✔ 15-Minute AI Engine Active</p>
+                        <p>COMEX Gold Target: <strong id="aiComexTarget">$2426.00</strong></p>
+                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹72,680</strong></p>
                     </div>
                 </div>
 
@@ -467,92 +353,42 @@
                     <button onclick="savePcPopupMsg()" class="btn-live" style="width:100%;margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i> Save Pop-up Message</button>
                 </div>
 
+                <!-- INBOX MESSAGES -->
+                <div class="pc-card">
+                    <h3><i class="fa-solid fa-inbox"></i> Customer Booking Inbox</h3>
+                    <div id="pcInboxList" style="max-height:220px;overflow-y:auto;">
+                        <!-- Dynamic inbox -->
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- PC OPERATOR CONTROL LOGIC & REAL-TIME BROADCAST SYNC -->
     <script>
-        const INITIAL_PC_PRODUCTS = [
-            { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0 },
-            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0 },
-            { id: "SILVER_CHORSA_98", name: "SILVER Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190 },
-            { id: "GOLD_9950_IMPOTED", name: "GOLD 995 IMPORTED", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290 },
-            { id: "GOLD_999_KD", name: "GOLD 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940 },
-            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390 }
-        ];
-
-        const INITIAL_PC_FUTURES = [
-            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590 },
-            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190 }
-        ];
-
         let pcState = {
             isFrozen: false,
             isMasterHidden: false,
-            isSecurityLoginRequired: false,
-            frozenPhysicalPrices: {},
-            adminSettings: {
-                renames: {
-                    "GOLD_9950_IMPOTED": "GOLD 995 IMPORTED"
-                },
-                premiumsBuy: {},
-                premiumsSell: {},
-                hiddenProducts: {},
-                hiddenBuy: {},
-                hiddenSell: {},
-                productOrder: ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "GOLD_FUTURE", "SILVER_FUTURE"],
-                marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
-                popupMsg: "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM."
-            },
-            products: [ ...INITIAL_PC_PRODUCTS ],
-            futures: [ ...INITIAL_PC_FUTURES ],
+            isSecurityLoginRequired: true,
+            adminSettings: {},
+            products: [],
+            futures: [],
             lastPrices: {},
             customers: [
                 { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456", activeSession: null }
             ],
             guestVisitors: [
-                { guestName: "Champalal Soni", mobile: "9414152854", ip: "127.0.0.1", device: "Desktop PC", city: "Jalore", page: "Operator Desk", status: "ONLINE", pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }
+                { guestName: "Champalal Soni", mobile: "9414152854", ip: "127.0.0.1", device: "Android Smartphone", city: "Jalore", page: "Mobile App", status: "ONLINE", pingTime: "08:44 PM" }
             ],
-            bankAccounts: [
-                { id: "bank_1", bankName: "HDFC Bank Ltd", accountNo: "50200084712035", ifsc: "HDFC0000241", branch: "gandhi chowk, Jalore", accountType: "Bullion Current Account" },
-                { id: "bank_2", bankName: "State Bank of India", accountNo: "38147295103", ifsc: "SBIN0001034", branch: "Jalore Main Branch", accountType: "Bullion Current Account" }
-            ]
+            bankAccounts: []
         };
 
         let isPcTableBuilt = false;
-        let isUserEditingBanks = false;
-        let syncChannel = null;
-
-        // Initialize Broadcast Channel for Zero-Latency Instant Tab Sync
-        try {
-            syncChannel = new BroadcastChannel('sg_realtime_sync');
-            syncChannel.onmessage = (e) => {
-                if (e.data) handleSyncMessage(e.data);
-            };
-        } catch(e) {}
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'sg_admin_settings_v3' || e.key === 'sg_customers_v3' || e.key === 'sg_security_lock_v3') {
-                loadLocalSettings();
-            }
-        });
+        let isUserEditingBanks = false; // PROTECT BANK EDITOR FROM SSE OVERWRITES WHILE DELETING/EDITING!
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadLocalSettings();
-            const isAuth = localStorage.getItem('sg_op_auth_v3') || sessionStorage.getItem('op_authenticated');
-            const savedUser = localStorage.getItem('sg_op_user_v3') || 'Paliwal9824';
-            const savedPass = localStorage.getItem('sg_op_pass_v3') || 'Rathore9824';
-
-            const opUserEl = document.getElementById('opUser');
-            const opPassEl = document.getElementById('opPass');
-            if (opUserEl) opUserEl.value = savedUser;
-            if (opPassEl) opPassEl.value = savedPass;
-
-            // PERMANENT AUTO-LOGIN: If logged in once, automatically open desk without asking for password again!
-            if (isAuth === 'true' || (savedUser === 'Paliwal9824' && savedPass === 'Rathore9824')) {
-                localStorage.setItem('sg_op_auth_v3', 'true');
-                sessionStorage.setItem('op_authenticated', 'true');
+            const isAuth = sessionStorage.getItem('op_authenticated');
+            if (isAuth === 'true') {
                 document.getElementById('operatorAuthModal').classList.add('hidden');
                 initPcPanel();
             } else {
@@ -560,79 +396,12 @@
             }
         });
 
-        function applyProductOrdering(list, orderIds) {
-            if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) return list;
-            return [...list].sort((a, b) => {
-                const idxA = orderIds.indexOf(a.id);
-                const idxB = orderIds.indexOf(b.id);
-                if (idxA === -1 && idxB === -1) return 0;
-                if (idxA === -1) return 1;
-                if (idxB === -1) return -1;
-                return idxA - idxB;
-            });
-        }
-
-        function loadLocalSettings() {
-            try {
-                const savedSec = localStorage.getItem('sg_security_lock_v3');
-                if (savedSec !== null) pcState.isSecurityLoginRequired = (savedSec === 'true');
-
-                const savedSettings = localStorage.getItem('sg_admin_settings_v3');
-                if (savedSettings) {
-                    pcState.adminSettings = { ...pcState.adminSettings, ...JSON.parse(savedSettings) };
-                    pcState.isMasterHidden = !!pcState.adminSettings.isMasterHidden;
-                    pcState.isFrozen = !!pcState.adminSettings.isMasterFrozen;
-                }
-
-                const savedCusts = localStorage.getItem('sg_customers_v3');
-                if (savedCusts) {
-                    pcState.customers = JSON.parse(savedCusts);
-                }
-
-                const savedVisitors = localStorage.getItem('sg_guest_visitors_v3');
-                if (savedVisitors) {
-                    pcState.guestVisitors = JSON.parse(savedVisitors);
-                }
-            } catch(e) {}
-        }
-
-        function handleSyncMessage(msg) {
-            if (msg.type === 'NEW_REGISTRATION' && msg.customer) {
-                const exists = pcState.customers.find(c => c.id === msg.customer.id || c.mobile === msg.customer.mobile);
-                if (!exists) {
-                    pcState.customers.push(msg.customer);
-                    localStorage.setItem('sg_customers_v3', JSON.stringify(pcState.customers));
-                    renderPcCust();
-                }
-            } else if (msg.type === 'GUEST_PING' && msg.visitor) {
-                updateGuestVisitorList(msg.visitor);
-            }
-        }
-
-        function updateGuestVisitorList(v) {
-            const existing = pcState.guestVisitors.find(x => x.ip === v.ip || (x.mobile && x.mobile === v.mobile));
-            if (existing) {
-                existing.status = 'ONLINE';
-                existing.lastPing = Date.now();
-                existing.pingTime = v.pingTime;
-                existing.page = v.page;
-                if (v.guestName && v.guestName !== 'Guest Visitor') existing.guestName = v.guestName;
-                if (v.mobile && v.mobile !== 'Not Registered') existing.mobile = v.mobile;
-            } else {
-                pcState.guestVisitors.unshift({ ...v, status: 'ONLINE', lastPing: Date.now() });
-            }
-            renderGuestVisitors(pcState.guestVisitors);
-        }
-
         function handleOperatorLogin(e) {
             e.preventDefault();
             const u = document.getElementById('opUser').value.trim();
             const p = document.getElementById('opPass').value.trim();
 
             if (u === 'Paliwal9824' && p === 'Rathore9824') {
-                localStorage.setItem('sg_op_auth_v3', 'true');
-                localStorage.setItem('sg_op_user_v3', u);
-                localStorage.setItem('sg_op_pass_v3', p);
                 sessionStorage.setItem('op_authenticated', 'true');
                 document.getElementById('operatorAuthModal').classList.add('hidden');
                 initPcPanel();
@@ -642,882 +411,70 @@
         }
 
         function logoutOperator() {
-            if (confirm("क्या आप वाकई एडमिन डेस्क से लॉगआउट करना चाहते हैं?")) {
-                localStorage.removeItem('sg_op_auth_v3');
-                sessionStorage.removeItem('op_authenticated');
-                document.getElementById('operatorAuthModal').classList.remove('hidden');
-            }
+            sessionStorage.removeItem('op_authenticated');
+            document.getElementById('operatorAuthModal').classList.remove('hidden');
         }
 
         async function initPcPanel() {
-            updateSecurityButtonUI();
-            updateControlButtons();
-            renderPcRates(pcState.products, pcState.futures);
             renderPcCust();
             renderGuestVisitors(pcState.guestVisitors);
             renderBankAccountsEditor();
-
-            const marqueeInput = document.getElementById('pcMarqueeText');
-            if (marqueeInput) marqueeInput.value = pcState.adminSettings.marqueeText || '';
-
-            const popupInput = document.getElementById('pcPopupText');
-            if (popupInput) popupInput.value = pcState.adminSettings.popupMsg || '';
-
             await fetchSecurityStatus();
             await fetchAdminSettings();
             initSseStream();
-
-            // Periodic 2-second background sync for new customer registration requests
-            setInterval(fetchAdminSettings, 2000);
         }
 
         async function fetchSecurityStatus() {
-            const urls = ['api.php?action=security-status&_=' + Date.now(), '/api/security-status?_=' + Date.now()];
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        const data = await res.json();
-                        pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                        localStorage.setItem('sg_security_lock_v3', String(pcState.isSecurityLoginRequired));
-                        updateSecurityButtonUI();
-                        return;
-                    }
-                } catch(e) {}
-            }
-        }
-
-        async function toggleSecurityMode() {
-            pcState.isSecurityLoginRequired = !pcState.isSecurityLoginRequired;
-            localStorage.setItem('sg_security_lock_v3', String(pcState.isSecurityLoginRequired));
-            updateSecurityButtonUI();
-
-            if (syncChannel) {
-                syncChannel.postMessage({ type: 'SECURITY_TOGGLE', isSecurityLoginRequired: pcState.isSecurityLoginRequired });
-            }
-
-            const urls = ['api.php?action=toggle-security', '/api/toggle-security'];
-            for (const url of urls) {
-                try {
-                    await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ isSecurityLoginRequired: pcState.isSecurityLoginRequired })
-                    });
-                } catch(e) {}
-            }
-
-            alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
-        }
-
-        function updateSecurityButtonUI() {
-            const btn = document.getElementById('pcSecurityToggleBtn');
-            const txt = document.getElementById('securityBtnText');
-            if (btn && txt) {
-                if (pcState.isSecurityLoginRequired) {
-                    btn.className = "btn-security-toggle btn-security-on";
-                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
-                } else {
-                    btn.className = "btn-security-toggle btn-security-off";
-                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
-                }
-            }
-        }
-
-        let pcPollingTimer = null;
-        function initSseStream() {
             try {
-                const sseUrl = (window.location.pathname.endsWith('.php') || window.location.hostname.includes('swastikgold.net')) ? 
-                    'api.php?action=rates-sse' : '/api/rates-sse';
-                const evtSource = new EventSource(sseUrl);
-                evtSource.onmessage = function(event) {
-                    try {
-                        const data = JSON.parse(event.data);
-                        handleIncomingPcPayload(data);
-                    } catch(e) {}
-                };
-                evtSource.onerror = function() {
-                    try { evtSource.close(); } catch(e) {}
-                    startPcPolling();
-                };
-            } catch(e) {
-                startPcPolling();
-            }
-
-            startPcPolling();
-        }
-
-        function startPcPolling() {
-            if (pcPollingTimer) return;
-            pollPcRates();
-            pcPollingTimer = setInterval(pollPcRates, 400);
-        }
-
-        async function pollPcRates() {
-            const urls = ['api.php?action=rates-json&_=' + Date.now(), '/api/rates-json?_=' + Date.now()];
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url, { cache: 'no-store' });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && (data.spot || data.products)) {
-                            handleIncomingPcPayload(data);
-                            return;
-                        }
-                    }
-                } catch(e) {}
-            }
-
-            try {
-                const res = await fetch("https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold?_=" + Date.now(), { mode: 'cors', cache: 'no-store' });
+                const res = await fetch('/api/security-status?_=' + Date.now());
                 if (res.ok) {
-                    const raw = await res.text();
-                    parseDirectSundhaPcStream(raw);
+                    const data = await res.json();
+                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                    updateSecurityButtonUI();
                 }
             } catch(e) {}
         }
 
-        function parseDirectSundhaPcStream(raw) {
-            if (!raw) return;
-            const lines = raw.split(/\r?\n/);
-            const prods = [];
-            const futs = [];
-            lines.forEach(l => {
-                const p = l.split('\t').map(x => x.trim());
-                if (p.length >= 4) {
-                    let sym = p[2];
-                    if (!sym || /^\d+$/.test(sym)) sym = p[1];
-                    if (!sym || /^\d+$/.test(sym) || ['SYMBOL','RATE','NAME'].includes(sym.toUpperCase())) return;
-                    if (['SILVER','GOLD','USDINR'].includes(sym.toUpperCase())) return;
-                    const rId = sym.replace(/\s+/g, '_').toUpperCase();
-                    const rawB = parseInt(p[3].replace(/,/g,'')) || 0;
-                    const rawS = parseInt(p[4].replace(/,/g,'')) || 0;
-                    const isF = sym.includes('FUTURE') || sym.includes('MCX');
-                    const obj = { id: rId, name: sym, buy: rawB, sell: rawS, rawBuy: rawB, rawSell: rawS };
-                    if (isF) futs.push(obj);
-                    else prods.push(obj);
-                }
-            });
-            if (prods.length > 0 || futs.length > 0) {
-                handleIncomingPcPayload({ allProducts: prods, allFutures: futs });
-            }
-        }
-
-        function handleIncomingPcPayload(data) {
-            if (!data) return;
-            if (data.allProducts || data.products) pcState.products = data.allProducts || data.products;
-            if (data.allFutures || data.futures) pcState.futures = data.allFutures || data.futures;
-            
-            if (data.guestVisitors && Array.isArray(data.guestVisitors)) {
-                data.guestVisitors.forEach(v => updateGuestVisitorList(v));
-            }
-
-            if (!isUserEditingBanks && data.bankAccounts && data.bankAccounts.length > 0) {
-                pcState.bankAccounts = data.bankAccounts;
-                renderBankAccountsEditor();
-            }
-
-            if (data.customers && Array.isArray(data.customers)) {
-                data.customers.forEach(sc => {
-                    const idx = pcState.customers.findIndex(c => c.id === sc.id);
-                    if (idx >= 0) pcState.customers[idx] = sc;
-                    else pcState.customers.push(sc);
-                });
-                renderPcCust();
-            }
-
-            renderPcRates(pcState.products, pcState.futures);
-        }
-
-        /* 1. MOVE ITEM UP IN SEQUENCE */
-        function moveItemUp(id) {
-            let order = pcState.adminSettings.productOrder;
-            const allItems = [...pcState.products, ...pcState.futures];
-            if (!order || order.length === 0) {
-                order = allItems.map(x => x.id);
-            }
-            const idx = order.indexOf(id);
-            if (idx > 0) {
-                const temp = order[idx];
-                order[idx] = order[idx - 1];
-                order[idx - 1] = temp;
-                pcState.adminSettings.productOrder = order;
-                isPcTableBuilt = false;
-                pcState.products = applyProductOrdering(pcState.products, order);
-                pcState.futures = applyProductOrdering(pcState.futures, order);
-                renderPcRates(pcState.products, pcState.futures);
-                updateServerSettings({ productOrder: order });
-            }
-        }
-
-        /* 2. MOVE ITEM DOWN IN SEQUENCE */
-        function moveItemDown(id) {
-            let order = pcState.adminSettings.productOrder;
-            const allItems = [...pcState.products, ...pcState.futures];
-            if (!order || order.length === 0) {
-                order = allItems.map(x => x.id);
-            }
-            const idx = order.indexOf(id);
-            if (idx >= 0 && idx < order.length - 1) {
-                const temp = order[idx];
-                order[idx] = order[idx + 1];
-                order[idx + 1] = temp;
-                pcState.adminSettings.productOrder = order;
-                isPcTableBuilt = false;
-                pcState.products = applyProductOrdering(pcState.products, order);
-                pcState.futures = applyProductOrdering(pcState.futures, order);
-                renderPcRates(pcState.products, pcState.futures);
-                updateServerSettings({ productOrder: order });
-            }
-        }
-
-        /* 3. RESET DEFAULT PRODUCT ORDER */
-        function resetProductOrder() {
-            pcState.adminSettings.productOrder = INITIAL_PC_PRODUCTS.map(p => p.id).concat(INITIAL_PC_FUTURES.map(f => f.id));
-            isPcTableBuilt = false;
-            pcState.products = applyProductOrdering(pcState.products, pcState.adminSettings.productOrder);
-            pcState.futures = applyProductOrdering(pcState.futures, pcState.adminSettings.productOrder);
-            renderPcRates(pcState.products, pcState.futures);
-            updateServerSettings({ productOrder: pcState.adminSettings.productOrder });
-            alert("✔ प्रोडक्ट का क्रम (Order) डिफ़ॉल्ट पर रीसेट कर दिया गया है!");
-        }
-
-        function renderPcRates(products, futures) {
-            const tbody = document.getElementById('pcRatesRows');
-            const orderedOrder = pcState.adminSettings.productOrder || [];
-            const sortedProds = applyProductOrdering(products, orderedOrder);
-            const sortedFuts = applyProductOrdering(futures, orderedOrder);
-            const allItems = applyProductOrdering([...sortedProds, ...sortedFuts], orderedOrder);
-
-            if (!isPcTableBuilt || tbody.children.length !== allItems.length) {
-                tbody.innerHTML = allItems.map((p, idx) => {
-                    const isProductHidden = !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id]);
-                    const isBuyHidden = !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id]);
-                    const isSellHidden = !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id]);
-                    const customName = (pcState.adminSettings.renames && pcState.adminSettings.renames[p.id]) || p.name;
+        function initSseStream() {
+            const evtSource = new EventSource('/api/rates-sse');
+            evtSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    pcState.products = data.allProducts || data.products || [];
+                    pcState.futures = data.allFutures || data.futures || [];
+                    pcState.guestVisitors = data.guestVisitors || [];
                     
-                    const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id]) !== undefined ? pcState.adminSettings.premiumsBuy[p.id] : 0;
-                    const sellPrem = (pcState.adminSettings.premiumsSell && pcState.adminSettings.premiumsSell[p.id]) !== undefined ? pcState.adminSettings.premiumsSell[p.id] : 0;
-
-                    return `
-                    <tr id="pc-row-${p.id}" class="${isProductHidden ? 'row-hidden' : ''}">
-                        <td style="text-align:center;white-space:nowrap;">
-                            <button type="button" class="btn-arrow-move" onclick="moveItemUp('${p.id}')" title="Move Up (ऊपर करें)"><i class="fa-solid fa-arrow-up"></i></button>
-                            <button type="button" class="btn-arrow-move" onclick="moveItemDown('${p.id}')" title="Move Down (नीचे करें)"><i class="fa-solid fa-arrow-down"></i></button>
-                        </td>
-                        <td style="text-align:center;background:rgba(239,68,68,0.1);">
-                            <input type="checkbox" class="eye-hide-checkbox" id="hideProd-${p.id}" ${isProductHidden ? 'checked' : ''} onchange="toggleInstantProductHide('${p.id}')">
-                        </td>
-                        <td><strong>${p.id}</strong></td>
-                        <td>
-                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}" oninput="previewLiveCalculatedRates('${p.id}')">
-                        </td>
-                        <td style="text-align:center;">
-                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy +/-" oninput="previewLiveCalculatedRates('${p.id}')">
-                        </td>
-                        <td style="text-align:center;"><span class="price-up" id="pc-buy-${p.id}">${(p.buy > 0 && !isProductHidden && !isBuyHidden) ? p.buy : '-'}</span></td>
-                        <td style="text-align:center;">
-                            <input type="checkbox" id="hideBuy-${p.id}" ${isBuyHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'buy')">
-                        </td>
-                        <td style="text-align:center;">
-                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell +/-" oninput="previewLiveCalculatedRates('${p.id}')">
-                        </td>
-                        <td style="text-align:center;"><span class="price-down" id="pc-sell-${p.id}">${(p.sell > 0 && !isProductHidden && !isSellHidden) ? p.sell : '-'}</span></td>
-                        <td style="text-align:center;">
-                            <input type="checkbox" id="hideSell-${p.id}" ${isSellHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'sell')">
-                        </td>
-                    </tr>`;
-                }).join('');
-                isPcTableBuilt = true;
-            }
-
-            allItems.forEach(p => {
-                const key = p.id;
-                const isFuture = p.id.includes('FUTURE') || p.id.includes('MCX');
-                const oldPrices = pcState.lastPrices[key] || { buy: p.buy, sell: p.sell };
-
-                const buyEl = document.getElementById(`pc-buy-${key}`);
-                const sellEl = document.getElementById(`pc-sell-${key}`);
-                const premBuyInp = document.getElementById(`premBuy-${key}`);
-                const premSellInp = document.getElementById(`premSell-${key}`);
-                const rowEl = document.getElementById(`pc-row-${key}`);
-                
-                const hideProdChk = document.getElementById(`hideProd-${key}`);
-                const hideBuyChk = document.getElementById(`hideBuy-${key}`);
-                const hideSellChk = document.getElementById(`hideSell-${key}`);
-
-                const isRowHidden = hideProdChk ? hideProdChk.checked : !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[key]);
-                const isBuyHidden = hideBuyChk ? hideBuyChk.checked : !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[key]);
-                const isSellHidden = hideSellChk ? hideSellChk.checked : !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[key]);
-
-                if (rowEl) {
-                    if (isRowHidden) rowEl.classList.add('row-hidden');
-                    else rowEl.classList.remove('row-hidden');
-                }
-
-                let rawBuy = p.rawBuy || p.buy;
-                let rawSell = p.rawSell || p.sell;
-
-                if (pcState.isFrozen && !isFuture && pcState.frozenPhysicalPrices[key]) {
-                    rawBuy = pcState.frozenPhysicalPrices[key].buy;
-                    rawSell = pcState.frozenPhysicalPrices[key].sell;
-                }
-
-                const activeBuyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : (p.buyPremium || 0);
-                const activeSellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : (p.sellPremium || 0);
-
-                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : 0;
-                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : 0;
-
-                const isPriceHiddenByMaster = !isFuture && pcState.isMasterHidden;
-
-                if (buyEl) {
-                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !isPriceHiddenByMaster) ? String(finalBuyPreview) : '-';
-                    if (buyEl.innerText !== buyText) buyEl.innerText = buyText;
-
-                    if (finalBuyPreview > 0 && oldPrices.buy > 0 && finalBuyPreview !== oldPrices.buy) {
-                        trigger350msPcFlash(buyEl, finalBuyPreview > oldPrices.buy ? 'up' : 'down');
-                    }
-                }
-
-                if (sellEl) {
-                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !isPriceHiddenByMaster) ? String(finalSellPreview) : '-';
-                    if (sellEl.innerText !== sellText) sellEl.innerText = sellText;
-
-                    if (finalSellPreview > 0 && oldPrices.sell > 0 && finalSellPreview !== oldPrices.sell) {
-                        trigger350msPcFlash(sellEl, finalSellPreview > oldPrices.sell ? 'up' : 'down');
-                    }
-                }
-
-                pcState.lastPrices[key] = { buy: finalBuyPreview, sell: finalSellPreview };
-            });
-        }
-
-        function trigger350msPcFlash(cellEl, dir) {
-            if (!cellEl) return;
-            cellEl.classList.remove('flash-green', 'flash-red');
-            cellEl.classList.add(dir === 'up' ? 'flash-green' : 'flash-red');
-            setTimeout(() => cellEl.classList.remove('flash-green', 'flash-red'), 350);
-        }
-
-        function previewLiveCalculatedRates(itemId) {
-            const allItems = [...pcState.products, ...pcState.futures];
-            const item = allItems.find(x => x.id === itemId);
-            if (!item) return;
-
-            const buyEl = document.getElementById(`pc-buy-${itemId}`);
-            const sellEl = document.getElementById(`pc-sell-${itemId}`);
-            const premBuyInp = document.getElementById(`premBuy-${itemId}`);
-            const premSellInp = document.getElementById(`premSell-${itemId}`);
-            
-            const rawBuy = item.rawBuy || item.buy;
-            const rawSell = item.rawSell || item.sell;
-
-            const buyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : 0;
-            const sellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : 0;
-
-            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
-
-            if (buyEl) buyEl.innerText = finalBuy > 0 ? finalBuy : '-';
-            if (sellEl) sellEl.innerText = finalSell > 0 ? finalSell : '-';
-        }
-
-        async function toggleInstantProductHide(itemId) {
-            const chk = document.getElementById(`hideProd-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            if (!pcState.adminSettings.hiddenProducts) pcState.adminSettings.hiddenProducts = {};
-            pcState.adminSettings.hiddenProducts[itemId] = isChecked;
-
-            await updateServerSettings({ hiddenProducts: pcState.adminSettings.hiddenProducts });
-            previewLiveCalculatedRates(itemId);
-        }
-
-        async function toggleInstantColumnHide(itemId, colType) {
-            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            if (colType === 'buy') {
-                if (!pcState.adminSettings.hiddenBuy) pcState.adminSettings.hiddenBuy = {};
-                pcState.adminSettings.hiddenBuy[itemId] = isChecked;
-                await updateServerSettings({ hiddenBuy: pcState.adminSettings.hiddenBuy });
-            } else {
-                if (!pcState.adminSettings.hiddenSell) pcState.adminSettings.hiddenSell = {};
-                pcState.adminSettings.hiddenSell[itemId] = isChecked;
-                await updateServerSettings({ hiddenSell: pcState.adminSettings.hiddenSell });
-            }
-            previewLiveCalculatedRates(itemId);
-        }
-
-        async function saveAllProductOverrides() {
-            const renames = {};
-            const premiumsBuy = {};
-            const premiumsSell = {};
-            const hiddenProducts = {};
-            const hiddenBuy = {};
-            const hiddenSell = {};
-
-            const allItems = [...pcState.products, ...pcState.futures];
-
-            allItems.forEach(p => {
-                const renameEl = document.getElementById(`rename-${p.id}`);
-                const premBuyEl = document.getElementById(`premBuy-${p.id}`);
-                const premSellEl = document.getElementById(`premSell-${p.id}`);
-                const hideProdEl = document.getElementById(`hideProd-${p.id}`);
-                const hideBuyEl = document.getElementById(`hideBuy-${p.id}`);
-                const hideSellEl = document.getElementById(`hideSell-${p.id}`);
-
-                if (renameEl && renameEl.value.trim() !== '') renames[p.id] = renameEl.value.trim();
-                if (premBuyEl && premBuyEl.value.trim() !== '') premiumsBuy[p.id] = parseInt(premBuyEl.value) || 0;
-                if (premSellEl && premSellEl.value.trim() !== '') premiumsSell[p.id] = parseInt(premSellEl.value) || 0;
-                
-                if (hideProdEl && hideProdEl.checked) hiddenProducts[p.id] = true;
-                if (hideBuyEl && hideBuyEl.checked) hiddenBuy[p.id] = true;
-                if (hideSellEl && hideSellEl.checked) hiddenSell[p.id] = true;
-            });
-
-            const updatedSettings = {
-                ...pcState.adminSettings,
-                renames,
-                premiumsBuy,
-                premiumsSell,
-                hiddenProducts,
-                hiddenBuy,
-                hiddenSell
-            };
-
-            await updateServerSettings(updatedSettings);
-            alert("✔ उत्पाद के नाम, क्रम (Order), प्रीमियम और हाइड सेटिंग्स सफलतापूर्वक सेव एवं सिंक हो गए!");
-        }
-
-        async function togglePcMasterHide() {
-            pcState.isMasterHidden = !pcState.isMasterHidden;
-            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
-            updateControlButtons();
-            renderPcRates(pcState.products, pcState.futures);
-        }
-
-        async function togglePcFreeze() {
-            pcState.isFrozen = !pcState.isFrozen;
-            if (pcState.isFrozen) {
-                pcState.frozenPhysicalPrices = {};
-                pcState.products.forEach(p => {
-                    pcState.frozenPhysicalPrices[p.id] = { buy: p.buy, sell: p.sell };
-                });
-            } else {
-                pcState.frozenPhysicalPrices = {};
-            }
-
-            await updateServerSettings({ isMasterFrozen: pcState.isFrozen, frozenPhysicalPrices: pcState.frozenPhysicalPrices });
-            updateControlButtons();
-            renderPcRates(pcState.products, pcState.futures);
-        }
-
-        function updateControlButtons() {
-            const hideBtn = document.getElementById('pcMasterHideBtn');
-            if (hideBtn) {
-                if (pcState.isMasterHidden) {
-                    hideBtn.innerText = "Show Physical";
-                    hideBtn.style.background = "#10b981";
-                } else {
-                    hideBtn.innerText = "Hide Physical";
-                    hideBtn.style.background = "#dc2626";
-                }
-            }
-
-            const freezeBtn = document.getElementById('pcFreezeBtn');
-            if (freezeBtn) {
-                if (pcState.isFrozen) {
-                    freezeBtn.innerText = "Resume Physical";
-                    freezeBtn.style.background = "#10b981";
-                } else {
-                    freezeBtn.innerText = "Freeze Physical";
-                    freezeBtn.style.background = "#ef4444";
-                }
-            }
-        }
-
-        async function savePcMarqueeText() {
-            const txt = document.getElementById('pcMarqueeText').value.trim();
-            if (!txt) return;
-            await updateServerSettings({ marqueeText: txt });
-            alert("मार्की न्यूज़ टिकर सफलतापूर्वक सेव हो गया!");
-        }
-
-        async function savePcPopupMsg() {
-            const msg = document.getElementById('pcPopupText').value.trim();
-            if (!msg) return;
-            await updateServerSettings({ popupMsg: msg });
-            alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
-        }
-
-        async function savePcBulletinMsg() {
-            const txt = (document.getElementById('pcBulletinText')?.value || '').trim();
-            if (!txt) {
-                alert("कृपया बुलेटिन संदेश लिखें!");
-                return;
-            }
-            await updateServerSettings({ bulletinMsg: txt });
-            alert("✔ ऑफिशियल बुलेटिन संदेश Swastik Live Personal Desk पर सफलतापूर्वक लाइव हो गया है!");
-        }
-
-        async function updateServerSettings(data) {
-            pcState.adminSettings = { ...pcState.adminSettings, ...data };
-            localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
-            
-            if (syncChannel) {
-                syncChannel.postMessage({ type: 'SETTINGS_UPDATE', settings: pcState.adminSettings });
-            }
-
-            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-            const urls = [
-                `api.php?action=admin-settings&_nc=${nonce}`,
-                `/api/admin-settings?_nc=${nonce}`,
-                `https://swastikgold.net/api.php?action=admin-settings&_nc=${nonce}`
-            ];
-            for (const url of urls) {
-                try {
-                    await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Cache-Control': 'no-cache, no-store, must-revalidate',
-                            'Pragma': 'no-cache'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                } catch(e) {}
-            }
-        }
-
-        async function fetchAdminSettings() {
-            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-            const urls = [
-                `api.php?action=admin-settings&_nc=${nonce}`,
-                `/api/admin-settings?_nc=${nonce}`,
-                `https://swastikgold.net/api.php?action=admin-settings&_nc=${nonce}`
-            ];
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url, {
-                        method: 'GET',
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control': 'no-cache, no-store, must-revalidate',
-                            'Pragma': 'no-cache'
-                        }
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        pcState.adminSettings = { ...pcState.adminSettings, ...data };
-                        if (data.customers && data.customers.length > 0) pcState.customers = data.customers;
-                        if (data.bankAccounts && data.bankAccounts.length > 0) pcState.bankAccounts = data.bankAccounts;
-                        
-                        localStorage.setItem('sg_admin_settings_v3', JSON.stringify(pcState.adminSettings));
-                        
-                        const marqEl = document.getElementById('pcMarqueeText');
-                        if (marqEl && data.marqueeText) marqEl.value = data.marqueeText;
-
-                        const popEl = document.getElementById('pcPopupText');
-                        if (popEl && data.popupMsg) popEl.value = data.popupMsg;
-
-                        const bullEl = document.getElementById('pcBulletinText');
-                        if (bullEl && data.bulletinMsg) bullEl.value = data.bulletinMsg;
-
-                        renderPcCust();
+                    // ONLY OVERWRITE BANK ACCOUNTS FROM SSE IF OPERATOR IS NOT ACTIVELY DELETING/EDITING!
+                    if (!isUserEditingBanks) {
+                        pcState.bankAccounts = data.bankAccounts || [];
                         renderBankAccountsEditor();
-                        renderPcRates(pcState.products, pcState.futures);
-                        updateAiPreview();
-                        return;
                     }
+
+                    if (data.customers && Array.isArray(data.customers)) {
+                        pcState.customers = data.customers;
+                        renderPcCust();
+                    }
+
+                    const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
+                    const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
+
+                    const onEl = document.getElementById('onlineCountBadge');
+                    const offEl = document.getElementById('offlineCountBadge');
+                    if (onEl) onEl.innerText = onlineList.length;
+                    if (offEl) offEl.innerText = offlineList.length;
+                    
+                    renderGuestVisitors(pcState.guestVisitors);
+
+                    if (data.swastikAiReport) {
+                        const comexEl = document.getElementById('aiComexTarget');
+                        const mcxEl = document.getElementById('aiMcxTarget');
+                        if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
+                        if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
+                    }
+
+                    renderPcRates(pcState.products, pcState.futures);
                 } catch(e) {}
-            }
-        }
-
-        function updateAiPreview() {
-            const previewEl = document.getElementById('pcAiReportPreview');
-            if (!previewEl) return;
-            previewEl.innerHTML = `
-                <p style="color:#4ade80;font-weight:700;">🎯 100% Graph & Market Analyzed (99.2% Accuracy)</p>
-                <p style="margin-top:4px;">🟡 <strong>COMEX Gold 1-Day Target:</strong> $4394.45 (1W: $4434.45 | 1M: $4520.95)</p>
-                <p style="margin-top:2px;">⚪ <strong>COMEX Silver 1-Day Target:</strong> $65.90 (1W: $68.15 | 1M: $72.55)</p>
-                <p style="margin-top:2px;">🟡 <strong>MCX Gold 1-Day Target:</strong> ₹1,55,080 (1W: ₹1,56,310 | 1M: ₹1,59,060)</p>
-                <p style="margin-top:2px;">⚪ <strong>MCX Silver 1-Day Target:</strong> ₹2,37,222 (1W: ₹2,39,772 | 1M: ₹2,45,072)</p>
-                <div style="margin-top:6px;font-size:10px;color:#94a3b8;border-top:1px solid #1e293b;padding-top:4px;">
-                    ⚡ <strong>मुख्य कारण:</strong> US Fed दर कटौती (92%), DXY डॉलर कमजोरी (102.3), इंडस्ट्रियल सोलर सिल्वर डिमांड व त्योहारी हाजिर मांग।
-                </div>`;
-        }
-
-        function switchCustTab(tabType) {
-            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
-            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
-            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
-
-            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
-            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
-            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
-        }
-
-        function filterAllCustTables() {
-            renderPcCust();
-            renderGuestVisitors(pcState.guestVisitors);
-        }
-
-        function clearCustSearch() {
-            const inp = document.getElementById('custSearchInput');
-            if (inp) inp.value = '';
-            renderPcCust();
-            renderGuestVisitors(pcState.guestVisitors);
-        }
-
-        function renderPcCust() {
-            const approvedTbody = document.getElementById('pcApprovedCustRows');
-            const requestTbody = document.getElementById('pcRequestCustRows');
-            const query = (document.getElementById('custSearchInput')?.value || '').trim().toLowerCase();
-
-            const approvedList = (pcState.customers || []).filter(c => c.status === 'APPROVED' || c.status === 'BLOCKED');
-            const pendingList = (pcState.customers || []).filter(c => c.status === 'PENDING');
-
-            const appBadge = document.getElementById('approvedCustCountBadge');
-            const reqBadge = document.getElementById('pendingRequestCountBadge');
-
-            if (appBadge) appBadge.innerText = approvedList.length;
-            if (reqBadge) reqBadge.innerText = pendingList.length;
-
-            const filterFn = (c) => {
-                if (!query) return true;
-                const idM = (c.id || '').toLowerCase().includes(query);
-                const nameM = (c.name || '').toLowerCase().includes(query);
-                const mobM = (c.mobile || '').toLowerCase().includes(query);
-                const cityM = (c.city || '').toLowerCase().includes(query);
-                const pinM = (c.pin || '').toLowerCase().includes(query);
-                const statM = (c.status || '').toLowerCase().includes(query);
-                return idM || nameM || mobM || cityM || pinM || statM;
             };
-
-            const displayApproved = approvedList.filter(filterFn);
-            const displayPending = pendingList.filter(filterFn);
-
-            if (approvedTbody) {
-                if (displayApproved.length === 0) {
-                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:${query ? '#f87171' : '#94a3b8'};padding:14px;font-weight:700;">${query ? `🔍 खोज '${query}' के लिए कोई स्वीकृत कस्टमर नहीं मिला` : 'कोई स्वीकृत कस्टमर नहीं है'}</td></tr>`;
-                } else {
-                    approvedTbody.innerHTML = displayApproved.map(c => {
-                        const pinStr = c.pin || '123456';
-                        const waText = encodeURIComponent(
-                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
-                            `नमस्कार ${c.name} जी! Swastik Gold में आपका हार्दिक स्वागत है।\n\n` +
-                            `आपकी बुलियन लाइव रेट्स ऐप एवं वेबसाइट की लॉगिन डिटेल्स निम्न प्रकार हैं:\n\n` +
-                            `🔑 *User ID:* ${c.id}\n` +
-                            `🔒 *Password PIN:* ${pinStr}\n\n` +
-                            `🌐 *Website Link:* https://swastikgold.net/\n\n` +
-                            `धन्यवाद!\n` +
-                            `*Swastik Gold Jalore - Champalal Soni*\n` +
-                            `📞 Contact: 9414152854 / 9772277054`
-                        );
-
-                        return `
-                        <tr>
-                            <td><strong>${c.id}</strong></td>
-                            <td><strong>${c.name}</strong></td>
-                            <td>${c.mobile}</td>
-                            <td>${c.city}</td>
-                            <td><span class="pin-code">${pinStr}</span></td>
-                            <td><strong style="color:${c.status === 'APPROVED' ? '#4ade80' : '#f87171'};">${c.status}</strong></td>
-                            <td>
-                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
-                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
-                                </a>
-                            </td>
-                            <td>
-                                ${c.status === 'APPROVED' ? `<button class="btn-action-sm" style="background:#ef4444;" onclick="setCustStatus('${c.id}', 'BLOCKED')">Block Account</button>` : ''}
-                                ${c.status === 'BLOCKED' ? `<button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')">Unblock Account</button>` : ''}
-                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </td>
-                        </tr>`;
-                    }).join('');
-                }
-            }
-
-            if (requestTbody) {
-                if (displayPending.length === 0) {
-                    requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:${query ? '#f87171' : '#94a3b8'};padding:14px;font-weight:700;">${query ? `🔍 खोज '${query}' के लिए कोई पेंडिंग रिक्वेस्ट नहीं मिली` : 'वर्तमान में कोई नई रजिस्ट्रेशन रिक्वेस्ट पेंडिंग नहीं है'}</td></tr>`;
-                } else {
-                    requestTbody.innerHTML = displayPending.map(c => {
-                        const pinStr = c.pin || '123456';
-                        const waText = encodeURIComponent(
-                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
-                            `नमस्कार ${c.name} जी! आपकी रजिस्ट्रेशन रिक्वेस्ट स्वास्तिक गोल्ड में स्वीकृत कर ली गई है।\n\n` +
-                            `आपकी लॉगिन आईडी एवं पासवर्ड निम्न हैं:\n` +
-                            `🔑 User ID: ${c.id}\n` +
-                            `🔒 PIN: ${pinStr}\n` +
-                            `🌐 Website: https://swastikgold.net/`
-                        );
-
-                        return `
-                        <tr style="background:rgba(250,204,21,0.14);">
-                            <td><strong style="color:#f59e0b;">${c.id}</strong></td>
-                            <td><strong style="color:#ffffff;font-size:12px;">${c.name}</strong></td>
-                            <td><strong style="color:#4ade80;font-family:monospace;">${c.mobile}</strong></td>
-                            <td>${c.city}</td>
-                            <td><span class="pin-code">${pinStr}</span></td>
-                            <td><strong style="color:#facc15;">⏳ PENDING REQUEST</strong></td>
-                            <td>
-                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
-                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
-                                </a>
-                            </td>
-                            <td>
-                                <button class="btn-action-sm" style="background:#16a34a;padding:5px 12px;font-size:11px;" onclick="setCustStatus('${c.id}', 'APPROVED')">
-                                    <i class="fa-solid fa-check"></i> APPROVE REQUEST
-                                </button>
-                                <button class="btn-action-sm" style="background:#dc2626;padding:5px 8px;font-size:11px;" onclick="deleteCustomer('${c.id}')">
-                                    <i class="fa-solid fa-xmark"></i> Reject
-                                </button>
-                            </td>
-                        </tr>`;
-                    }).join('');
-                }
-            }
-        }
-
-        async function setCustStatus(id, status) {
-            const custs = [...pcState.customers];
-            const target = custs.find(x => x.id === id);
-            if (target) {
-                target.status = status;
-                if (status === 'BLOCKED') {
-                    target.activeSession = null;
-                    if (syncChannel) {
-                        syncChannel.postMessage({ type: 'FORCE_LOGOUT_CUSTOMER', customerId: id, reason: 'BLOCKED' });
-                    }
-                }
-                localStorage.setItem('sg_customers_v3', JSON.stringify(custs));
-                
-                if (syncChannel) {
-                    syncChannel.postMessage({ type: 'CUSTOMER_STATUS_CHANGE', customerId: id, status: status });
-                }
-
-                await updateServerSettings({ customers: custs });
-                renderPcCust();
-
-                if (status === 'APPROVED') {
-                    const waText = encodeURIComponent(
-                        `卐 *SWASTIK GOLD JALORE* 卐\n` +
-                        `नमस्कार ${target.name} जी! आपकी रजिस्ट्रेशन रिक्वेस्ट स्वास्तिक गोल्ड में स्वीकृत (APPROVED) कर दी गई है।\n\n` +
-                        `आपकी लॉगिन आईडी एवं पासवर्ड निम्न हैं:\n` +
-                        `🔑 *User ID:* ${target.id}\n` +
-                        `🔒 *Password PIN:* ${target.pin || '123456'}\n\n` +
-                        `🌐 *Website Link:* https://swastikgold.net/\n\n` +
-                        `धन्यवाद!\n` +
-                        `*Swastik Gold Jalore - Champalal Soni*\n` +
-                        `📞 Contact: 9414152854 / 9772277054`
-                    );
-
-                    if (confirm(`✔ कस्टमर ${target.name} (ID: ${target.id}) को सफलतापूर्वक अप्रूव कर दिया गया है!\n\nक्या आप अभी कस्टमर को उसके WhatsApp (+91 ${target.mobile}) पर लॉगिन आईडी एवं पासवर्ड भेजना चाहते हैं?`)) {
-                        window.open(`https://wa.me/91${target.mobile}?text=${waText}`, '_blank');
-                    }
-                } else {
-                    alert(`✔ कस्टमर ${target.name} (ID: ${target.id}) की स्थिति ${status} कर दी गई है!`);
-                }
-            }
-        }
-
-        async function deleteCustomer(id) {
-            if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को डिलीट/रिजेक्ट करना चाहते हैं?`)) return;
-            pcState.customers = pcState.customers.filter(x => x.id !== id);
-            localStorage.setItem('sg_customers_v3', JSON.stringify(pcState.customers));
-            if (syncChannel) {
-                syncChannel.postMessage({ type: 'FORCE_LOGOUT_CUSTOMER', customerId: id, reason: 'DELETED' });
-            }
-            await updateServerSettings({ customers: pcState.customers });
-            renderPcCust();
-            alert(`कस्टमर ID ${id} रिजेक्ट/डिलीट कर दिया गया है!`);
-        }
-
-        function updateGuestVisitorList(v) {
-            if (!v) return;
-            if (!pcState.guestVisitors) pcState.guestVisitors = [];
-            const vid = v.visitorId || (v.ip + '_' + v.device);
-            const idx = pcState.guestVisitors.findIndex(x => (x.visitorId && x.visitorId === vid) || (v.mobile && v.mobile !== 'Not Registered' && x.mobile === v.mobile) || (x.ip === v.ip && x.device === v.device));
-            if (idx >= 0) {
-                pcState.guestVisitors[idx] = { ...pcState.guestVisitors[idx], ...v };
-            } else {
-                pcState.guestVisitors.unshift(v);
-            }
-            renderGuestVisitors(pcState.guestVisitors);
-        }
-
-        function renderGuestVisitors(visitors) {
-            const tbody = document.getElementById('guestVisitorRows');
-            if (!tbody) return;
-            if (!visitors || visitors.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:10px;">कोई गेस्ट विज़िटर डेटा उपलब्ध नहीं है</td></tr>`;
-                return;
-            }
-
-            const query = (document.getElementById('custSearchInput')?.value || '').trim().toLowerCase();
-            const now = Date.now();
-
-            // 1. Sort: Online Visitors First (<15s ping), followed by offline visitors sorted by recent ping
-            const sortedVisitors = [...visitors].sort((a, b) => {
-                const aOnline = (a.status === 'ONLINE' && (now - (a.lastPing || 0) < 15000));
-                const bOnline = (b.status === 'ONLINE' && (now - (b.lastPing || 0) < 15000));
-                if (aOnline && !bOnline) return -1;
-                if (!aOnline && bOnline) return 1;
-                return (b.lastPing || 0) - (a.lastPing || 0);
-            });
-
-            let onlineCount = 0;
-            let offlineCount = 0;
-
-            const filteredVisitors = sortedVisitors.filter(v => {
-                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 15000));
-                if (isOnline) onlineCount++;
-                else offlineCount++;
-
-                if (!query) return true;
-                const nameM = (v.guestName || '').toLowerCase().includes(query);
-                const mobM = (v.mobile || '').toLowerCase().includes(query);
-                const ipM = (v.ip || '').toLowerCase().includes(query);
-                const cityM = (v.city || '').toLowerCase().includes(query);
-                const devM = (v.device || '').toLowerCase().includes(query);
-                const vidM = (v.visitorId || '').toLowerCase().includes(query);
-                return nameM || mobM || ipM || cityM || devM || vidM;
-            });
-
-            const onEl = document.getElementById('onlineCountBadge');
-            const offEl = document.getElementById('offlineCountBadge');
-            if (onEl) onEl.innerText = onlineCount;
-            if (offEl) offEl.innerText = offlineCount;
-
-            if (filteredVisitors.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#f87171;padding:14px;font-weight:700;">🔍 खोज '${query}' के लिए कोई विज़िटर नहीं मिला</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = filteredVisitors.map(v => {
-                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 15000));
-                const statusBadge = isOnline ? 
-                    `<strong style="color:#4ade80;">🟢 LIVE ONLINE</strong>` : 
-                    `<strong style="color:#f87171;">🔴 OFFLINE VISITED</strong>`;
-
-                const nameDisplay = v.guestName || 'Guest Visitor';
-                const mobileDisplay = v.mobile || 'Not Registered';
-
-                return `
-                <tr style="${!isOnline ? 'opacity:0.8;' : ''}">
-                    <td>${statusBadge}</td>
-                    <td><strong style="color:#facc15;">${nameDisplay}</strong></td>
-                    <td><strong style="color:#4ade80;font-family:monospace;">${mobileDisplay}</strong></td>
-                    <td><strong>${v.ip || '127.0.0.1'}</strong></td>
-                    <td><span style="color:#38bdf8;font-weight:700;">${v.device || 'Mobile / PC'}</span></td>
-                    <td>${v.city || 'Jalore Region'}</td>
-                    <td>${v.page || 'Live Rates'}</td>
-                    <td><span class="pin-code">${v.pingTime || '--:--'}</span></td>
-                </tr>`;
-            }).join('');
         }
 
         function renderBankAccountsEditor() {
@@ -1562,7 +519,7 @@
             isUserEditingBanks = true;
             pcState.bankAccounts = pcState.bankAccounts.filter(x => x.id !== id);
             renderBankAccountsEditor();
-            await saveBankAccountsToAdmin(false);
+            await saveBankAccountsToAdmin(false); // ATOMIC 1-CLICK PERMANENT SAVE ON DELETE
         }
 
         async function saveBankAccountsToAdmin(showAlert = true) {
@@ -1580,10 +537,485 @@
                 return { ...b, bankName: bName, accountNo: accNo, ifsc: ifsc, branch: branch };
             });
 
-            pcState.bankAccounts = updatedBanks;
             await updateServerSettings({ bankAccounts: updatedBanks });
             isUserEditingBanks = false;
-            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट एवं सेव हो गए!");
+            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट एवं डिस्क पर सेव हो गए!");
+        }
+
+        function switchCustTab(tabType) {
+            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
+            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
+            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
+
+            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
+            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
+            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
+        }
+
+        function renderGuestVisitors(visitors) {
+            const tbody = document.getElementById('guestVisitorRows');
+            if (!tbody) return;
+            if (!visitors || visitors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई गेस्ट विज़िटर डेटा उपलब्ध नहीं है</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = visitors.map(v => {
+                const isOnline = v.status === 'ONLINE';
+                const statusBadge = isOnline ? 
+                    `<strong style="color:#4ade80;">🟢 LIVE ONLINE</strong>` : 
+                    `<strong style="color:#f87171;">🔴 OFFLINE VISITED</strong>`;
+
+                const nameDisplay = v.guestName || 'Champalal Soni';
+                const mobileDisplay = v.mobile || '9414152854';
+
+                return `
+                <tr style="${!isOnline ? 'opacity:0.75;' : ''}">
+                    <td>${statusBadge}</td>
+                    <td><strong style="color:#facc15;">${nameDisplay}</strong></td>
+                    <td><strong style="color:#4ade80;font-family:monospace;">${mobileDisplay}</strong></td>
+                    <td><strong>${v.ip}</strong></td>
+                    <td><span style="color:#38bdf8;font-weight:700;">${v.device}</span></td>
+                    <td>${v.city || 'Jalore Region'}</td>
+                    <td>${v.page}</td>
+                    <td><span class="pin-code">${v.pingTime}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function fetchAdminSettings() {
+            try {
+                const res = await fetch('/api/admin-settings?_=' + Date.now());
+                if (res.ok) {
+                    pcState.adminSettings = await res.json();
+                    pcState.customers = pcState.adminSettings.customers || [];
+                    pcState.bankAccounts = pcState.adminSettings.bankAccounts || [];
+                    
+                    const marqueeInput = document.getElementById('pcMarqueeText');
+                    if (marqueeInput && !marqueeInput.matches(':focus')) {
+                        marqueeInput.value = pcState.adminSettings.marqueeText || '';
+                    }
+
+                    const popupInput = document.getElementById('pcPopupText');
+                    if (popupInput && !popupInput.matches(':focus')) {
+                        popupInput.value = pcState.adminSettings.popupMsg || '';
+                    }
+
+                    pcState.isMasterHidden = pcState.adminSettings.isMasterHidden || false;
+                    pcState.isFrozen = pcState.adminSettings.isMasterFrozen || false;
+                    
+                    updateControlButtons();
+                    renderPcCust();
+                    renderBankAccountsEditor();
+                }
+            } catch(e) {}
+        }
+
+        /* DEDICATED ATOMIC TOGGLE SECURITY FUNCTION (POST /api/toggle-security) */
+        async function toggleSecurityMode() {
+            const nextStatus = !pcState.isSecurityLoginRequired;
+
+            try {
+                const res = await fetch('/api/toggle-security', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                    updateSecurityButtonUI();
+                    alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+                }
+            } catch(e) {
+                alert("सर्वर से कनेक्ट करने में त्रुटि!");
+            }
+        }
+
+        function updateSecurityButtonUI() {
+            const btn = document.getElementById('pcSecurityToggleBtn');
+            const txt = document.getElementById('securityBtnText');
+            if (btn && txt) {
+                if (pcState.isSecurityLoginRequired) {
+                    btn.className = "btn-security-toggle btn-security-on";
+                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
+                } else {
+                    btn.className = "btn-security-toggle btn-security-off";
+                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
+                }
+            }
+        }
+
+        function renderPcRates(products, futures) {
+            const tbody = document.getElementById('pcRatesRows');
+            const allItems = [...products, ...futures];
+
+            if (!isPcTableBuilt || tbody.children.length !== allItems.length) {
+                tbody.innerHTML = allItems.map(p => {
+                    const isProductHidden = pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id];
+                    const isBuyHidden = pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id];
+                    const isSellHidden = pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id];
+                    const customName = (pcState.adminSettings.renames && pcState.adminSettings.renames[p.id]) || p.name;
+                    
+                    const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id]) !== undefined ? pcState.adminSettings.premiumsBuy[p.id] : 0;
+                    const sellPrem = (pcState.adminSettings.premiumsSell && pcState.adminSettings.premiumsSell[p.id]) !== undefined ? pcState.adminSettings.premiumsSell[p.id] : 0;
+
+                    return `
+                    <tr id="pc-row-${p.id}" class="${isProductHidden ? 'row-hidden' : ''}">
+                        <td style="text-align:center;background:rgba(239,68,68,0.1);">
+                            <input type="checkbox" class="eye-hide-checkbox" id="hideProd-${p.id}" ${isProductHidden ? 'checked' : ''} onchange="toggleInstantProductHide('${p.id}')">
+                        </td>
+                        <td><strong>${p.id}</strong></td>
+                        <td>
+                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}">
+                        </td>
+                        <td style="text-align:center;">
+                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                        </td>
+                        <td style="text-align:center;"><span class="price-up" id="pc-buy-${p.id}">${(p.buy > 0 && !isProductHidden && !isBuyHidden) ? p.buy : '-'}</span></td>
+                        <td style="text-align:center;">
+                            <input type="checkbox" id="hideBuy-${p.id}" ${isBuyHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'buy')">
+                        </td>
+                        <td style="text-align:center;">
+                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                        </td>
+                        <td style="text-align:center;"><span class="price-down" id="pc-sell-${p.id}">${(p.sell > 0 && !isProductHidden && !isSellHidden) ? p.sell : '-'}</span></td>
+                        <td style="text-align:center;">
+                            <input type="checkbox" id="hideSell-${p.id}" ${isSellHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'sell')">
+                        </td>
+                    </tr>`;
+                }).join('');
+                isPcTableBuilt = true;
+            }
+
+            allItems.forEach(p => {
+                const key = p.id;
+                const oldPrices = pcState.lastPrices[key] || { buy: p.buy, sell: p.sell };
+
+                const buyEl = document.getElementById(`pc-buy-${key}`);
+                const sellEl = document.getElementById(`pc-sell-${key}`);
+                const premBuyInp = document.getElementById(`premBuy-${key}`);
+                const premSellInp = document.getElementById(`premSell-${key}`);
+                const rowEl = document.getElementById(`pc-row-${key}`);
+                
+                const hideProdChk = document.getElementById(`hideProd-${key}`);
+                const hideBuyChk = document.getElementById(`hideBuy-${key}`);
+                const hideSellChk = document.getElementById(`hideSell-${key}`);
+
+                const isRowHidden = hideProdChk ? hideProdChk.checked : !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[key]);
+                const isBuyHidden = hideBuyChk ? hideBuyChk.checked : !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[key]);
+                const isSellHidden = hideSellChk ? hideSellChk.checked : !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[key]);
+
+                if (rowEl) {
+                    if (isRowHidden) rowEl.classList.add('row-hidden');
+                    else rowEl.classList.remove('row-hidden');
+                }
+
+                const rawBuy = p.rawBuy || p.buy;
+                const rawSell = p.rawSell || p.sell;
+
+                const activeBuyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : (p.buyPremium || 0);
+                const activeSellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : (p.sellPremium || 0);
+
+                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : p.buy;
+                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : p.sell;
+
+                if (buyEl) {
+                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? String(finalBuyPreview) : '-';
+                    if (buyEl.innerText !== buyText) buyEl.innerText = buyText;
+
+                    if (finalBuyPreview > 0 && oldPrices.buy > 0 && finalBuyPreview !== oldPrices.buy) {
+                        trigger350msPcFlash(buyEl, finalBuyPreview > oldPrices.buy ? 'up' : 'down');
+                    }
+                }
+
+                if (sellEl) {
+                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? String(finalSellPreview) : '-';
+                    if (sellEl.innerText !== sellText) sellEl.innerText = sellText;
+
+                    if (finalSellPreview > 0 && oldPrices.sell > 0 && finalSellPreview !== oldPrices.sell) {
+                        trigger350msPcFlash(sellEl, finalSellPreview > oldPrices.sell ? 'up' : 'down');
+                    }
+                }
+
+                pcState.lastPrices[key] = { buy: finalBuyPreview, sell: finalSellPreview };
+            });
+        }
+
+        function trigger350msPcFlash(cellEl, dir) {
+            if (!cellEl) return;
+            cellEl.classList.remove('flash-green', 'flash-red');
+            cellEl.classList.add(dir === 'up' ? 'flash-green' : 'flash-red');
+            setTimeout(() => cellEl.classList.remove('flash-green', 'flash-red'), 350);
+        }
+
+        async function toggleInstantProductHide(itemId) {
+            const chk = document.getElementById(`hideProd-${itemId}`);
+            const isChecked = chk ? chk.checked : false;
+
+            const currentHiddenMap = { ...(pcState.adminSettings.hiddenProducts || {}) };
+            currentHiddenMap[itemId] = isChecked;
+
+            await updateServerSettings({ hiddenProducts: currentHiddenMap });
+            previewLiveCalculatedRates(itemId);
+        }
+
+        async function toggleInstantColumnHide(itemId, colType) {
+            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
+            const isChecked = chk ? chk.checked : false;
+
+            let currentMap = colType === 'buy' ? { ...(pcState.adminSettings.hiddenBuy || {}) } : { ...(pcState.adminSettings.hiddenSell || {}) };
+            currentMap[itemId] = isChecked;
+
+            const updatedSettings = {};
+            if (colType === 'buy') updatedSettings.hiddenBuy = currentMap;
+            else updatedSettings.hiddenSell = currentMap;
+
+            await updateServerSettings(updatedSettings);
+            previewLiveCalculatedRates(itemId);
+        }
+
+        function previewLiveCalculatedRates(itemId) {
+            const allItems = [...pcState.products, ...pcState.futures];
+            const item = allItems.find(x => x.id === itemId);
+            if (!item) return;
+
+            const buyEl = document.getElementById(`pc-buy-${itemId}`);
+            const sellEl = document.getElementById(`pc-sell-${itemId}`);
+            const premBuyInp = document.getElementById(`premBuy-${itemId}`);
+            const premSellInp = document.getElementById(`premSell-${itemId}`);
+            
+            const hideProdChk = document.getElementById(`hideProd-${itemId}`);
+            const hideBuyChk = document.getElementById(`hideBuy-${itemId}`);
+            const hideSellChk = document.getElementById(`hideSell-${itemId}`);
+
+            const isRowHidden = hideProdChk ? hideProdChk.checked : false;
+            const isBuyHidden = hideBuyChk ? hideBuyChk.checked : false;
+            const isSellHidden = hideSellChk ? hideSellChk.checked : false;
+
+            const rawBuy = item.rawBuy || item.buy;
+            const rawSell = item.rawSell || item.sell;
+
+            const buyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : 0;
+            const sellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : 0;
+
+            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : item.buy;
+            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : item.sell;
+
+            if (buyEl) buyEl.innerText = (finalBuy > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? finalBuy : '-';
+            if (sellEl) sellEl.innerText = (finalSell > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? finalSell : '-';
+        }
+
+        async function saveAllProductOverrides() {
+            const renames = {};
+            const premiumsBuy = {};
+            const premiumsSell = {};
+            const hiddenProducts = {};
+            const hiddenBuy = {};
+            const hiddenSell = {};
+
+            const allItems = [...pcState.products, ...pcState.futures];
+
+            allItems.forEach(p => {
+                const renameEl = document.getElementById(`rename-${p.id}`);
+                const premBuyEl = document.getElementById(`premBuy-${p.id}`);
+                const premSellEl = document.getElementById(`premSell-${p.id}`);
+                const hideProdEl = document.getElementById(`hideProd-${p.id}`);
+                const hideBuyEl = document.getElementById(`hideBuy-${p.id}`);
+                const hideSellEl = document.getElementById(`hideSell-${p.id}`);
+
+                if (renameEl && renameEl.value.trim() !== '') renames[p.id] = renameEl.value.trim();
+                if (premBuyEl && premBuyEl.value.trim() !== '') premiumsBuy[p.id] = parseInt(premBuyEl.value) || 0;
+                if (premSellEl && premSellEl.value.trim() !== '') premiumsSell[p.id] = parseInt(premSellEl.value) || 0;
+                
+                if (hideProdEl && hideProdEl.checked) hiddenProducts[p.id] = true;
+                if (hideBuyEl && hideBuyEl.checked) hiddenBuy[p.id] = true;
+                if (hideSellEl && hideSellEl.checked) hiddenSell[p.id] = true;
+            });
+
+            await updateServerSettings({ renames, premiumsBuy, premiumsSell, hiddenProducts, hiddenBuy, hiddenSell });
+            alert("उत्पाद के नाम, प्रीमियम और हाइड कंट्रोल्स सफलतापूर्वक सेव हो गए!");
+        }
+
+        async function savePcMarqueeText() {
+            const txt = document.getElementById('pcMarqueeText').value.trim();
+            if (!txt) return;
+            await updateServerSettings({ marqueeText: txt });
+            alert("मार्की न्यूज़ टिकर सफलतापूर्वक सेव हो गया!");
+        }
+
+        async function savePcPopupMsg() {
+            const msg = document.getElementById('pcPopupText').value.trim();
+            if (!msg) return;
+            await updateServerSettings({ popupMsg: msg });
+            alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
+        }
+
+        async function togglePcMasterHide() {
+            pcState.isMasterHidden = !pcState.isMasterHidden;
+            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
+            updateControlButtons();
+        }
+
+        async function togglePcFreeze() {
+            pcState.isFrozen = !pcState.isFrozen;
+            await updateServerSettings({ isMasterFrozen: pcState.isFrozen });
+            updateControlButtons();
+        }
+
+        function updateControlButtons() {
+            const hideBtn = document.getElementById('pcMasterHideBtn');
+            if (pcState.isMasterHidden) {
+                hideBtn.innerText = "Show Physical";
+                hideBtn.style.background = "#10b981";
+            } else {
+                hideBtn.innerText = "Hide Physical";
+                hideBtn.style.background = "#dc2626";
+            }
+
+            const freezeBtn = document.getElementById('pcFreezeBtn');
+            if (pcState.isFrozen) {
+                freezeBtn.innerText = "Resume Physical";
+                freezeBtn.style.background = "#10b981";
+            } else {
+                freezeBtn.innerText = "Freeze Physical";
+                freezeBtn.style.background = "#ef4444";
+            }
+        }
+
+        async function updateServerSettings(data) {
+            try {
+                const res = await fetch('/api/admin-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    pcState.adminSettings = result.settings;
+                    pcState.customers = result.settings.customers || [];
+                    pcState.bankAccounts = result.settings.bankAccounts || [];
+                    renderPcCust();
+                    renderBankAccountsEditor();
+                }
+            } catch(e) {}
+        }
+
+        function renderPcCust() {
+            const approvedTbody = document.getElementById('pcApprovedCustRows');
+            const requestTbody = document.getElementById('pcRequestCustRows');
+
+            const approvedList = (pcState.customers || []).filter(c => c.status === 'APPROVED' || c.status === 'BLOCKED');
+            const pendingList = (pcState.customers || []).filter(c => c.status === 'PENDING');
+
+            const appBadge = document.getElementById('approvedCustCountBadge');
+            const reqBadge = document.getElementById('pendingRequestCountBadge');
+
+            if (appBadge) appBadge.innerText = approvedList.length;
+            if (reqBadge) reqBadge.innerText = pendingList.length;
+
+            // RENDER TAB 1: APPROVED CUSTOMERS
+            if (approvedTbody) {
+                if (approvedList.length === 0) {
+                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई स्वीकृत कस्टमर नहीं है</td></tr>`;
+                } else {
+                    approvedTbody.innerHTML = approvedList.map(c => {
+                        const pinStr = c.pin || '123456';
+                        const waText = encodeURIComponent(
+                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
+                            `नमस्कार ${c.name} जी! Swastik Gold में आपका हार्दिक स्वागत है।\n\n` +
+                            `आपकी बुलियन लाइव रेट्स ऐप एवं वेबसाइट की लॉगिन डिटेल्स निम्न प्रकार हैं:\n\n` +
+                            `🔑 *User ID:* ${c.id}\n` +
+                            `🔒 *Password PIN:* ${pinStr}\n\n` +
+                            `🌐 *Website Link:* https://swastikgold.net/\n\n` +
+                            `धन्यवाद!\n` +
+                            `*Swastik Gold Jalore - Champalal Soni*\n` +
+                            `📞 Contact: 9414152854 / 9772277054`
+                        );
+
+                        return `
+                        <tr>
+                            <td><strong>${c.id}</strong></td>
+                            <td><strong>${c.name}</strong></td>
+                            <td>${c.mobile}</td>
+                            <td>${c.city}</td>
+                            <td><span class="pin-code">${pinStr}</span></td>
+                            <td><strong style="color:${c.status === 'APPROVED' ? '#4ade80' : '#f87171'};">${c.status}</strong></td>
+                            <td>
+                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
+                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
+                                </a>
+                            </td>
+                            <td>
+                                ${c.status === 'APPROVED' ? `<button class="btn-action-sm" style="background:#ef4444;" onclick="setCustStatus('${c.id}', 'BLOCKED')">Block Account</button>` : ''}
+                                ${c.status === 'BLOCKED' ? `<button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')">Unblock Account</button>` : ''}
+                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                }
+            }
+
+            // RENDER TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER
+            if (requestTbody) {
+                if (pendingList.length === 0) {
+                    requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px;">वर्तमान में कोई नई रजिस्ट्रेशन रिक्वेस्ट पेंडिंग नहीं है</td></tr>`;
+                } else {
+                    requestTbody.innerHTML = pendingList.map(c => {
+                        const pinStr = c.pin || '123456';
+                        const waText = encodeURIComponent(
+                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
+                            `नमस्कार ${c.name} जी! आपकी रजिस्ट्रेशन रिक्वेस्ट स्वास्तिक गोल्ड में स्वीकृत कर ली गई है।\n\n` +
+                            `आपकी लॉगिन आईडी एवं पासवर्ड निम्न हैं:\n` +
+                            `🔑 User ID: ${c.id}\n` +
+                            `🔒 PIN: ${pinStr}\n` +
+                            `🌐 Website: https://swastikgold.net/`
+                        );
+
+                        return `
+                        <tr style="background:rgba(250,204,21,0.14);">
+                            <td><strong style="color:#f59e0b;">${c.id}</strong></td>
+                            <td><strong style="color:#ffffff;font-size:12px;">${c.name}</strong></td>
+                            <td><strong style="color:#4ade80;font-family:monospace;">${c.mobile}</strong></td>
+                            <td>${c.city}</td>
+                            <td><span class="pin-code">${pinStr}</span></td>
+                            <td><strong style="color:#facc15;">⏳ PENDING REQUEST</strong></td>
+                            <td>
+                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
+                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
+                                </a>
+                            </td>
+                            <td>
+                                <button class="btn-action-sm" style="background:#16a34a;padding:5px 12px;font-size:11px;" onclick="setCustStatus('${c.id}', 'APPROVED')">
+                                    <i class="fa-solid fa-check"></i> APPROVE REQUEST
+                                </button>
+                                <button class="btn-action-sm" style="background:#dc2626;padding:5px 8px;font-size:11px;" onclick="deleteCustomer('${c.id}')">
+                                    <i class="fa-solid fa-xmark"></i> Reject
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                }
+            }
+        }
+
+        async function setCustStatus(id, status) {
+            const custs = [...pcState.customers];
+            const target = custs.find(x => x.id === id);
+            if (target) {
+                target.status = status;
+                if (status === 'BLOCKED') target.activeSession = null;
+                await updateServerSettings({ customers: custs });
+                alert(`कस्टमर ${target.name} (ID: ${target.id}) की रिक्वेस्ट ${status === 'APPROVED' ? 'स्वीकृत (APPROVED)' : status} कर दी गई है!`);
+            }
+        }
+
+        async function deleteCustomer(id) {
+            if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को डिलीट/रिजेक्ट करना चाहते हैं?`)) return;
+            const updatedCusts = pcState.customers.filter(x => x.id !== id);
+            await updateServerSettings({ customers: updatedCusts });
+            alert(`कस्टमर ID ${id} रिजेक्ट/डिलीट कर दिया गया है!`);
         }
     </script>
 </body>

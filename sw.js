@@ -1,23 +1,54 @@
-// Swastik Gold Jalore - Universal Real-Time Service Worker
-// Enforces 100% Zero-Cache for Live Bullion Rates
+const CACHE_NAME = 'swastik-gold-v2';
+const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/website.html',
+  '/styles.css',
+  '/app.js',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
+];
 
 self.addEventListener('install', (e) => {
-    self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
-    e.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(keys.map((key) => caches.delete(key)));
-        }).then(() => self.clients.claim())
-    );
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (e) => {
-    // ALWAYS FETCH FRESH FROM NETWORK TO PREVENT ANY STALE RATES
-    e.respondWith(
-        fetch(e.request, { cache: 'no-store' }).catch(() => {
-            return caches.match(e.request);
-        })
-    );
+  if (e.request.url.includes('/api/')) {
+    return;
+  }
+  e.respondWith(
+    caches.match(e.request).then((cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
+      return fetch(e.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {
+        if (e.request.headers.get('accept').includes('text/html')) {
+          return caches.match('/index.html');
+        }
+      });
+    })
+  );
 });

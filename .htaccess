@@ -1,43 +1,15 @@
-# ==============================================================================
-# SWASTIK GOLD JALORE (swastikgold.net) - GODADDY APACHE & CPANEL CONFIGURATION
-# ==============================================================================
+# SWASTIK GOLD JALORE (swastikgold.net) - Apache & cPanel Rewrite Rules
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-RewriteEngine On
-RewriteBase /
+    # FORCE HTTPS ON SWASTIKGOLD.NET
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# 1. ROUTE /api/* CALLS AUTOMATICALLY TO api.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^api/(.*)$ api.php?action=$1 [QSA,L]
-
-# 2. CORS HEADERS & STRICT ZERO-CACHE HEADERS FOR REAL-TIME LIVE BULLION
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma"
-    
-    <FilesMatch "\.(html|htm|js|css|json|php)$">
-        Header set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0"
+    # PRESERVE API BACKEND HEADERS & NO-CACHE
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
         Header set Pragma "no-cache"
-        Header set Expires "Mon, 26 Jul 1997 05:00:00 GMT"
-        Header set X-Accel-Buffering "no"
-        Header set X-LiteSpeed-Cache-Control "no-cache, no-store"
-    </FilesMatch>
+    </IfModule>
 </IfModule>
-
-# DISABLE ETAGS SO BROWSERS NEVER SERVE 304 NOT MODIFIED STALE DATA
-FileETag None
-<IfModule mod_headers.c>
-    Header unset ETag
-</IfModule>
-
-# 3. PROPER MIME TYPES FOR PWA, SVGs, AND JSON
-<IfModule mod_mime.c>
-    AddType application/manifest+json .json .webmanifest
-    AddType image/svg+xml .svg .svgz
-    AddType application/javascript .js
-    AddType text/css .css
-</IfModule>
-
-# 4. DEFAULT INDEX DOCUMENT
-DirectoryIndex index.html website.html index.php

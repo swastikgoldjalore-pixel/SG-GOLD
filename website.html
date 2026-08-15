@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Swastik Gold Jalore - Landscape Bullion Desk</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#070f1e">
@@ -41,40 +38,7 @@
             padding: 0;
         }
 
-        /* CUSTOMER LOGIN MODAL OVERLAY FOR LANDSCAPE PORTAL */
-        .web-auth-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(7, 15, 30, 0.96);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-        }
-
-        .web-auth-card {
-            width: 100%;
-            max-width: 400px;
-            background: #0c182b;
-            border: 2px solid #facc15;
-            border-radius: 16px;
-            padding: 30px 24px;
-            box-shadow: 0 16px 45px rgba(0,0,0,0.85);
-            text-align: center;
-        }
-
-        .web-auth-title { color: #f59e0b; font-size: 20px; font-weight: 900; margin-bottom: 2px; font-family:'Cinzel Decorative', serif; }
-        .web-auth-sub { color: #94a3b8; font-size: 11px; font-weight: 700; margin-bottom: 20px; }
-
-        .web-input-group { margin-bottom: 14px; text-align: left; }
-        .web-input-group label { display: block; color: #facc15; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
-        .web-input-field { width: 100%; padding: 11px 12px; background: #070f1e; border: 1.5px solid #1e293b; border-radius: 6px; color: #ffffff; font-weight: 700; font-size: 14px; outline: none; text-transform: uppercase; }
-        .web-input-field:focus { border-color: #facc15; }
-
-        .btn-web-login { width: 100%; padding: 12px; background: #facc15; color: #000000; border: none; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 6px; }
-
-        /* HEADER WITH PURE SWASTIK LOGO ICON */
+        /* HEADER WITH PURE UNCLIPPED SWASTIK LOGO ICON */
         .site-header {
             background: #0c182b;
             padding: 10px 20px;
@@ -126,19 +90,6 @@
         .header-controls { display: flex; gap: 10px; align-items: center; }
         .btn-outline-app { background: transparent; color: #f59e0b; border: 2px solid #facc15; padding: 6px 14px; border-radius: 18px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
         .btn-gold-desk { background: #facc15; color: #0c182b; border: none; padding: 6px 16px; border-radius: 18px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; box-shadow: 0 4px 12px rgba(250,204,21,0.3); }
-
-        .user-pill-badge {
-            background: #172a4a;
-            color: #facc15;
-            border: 1px solid #facc15;
-            padding: 5px 12px;
-            border-radius: 18px;
-            font-weight: 800;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
 
         /* TICKER BANNER (SOLID BLACK TEXT ON YELLOW) */
         .ticker-bar {
@@ -203,6 +154,7 @@
 
         .price-pill-cell { flex: 1; display: flex; justify-content: center; }
 
+        /* NORMAL SMOOTH 350MS SIGNAL FLASHING SPEED */
         .rate-cell-text {
             font-weight: 800;
             font-size: clamp(20px, 2vw, 28px);
@@ -220,6 +172,7 @@
         .rate-cell-text.flash-green { background-color: #16a34a !important; color: #ffffff !important; }
         .rate-cell-text.flash-red { background-color: #dc2626 !important; color: #ffffff !important; }
 
+        /* BOTTOM RIGHT SWASTIK GOLD LOGO MARK WITH GOLD SWASTIK SYMBOL */
         .landscape-footer-mark {
             display: flex;
             justify-content: flex-end;
@@ -233,38 +186,9 @@
         }
 
         .landscape-footer-mark span.swastik-mark { font-size: 20px; color: #d97706; font-weight: 900; }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-
-    <!-- CUSTOMER AUTHENTICATION LOGIN MODAL FOR LANDSCAPE PORTAL -->
-    <div id="webAuthModal" class="web-auth-overlay hidden">
-        <div class="web-auth-card">
-            <div style="font-size:36px;color:#facc15;font-weight:900;margin-bottom:4px;">卐</div>
-            <h2 class="web-auth-title">SWASTIK GOLD</h2>
-            <p class="web-auth-sub">Landscape Customer Live Rates Portal</p>
-
-            <form onsubmit="handleWebLogin(event)">
-                <div class="web-input-group">
-                    <label><i class="fa-solid fa-user-shield"></i> कस्टमर User ID (Capital Letters)</label>
-                    <input type="text" id="webLoginId" placeholder="जैसे: SG1001" maxlength="10" required oninput="this.value = this.value.toUpperCase()" class="web-input-field">
-                </div>
-                <div class="web-input-group">
-                    <label><i class="fa-solid fa-key"></i> पासवर्ड (PIN)</label>
-                    <input type="password" id="webLoginPin" placeholder="6-Digit PIN" maxlength="10" required class="web-input-field" style="text-transform:none;">
-                </div>
-                <button type="submit" class="btn-web-login">
-                    <i class="fa-solid fa-lock-open"></i> UNLOCK LIVE RATE BOARD
-                </button>
-            </form>
-
-            <div style="margin-top:14px;font-size:11px;color:#cbd5e1;">
-                नया खाता चाहिए? <a href="index.html" style="color:#facc15;font-weight:800;text-decoration:none;">मोबाइल ऐप पर रजिस्टर करें</a>
-            </div>
-        </div>
-    </div>
 
     <!-- 1. PC HEADER WITH DATE & 12-HOUR LIVE CLOCK -->
     <header class="site-header">
@@ -282,11 +206,6 @@
         </div>
 
         <div class="header-controls">
-            <div id="userBadgeBox" class="user-pill-badge hidden">
-                <i class="fa-solid fa-user-check"></i>
-                <span id="userBadgeName">SG1001</span>
-                <button onclick="handleWebLogout()" style="background:none;border:none;color:#f87171;margin-left:6px;cursor:pointer;font-size:12px;" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
-            </div>
             <a href="index.html" class="btn-outline-app"><i class="fa-solid fa-mobile-screen"></i> Mobile App</a>
             <a href="pc-client.html" class="btn-gold-desk"><i class="fa-solid fa-lock"></i> Admin</a>
         </div>
@@ -330,36 +249,36 @@
                     <div class="prod-hl-line" id="spot-usdinr-hl">H: 95.80   L: 95.10</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-usdinr-bid">95.46</div>
+                    <div class="rate-cell-text" id="spot-usdinr-bid">95.40</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-usdinr-ask">95.47</div>
+                    <div class="rate-cell-text" id="spot-usdinr-ask">95.45</div>
                 </div>
             </div>
 
             <div class="product-row-card">
                 <div class="prod-info-block">
                     <div class="prod-name-title">GOLD COMEX</div>
-                    <div class="prod-hl-line" id="spot-gold-hl">H: 4397.26   L: 4310.81</div>
+                    <div class="prod-hl-line" id="spot-gold-hl">H: 4045.00   L: 4010.00</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-gold-bid">4375.95</div>
+                    <div class="rate-cell-text" id="spot-gold-bid">4027.85</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-gold-ask">4376.65</div>
+                    <div class="rate-cell-text" id="spot-gold-ask">4028.95</div>
                 </div>
             </div>
 
             <div class="product-row-card">
                 <div class="prod-info-block">
                     <div class="prod-name-title">SILVER COMEX</div>
-                    <div class="prod-hl-line" id="spot-silver-hl">H: 65.69   L: 63.48</div>
+                    <div class="prod-hl-line" id="spot-silver-hl">H: 58.50   L: 56.20</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-silver-bid">64.75</div>
+                    <div class="rate-cell-text" id="spot-silver-bid">57.09</div>
                 </div>
                 <div class="price-pill-cell">
-                    <div class="rate-cell-text" id="spot-silver-ask">64.77</div>
+                    <div class="rate-cell-text" id="spot-silver-ask">57.88</div>
                 </div>
             </div>
 
@@ -375,284 +294,21 @@
 
     </div>
 
-    <!-- UNIVERSAL REAL-TIME TRIPLE-TIER STREAM SCRIPT (v3.1.0) -->
+    <!-- REAL-TIME 0ms SSE STREAM & 350ms NORMAL FLASH SCRIPT -->
     <script>
-        const INITIAL_DEFAULT_PRODUCTS = [
-            { id: "RANI", name: "RANI", buy: 149990, sell: 0, rawBuy: 149990, rawSell: 0, high: 150500, low: 149500, isProductHidden: false },
-            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0, high: 233000, low: 231000, isProductHidden: false },
-            { id: "SILVER_CHORSA_98", name: "SILVER Chorsa 98", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190, high: 230190, low: 227500, isProductHidden: false },
-            { id: "GOLD_9950_IMPOTED", name: "GOLD 995 IMPORTED", buy: 149690, sell: 150290, rawBuy: 149690, rawSell: 150290, high: 150290, low: 149200, isProductHidden: false },
-            { id: "GOLD_999_KD", name: "GOLD 999 KD", buy: 150340, sell: 150940, rawBuy: 150340, rawSell: 150940, high: 150940, low: 149800, isProductHidden: false },
-            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390, high: 158390, low: 157200, isProductHidden: false }
-        ];
-
-        const INITIAL_DEFAULT_FUTURES = [
-            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590, high: 154950, low: 151923, isProductHidden: false },
-            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190, high: 237822, low: 231550, isProductHidden: false }
-        ];
-
         let webLastPrices = {};
         let evtSource = null;
-        let webPollingTimer = null;
-        let webTickTimer = null;
-        let lastWebFetchTime = 0;
-        let currentUser = null;
-        let currentSessionToken = null;
-        let currentProducts = [ ...INITIAL_DEFAULT_PRODUCTS ];
-        let currentFutures = [ ...INITIAL_DEFAULT_FUTURES ];
-        let webAdminSettings = {
-            renames: {
-                "GOLD_9950_IMPOTED": "GOLD 995 IMPORTED"
-            },
-            premiumsBuy: {},
-            premiumsSell: {},
-            hiddenProducts: {},
-            hiddenBuy: {},
-            hiddenSell: {},
-            isMasterHidden: false,
-            isMasterFrozen: false,
-            productOrder: ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "GOLD_FUTURE", "SILVER_FUTURE"]
-        };
-        const DIRECT_SUNDHA_ENDPOINT = "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold";
-
-        // Real-Time Broadcast Channel for Zero-Latency Sync & Instant 0ms Logout
-        try {
-            const syncChannel = new BroadcastChannel('sg_realtime_sync');
-            syncChannel.onmessage = (e) => {
-                if (!e.data) return;
-                const msg = e.data;
-                if (msg.type === 'SESSION_INVALIDATED' && currentUser && currentUser.id === msg.customerId) {
-                    if (currentSessionToken !== msg.newSessionToken) {
-                        alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
-                        handleWebLogout(false);
-                    }
-                } else if (msg.type === 'FORCE_LOGOUT_CUSTOMER' && currentUser && currentUser.id === msg.customerId) {
-                    alert(msg.reason === 'BLOCKED' ? "⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!" : "⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
-                    handleWebLogout(false);
-                } else if (msg.type === 'CUSTOMER_STATUS_CHANGE' && currentUser && currentUser.id === msg.customerId) {
-                    if (msg.status === 'BLOCKED') {
-                        alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-                        handleWebLogout(false);
-                    }
-                } else if (msg.type === 'SETTINGS_UPDATE' && msg.settings) {
-                    webAdminSettings = { ...webAdminSettings, ...msg.settings };
-                    if (msg.settings.marqueeText) {
-                        const marq = document.getElementById('marqueeText');
-                        if (marq) marq.innerText = msg.settings.marqueeText;
-                    }
-                    renderLandscapeProducts(currentProducts, currentFutures);
-                }
-            };
-        } catch(e) {}
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'sg_admin_settings_v3' && e.newValue) {
-                try {
-                    webAdminSettings = { ...webAdminSettings, ...JSON.parse(e.newValue) };
-                    renderLandscapeProducts(currentProducts, currentFutures);
-                } catch(err) {}
-            } else if (e.key === 'sg_customers_v3' && e.newValue && currentUser) {
-                try {
-                    const custs = JSON.parse(e.newValue);
-                    const myCust = custs.find(c => c.id === currentUser.id);
-                    if (myCust) {
-                        if (myCust.status === 'BLOCKED') {
-                            alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-                            handleWebLogout(false);
-                        } else if (myCust.status === 'DELETED') {
-                            alert("⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
-                            handleWebLogout(false);
-                        } else if (myCust.activeSession && myCust.activeSession !== currentSessionToken) {
-                            alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
-                            handleWebLogout(false);
-                        }
-                    }
-                } catch(err) {}
-            }
-        });
-
-        function checkCustomerAuth() {
-            const userStr = localStorage.getItem('sg_user');
-            const token = localStorage.getItem('sg_session_token');
-            if (userStr && token) {
-                try {
-                    currentUser = JSON.parse(userStr);
-                    currentSessionToken = token;
-                    document.getElementById('webAuthModal').classList.add('hidden');
-                    const badge = document.getElementById('userBadgeBox');
-                    const badgeName = document.getElementById('userBadgeName');
-                    if (badge && badgeName) {
-                        badgeName.innerText = `${currentUser.id} (${currentUser.name})`;
-                        badge.classList.remove('hidden');
-                    }
-                    return true;
-                } catch(e) {}
-            }
-
-            document.getElementById('webAuthModal').classList.remove('hidden');
-            const badge = document.getElementById('userBadgeBox');
-            if (badge) badge.classList.add('hidden');
-            return false;
-        }
-
-        function handleWebLogin(e) {
-            e.preventDefault();
-            const idInput = document.getElementById('webLoginId').value.trim().toUpperCase();
-            const pinInput = document.getElementById('webLoginPin').value.trim();
-
-            const localCusts = JSON.parse(localStorage.getItem('sg_customers_v3') || '[]');
-            let matched = localCusts.find(c => c.id.toUpperCase() === idInput && c.pin === pinInput);
-
-            if (!matched && idInput === 'SG1001' && pinInput === '123456') {
-                matched = { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456" };
-                localCusts.push(matched);
-            }
-
-            if (matched) {
-                if (matched.status === 'PENDING') {
-                    alert("⏳ आपका खाता अभी एडमिन अप्रूवल के लिए पेंडिंग है।");
-                    return;
-                }
-                if (matched.status === 'BLOCKED') {
-                    alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है।");
-                    return;
-                }
-
-                const sessionToken = "sess_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-                matched.activeSession = sessionToken;
-                localStorage.setItem('sg_customers_v3', JSON.stringify(localCusts));
-
-                currentUser = matched;
-                currentSessionToken = sessionToken;
-                localStorage.setItem('sg_user', JSON.stringify(matched));
-                localStorage.setItem('sg_session_token', sessionToken);
-
-                try {
-                    const syncChannel = new BroadcastChannel('sg_realtime_sync');
-                    syncChannel.postMessage({
-                        type: 'SESSION_INVALIDATED',
-                        customerId: matched.id,
-                        newSessionToken: sessionToken
-                    });
-                } catch(err) {}
-
-                checkCustomerAuth();
-                sendWebsiteVisitorPing();
-                alert(`स्वागत है ${matched.name} जी! लॉगिन सफल।`);
-                return;
-            }
-
-            alert("गलत लॉगिन ID या पासवर्ड PIN!");
-        }
-
-        function handleWebLogout(showAlert = true) {
-            currentUser = null;
-            currentSessionToken = null;
-            localStorage.removeItem('sg_user');
-            localStorage.removeItem('sg_session_token');
-            checkCustomerAuth();
-            if (showAlert) alert("सफलतापूर्वक लॉगआउट हो गया!");
-        }
-
-        function getOrCreateWebVisitorId() {
-            let vid = localStorage.getItem('sg_visitor_uid');
-            if (!vid) {
-                vid = 'V_WEB_' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
-                localStorage.setItem('sg_visitor_uid', vid);
-            }
-            return vid;
-        }
-
-        async function sendWebsiteVisitorPing(status = 'ONLINE') {
-            try {
-                const isUserLoggedIn = !!(currentUser && currentUser.name);
-                const vid = getOrCreateWebVisitorId();
-                const storedGuestName = localStorage.getItem('sg_guest_name');
-                const storedGuestPhone = localStorage.getItem('sg_guest_phone');
-
-                let guestDisplayName = "Landscape Visitor (" + vid.substr(-4) + ")";
-                if (isUserLoggedIn) {
-                    guestDisplayName = currentUser.name;
-                } else if (storedGuestName && storedGuestName.trim()) {
-                    guestDisplayName = storedGuestName.trim();
-                }
-
-                const visitorObj = {
-                    visitorId: vid,
-                    guestName: guestDisplayName,
-                    mobile: isUserLoggedIn ? currentUser.mobile : (storedGuestPhone || "Not Registered"),
-                    ip: "127.0.0.1",
-                    device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
-                    city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore / Rajasthan",
-                    page: "Website Live Board (website.html)",
-                    status: status,
-                    pingTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                    lastPing: Date.now()
-                };
-
-                const urls = ['api.php?action=visitor-ping', '/api/visitor-ping'];
-                for (const url of urls) {
-                    try {
-                        await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(visitorObj)
-                        });
-                        break;
-                    } catch(e) {}
-                }
-            } catch(e) {}
-        }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                sendWebsiteVisitorPing('OFFLINE');
-            } else {
-                sendWebsiteVisitorPing('ONLINE');
-            }
-        });
-
-        window.addEventListener('beforeunload', () => {
-            sendWebsiteVisitorPing('OFFLINE');
-        });
-
-        async function verifyWebSessionSecurity() {
-            if (!currentUser || !currentSessionToken) return;
-
-            const urls = [
-                `api.php?action=verify-session&id=${currentUser.id}&sessionToken=${currentSessionToken}&_=${Date.now()}`,
-                `/api/verify-session?id=${currentUser.id}&sessionToken=${currentSessionToken}&_=${Date.now()}`
-            ];
-
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (!data.valid) {
-                            if (data.reason === 'MULTI_DEVICE') {
-                                alert("⚠️ आपकी ID किसी दूसरे डिवाइस/ब्राउज़र पर लॉगिन हो गई है!\nइसलिए सुरक्षा कारणों से इस डिवाइस से आपकी आईडी ऑटोमैटिक लॉगआउट कर दी गई है।");
-                            } else if (data.reason === 'BLOCKED') {
-                                alert("⛔ आपका खाता एडमिन द्वारा ब्लॉक कर दिया गया है!");
-                            } else if (data.reason === 'DELETED') {
-                                alert("⛔ आपका खाता एडमिन द्वारा हटा/डिलीट कर दिया गया है!");
-                            }
-                            handleWebLogout(false);
-                        }
-                        return;
-                    }
-                } catch(e) {}
-            }
-        }
 
         function formatNoComma(val) {
             if (!val || val <= 0) return '-';
             return String(Math.round(val));
         }
 
+        // LIVE DATE & 12-HOUR TIME CLOCK ENGINE
         function startHeaderLiveClock() {
             function updateClock() {
                 const now = new Date();
+                
                 const d = String(now.getDate()).padStart(2, '0');
                 const m = String(now.getMonth() + 1).padStart(2, '0');
                 const y = now.getFullYear();
@@ -682,251 +338,45 @@
             }, 350);
         }
 
-        function initUniversalStream() {
-            if ('caches' in window) {
-                caches.keys().then((names) => {
-                    for (let name of names) caches.delete(name);
-                }).catch(() => {});
-            }
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                    for (let reg of registrations) {
-                        reg.unregister().catch(() => {});
-                    }
-                }).catch(() => {});
-            }
+        function initLandscapeSseStream() {
+            if (evtSource) evtSource.close();
+            evtSource = new EventSource('/api/rates-sse');
 
-            try {
-                const saved = localStorage.getItem('sg_admin_settings_v3');
-                if (saved) webAdminSettings = { ...webAdminSettings, ...JSON.parse(saved) };
-            } catch(e) {}
-
-            checkCustomerAuth();
-            renderLandscapeProducts(currentProducts, currentFutures);
-            trySseStream();
-            startWebPolling();
-            startWebAutonomousTick();
-            sendWebsiteVisitorPing();
-            setInterval(sendWebsiteVisitorPing, 3000);
-            setInterval(verifyWebSessionSecurity, 1000);
-        }
-
-        function startWebAutonomousTick() {
-            if (webTickTimer) return;
-            webTickTimer = setInterval(() => {
-                if (Date.now() - lastWebFetchTime > 2000) {
-                    if (!webAdminSettings.isMasterFrozen) {
-                        const step = (Math.random() > 0.5 ? 10 : -10);
-                        const pIdx = Math.floor(Math.random() * currentProducts.length);
-                        const prod = currentProducts[pIdx];
-                        if (prod.rawBuy > 0) prod.rawBuy += step;
-                        if (prod.rawSell > 0) prod.rawSell += step;
-                    }
-
-                    // Futures always tick
-                    const fIdx = Math.floor(Math.random() * currentFutures.length);
-                    const fut = currentFutures[fIdx];
-                    const fStep = (Math.random() > 0.5 ? 10 : -10);
-                    if (fut.rawBuy > 0) fut.rawBuy += fStep;
-                    if (fut.rawSell > 0) fut.rawSell += fStep;
-
-                    renderLandscapeProducts(currentProducts, currentFutures);
-                }
-            }, 700);
-        }
-
-        function trySseStream() {
-            try {
-                if (evtSource) { try { evtSource.close(); } catch(e) {} }
-                const sseUrl = (window.location.pathname.endsWith('.php') || window.location.hostname.includes('swastikgold.net')) ? 
-                    'api.php?action=rates-sse' : '/api/rates-sse';
-
-                evtSource = new EventSource(sseUrl);
-
-                evtSource.onmessage = function(event) {
-                    try {
-                        const data = JSON.parse(event.data);
-                        handleIncomingWebPayload(data);
-                        lastWebFetchTime = Date.now();
-                    } catch(e) {}
-                };
-
-                evtSource.onerror = function() {
-                    try { evtSource.close(); } catch(e) {}
-                    evtSource = null;
-                };
-            } catch(e) {}
-        }
-
-        function startWebPolling() {
-            if (webPollingTimer) return;
-            pollWebRate();
-            webPollingTimer = setInterval(pollWebRate, 250);
-        }
-
-        async function pollWebRate() {
-            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-            const urls = [
-                `api.php?action=rates-json&_nc=${nonce}`,
-                `/api/rates-json?_nc=${nonce}`,
-                `https://swastikgold.net/api.php?action=rates-json&_nc=${nonce}`
-            ];
-
-            for (const url of urls) {
+            evtSource.onmessage = function(event) {
                 try {
-                    const res = await fetch(url, {
-                        method: 'GET',
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control': 'no-cache, no-store, must-revalidate',
-                            'Pragma': 'no-cache'
-                        }
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && (data.spot || (data.products && data.products.length > 0))) {
-                            handleIncomingWebPayload(data);
-                            lastWebFetchTime = Date.now();
-                            return;
-                        }
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.spot) {
+                        renderSpotTickers(data.spot);
                     }
+
+                    const visibleProducts = (data.products || []).filter(p => !p.isProductHidden);
+                    const visibleFutures = (data.futures || []).filter(f => !f.isProductHidden);
+
+                    renderLandscapeProducts(visibleProducts, visibleFutures);
                 } catch(e) {}
-            }
-
-            try {
-                const res = await fetch(DIRECT_SUNDHA_ENDPOINT + "?_nc=" + nonce, { mode: 'cors', cache: 'no-store' });
-                if (res.ok) {
-                    const rawText = await res.text();
-                    if (rawText && rawText.length > 20) {
-                        parseDirectSundhaWebStream(rawText);
-                        lastWebFetchTime = Date.now();
-                    }
-                }
-            } catch(e) {}
-        }
-
-        function parseCleanNumber(valStr) {
-            if (!valStr || valStr === '-' || valStr === 'null') return 0;
-            const clean = String(valStr).replace(/,/g, '').trim();
-            const num = parseFloat(clean);
-            return isNaN(num) ? 0 : Math.round(num);
-        }
-
-        function parseDirectSundhaWebStream(data) {
-            if (!data) return;
-            const lines = data.split(/\r?\n/);
-            const visibleProducts = [];
-            const visibleFutures = [];
-
-            const spot = {
-                gold_bid: "4375.95", gold_ask: "4376.65", gold_high: "4397.26", gold_low: "4310.81",
-                silver_bid: "64.75", silver_ask: "64.77", silver_high: "65.69", silver_low: "63.48",
-                usdinr_bid: "95.46", usdinr_ask: "95.47", usdinr_high: "95.80", usdinr_low: "95.10"
             };
-
-            lines.forEach(line => {
-                const parts = line.split('\t').map(p => p.trim());
-                if (parts.length >= 4) {
-                    let symbol = parts[2];
-                    if (!symbol || /^\d+$/.test(symbol)) symbol = parts[1];
-                    if (!symbol || symbol.length === 0 || /^\d+$/.test(symbol)) return;
-                    if (['SYMBOL', 'RATE', 'NAME', 'TEMPLATE', 'ID', 'TYPE'].includes(symbol.toUpperCase())) return;
-
-                    const rawId = symbol.replace(/\s+/g, '_').toUpperCase();
-
-                    if (symbol === 'SILVER') { 
-                        spot.silver_bid = parts[3] || "64.75"; spot.silver_ask = parts[4] || "64.77";
-                        spot.silver_high = parts[5] || "65.69"; spot.silver_low = parts[6] || "63.48";
-                        return; 
-                    }
-                    if (symbol === 'GOLD') { 
-                        spot.gold_bid = parts[3] || "4375.95"; spot.gold_ask = parts[4] || "4376.65";
-                        spot.gold_high = parts[5] || "4397.26"; spot.gold_low = parts[6] || "4310.81";
-                        return; 
-                    }
-                    if (symbol === 'USDINR') { 
-                        spot.usdinr_bid = parts[3] || "95.46"; spot.usdinr_ask = parts[4] || "95.47";
-                        spot.usdinr_high = parts[5] || "95.80"; spot.usdinr_low = parts[6] || "95.10";
-                        return; 
-                    }
-
-                    const origBuy = parseCleanNumber(parts[3]);
-                    const origSell = parseCleanNumber(parts[4]);
-                    const origHigh = parseCleanNumber(parts[5]);
-                    const origLow = parseCleanNumber(parts[6]);
-
-                    const isFuture = symbol.includes('FUTURE') || symbol.includes('MCX') || symbol.includes('MINI') || symbol.includes('NEXT');
-
-                    const itemObj = {
-                        id: rawId,
-                        name: symbol,
-                        buy: origBuy,
-                        sell: origSell,
-                        rawBuy: origBuy,
-                        rawSell: origSell,
-                        high: origHigh,
-                        low: origLow,
-                        isProductHidden: false
-                    };
-
-                    if (isFuture) visibleFutures.push(itemObj);
-                    else visibleProducts.push(itemObj);
-                }
-            });
-
-            handleIncomingWebPayload({ spot, products: visibleProducts.length > 0 ? visibleProducts : currentProducts, futures: visibleFutures.length > 0 ? visibleFutures : currentFutures });
-        }
-
-        function handleIncomingWebPayload(data) {
-            if (!data) return;
-            if (data.spot) renderSpotTickers(data.spot);
-
-            if (data.adminSettings && typeof data.adminSettings === 'object') {
-                webAdminSettings = { ...webAdminSettings, ...data.adminSettings };
-            }
-            if (data.renames) webAdminSettings.renames = { ...(webAdminSettings.renames || {}), ...data.renames };
-            if (data.premiumsBuy) webAdminSettings.premiumsBuy = { ...(webAdminSettings.premiumsBuy || {}), ...data.premiumsBuy };
-            if (data.premiumsSell) webAdminSettings.premiumsSell = { ...(webAdminSettings.premiumsSell || {}), ...data.premiumsSell };
-            if (data.hiddenProducts) webAdminSettings.hiddenProducts = { ...(webAdminSettings.hiddenProducts || {}), ...data.hiddenProducts };
-            if (data.hiddenBuy) webAdminSettings.hiddenBuy = { ...(webAdminSettings.hiddenBuy || {}), ...data.hiddenBuy };
-            if (data.hiddenSell) webAdminSettings.hiddenSell = { ...(webAdminSettings.hiddenSell || {}), ...data.hiddenSell };
-            if (data.productOrder) webAdminSettings.productOrder = data.productOrder;
-            if (data.isMasterHidden !== undefined) webAdminSettings.isMasterHidden = data.isMasterHidden;
-            if (data.isMasterFrozen !== undefined) webAdminSettings.isMasterFrozen = data.isMasterFrozen;
-
-            if (data.marqueeText) {
-                const marq = document.getElementById('marqueeText');
-                if (marq) marq.innerText = data.marqueeText;
-            }
-
-            const visibleProducts = (data.products && data.products.length > 0) ? data.products : currentProducts;
-            const visibleFutures = (data.futures && data.futures.length > 0) ? data.futures : currentFutures;
-
-            currentProducts = visibleProducts;
-            currentFutures = visibleFutures;
-
-            renderLandscapeProducts(visibleProducts, visibleFutures);
         }
 
         window.addEventListener('online', () => {
-            initUniversalStream();
+            initLandscapeSseStream();
         });
 
         function renderSpotTickers(spot) {
-            updateSpotCell('spot-usdinr-bid', spot.usdinr_bid || "95.46");
-            updateSpotCell('spot-usdinr-ask', spot.usdinr_ask || "95.47");
+            updateSpotCell('spot-usdinr-bid', spot.usdinr_bid || "95.40");
+            updateSpotCell('spot-usdinr-ask', spot.usdinr_ask || "95.45");
             const uHl = document.getElementById('spot-usdinr-hl');
             if (uHl) uHl.innerText = `H: ${spot.usdinr_high || '95.80'}   L: ${spot.usdinr_low || '95.10'}`;
 
-            updateSpotCell('spot-gold-bid', spot.gold_bid || "4375.95");
-            updateSpotCell('spot-gold-ask', spot.gold_ask || "4376.65");
+            updateSpotCell('spot-gold-bid', spot.gold_bid || "4027.85");
+            updateSpotCell('spot-gold-ask', spot.gold_ask || "4028.95");
             const gHl = document.getElementById('spot-gold-hl');
-            if (gHl) gHl.innerText = `H: ${spot.gold_high || '4397.26'}   L: ${spot.gold_low || '4310.81'}`;
+            if (gHl) gHl.innerText = `H: ${spot.gold_high || '4045.00'}   L: ${spot.gold_low || '4010.00'}`;
 
-            updateSpotCell('spot-silver-bid', spot.silver_bid || "64.75");
-            updateSpotCell('spot-silver-ask', spot.silver_ask || "64.77");
+            updateSpotCell('spot-silver-bid', spot.silver_bid || "57.09");
+            updateSpotCell('spot-silver-ask', spot.silver_ask || "57.88");
             const sHl = document.getElementById('spot-silver-hl');
-            if (sHl) sHl.innerText = `H: ${spot.silver_high || '65.69'}   L: ${spot.silver_low || '63.48'}`;
+            if (sHl) sHl.innerText = `H: ${spot.silver_high || '58.50'}   L: ${spot.silver_low || '56.20'}`;
         }
 
         function updateSpotCell(id, newVal) {
@@ -947,209 +397,86 @@
             webLastPrices[id] = newVal;
         }
 
-        function applyProductOrdering(list, orderIds) {
-            if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) return list;
-            return [...list].sort((a, b) => {
-                const idxA = orderIds.indexOf(a.id);
-                const idxB = orderIds.indexOf(b.id);
-                if (idxA === -1 && idxB === -1) return 0;
-                if (idxA === -1) return 1;
-                if (idxB === -1) return -1;
-                return idxA - idxB;
-            });
-        }
-
-        function getWebPhysicalSellHighLow(productId, currentFinalSell) {
-            const todayKey = new Date().toISOString().slice(0, 10);
-            let hlData = null;
-            try {
-                hlData = JSON.parse(localStorage.getItem('sg_sell_hl_' + todayKey) || '{}');
-            } catch(e) { hlData = {}; }
-
-            if (currentFinalSell > 0) {
-                if (!hlData[productId]) {
-                    hlData[productId] = { high: currentFinalSell, low: currentFinalSell };
-                } else {
-                    if (currentFinalSell > hlData[productId].high) hlData[productId].high = currentFinalSell;
-                    if (currentFinalSell < hlData[productId].low) hlData[productId].low = currentFinalSell;
-                }
-                try { localStorage.setItem('sg_sell_hl_' + todayKey, JSON.stringify(hlData)); } catch(e) {}
-            }
-
-            return hlData[productId] || { high: currentFinalSell, low: currentFinalSell };
-        }
-
-        /* RENDER LANDSCAPE PRODUCTS WITH RENAMES, PREMIUMS, SEQUENCE ORDER & HIDE RULES */
         function renderLandscapeProducts(products, futures) {
             const leftContainer = document.getElementById('leftProdContainer');
             const rightContainer = document.getElementById('rightFutContainer');
 
-            const renames = webAdminSettings.renames || {};
-            const premiumsBuy = webAdminSettings.premiumsBuy || {};
-            const premiumsSell = webAdminSettings.premiumsSell || {};
-            const hiddenProducts = webAdminSettings.hiddenProducts || {};
-            const hiddenBuy = webAdminSettings.hiddenBuy || {};
-            const hiddenSell = webAdminSettings.hiddenSell || {};
-            const isMasterHidden = !!webAdminSettings.isMasterHidden;
-            const orderIds = webAdminSettings.productOrder || [];
-
-            const visibleProds = applyProductOrdering(products.filter(p => !hiddenProducts[p.id]), orderIds);
-            const visibleFutures = applyProductOrdering(futures.filter(f => !hiddenProducts[f.id]), orderIds);
-
-            visibleProds.forEach(p => {
+            products.forEach(p => {
                 const bId = `buy-${p.id}`;
                 const sId = `sell-${p.id}`;
-                const nameId = `name-${p.id}`;
-                const hlId = `hl-${p.id}`;
                 const oldBuy = webLastPrices[bId];
                 const oldSell = webLastPrices[sId];
 
-                const customName = renames[p.id] || p.name;
-                const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
-                const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
+                const buyText = formatNoComma(p.buy);
+                const sellText = formatNoComma(p.sell);
 
-                let rawBuy = p.rawBuy || p.buy;
-                let rawSell = p.rawSell || p.sell;
-                let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-                let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
-
-                // HIDE PHYSICAL RULE: Show '-' on prices, keep row visible
-                if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
-                if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
-
-                const buyText = formatNoComma(finalBuy);
-                const sellText = formatNoComma(finalSell);
-
-                const nameEl = document.getElementById(nameId);
                 const buyEl = document.getElementById(bId);
                 const sellEl = document.getElementById(sId);
-                const hlEl = document.getElementById(hlId);
-
-                if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
 
                 if (buyEl && buyEl.innerText !== buyText) {
                     buyEl.innerText = buyText;
-                    if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+                    if (oldBuy && oldBuy !== buyText && p.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
                 }
 
                 if (sellEl && sellEl.innerText !== sellText) {
                     sellEl.innerText = sellText;
-                    if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
-                }
-
-                // PHYSICAL HIGH/LOW BASED ON LIVE SELL PRICE WITH MIDNIGHT RESET
-                const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
-                if (hlEl) {
-                    if (isSellHidden || finalSell <= 0) {
-                        hlEl.style.display = 'none';
-                    } else {
-                        hlEl.style.display = 'block';
-                        const hl = getWebPhysicalSellHighLow(p.id, finalSell);
-                        hlEl.innerText = `H: ${formatNoComma(hl.high)}   L: ${formatNoComma(hl.low)}`;
-                    }
+                    if (oldSell && oldSell !== sellText && p.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
                 }
 
                 webLastPrices[bId] = buyText;
                 webLastPrices[sId] = sellText;
             });
 
-            visibleFutures.forEach(f => {
+            futures.forEach(f => {
                 const bId = `buy-${f.id}`;
                 const sId = `sell-${f.id}`;
-                const nameId = `name-${f.id}`;
                 const oldBuy = webLastPrices[bId];
                 const oldSell = webLastPrices[sId];
 
-                const customName = renames[f.id] || f.name;
-                const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
-                const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
+                const buyText = formatNoComma(f.buy);
+                const sellText = formatNoComma(f.sell);
 
-                let rawBuy = f.rawBuy || f.buy;
-                let rawSell = f.rawSell || f.sell;
-                let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-                let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
-
-                const buyText = formatNoComma(finalBuy);
-                const sellText = formatNoComma(finalSell);
-
-                const nameEl = document.getElementById(nameId);
                 const buyEl = document.getElementById(bId);
                 const sellEl = document.getElementById(sId);
 
-                if (nameEl && nameEl.innerText !== customName) nameEl.innerText = customName;
-
                 if (buyEl && buyEl.innerText !== buyText) {
                     buyEl.innerText = buyText;
-                    if (oldBuy && oldBuy !== buyText && finalBuy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
+                    if (oldBuy && oldBuy !== buyText && f.buy > 0) trigger350msFlash(buyEl, parseInt(buyText) > parseInt(oldBuy) ? 'up' : 'down');
                 }
 
                 if (sellEl && sellEl.innerText !== sellText) {
                     sellEl.innerText = sellText;
-                    if (oldSell && oldSell !== sellText && finalSell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
+                    if (oldSell && oldSell !== sellText && f.sell > 0) trigger350msFlash(sellEl, parseInt(sellText) > parseInt(oldSell) ? 'up' : 'down');
                 }
 
                 webLastPrices[bId] = buyText;
                 webLastPrices[sId] = sellText;
             });
 
-            const currentLeftIds = Array.from(leftContainer.children).map(c => c.id.replace('row-', ''));
-            const expectedLeftIds = visibleProds.map(p => p.id);
-            const isLeftOrderMatched = currentLeftIds.length === expectedLeftIds.length && currentLeftIds.every((val, index) => val === expectedLeftIds[index]);
-
-            if (!leftContainer.children.length || !isLeftOrderMatched) {
-                leftContainer.innerHTML = visibleProds.map(p => {
-                    const customName = renames[p.id] || p.name;
-                    const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
-                    const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
-
-                    let rawBuy = p.rawBuy || p.buy;
-                    let rawSell = p.rawSell || p.sell;
-                    let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-                    let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
-
-                    if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
-                    if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
-
-                    const isSellHidden = isMasterHidden || !!hiddenSell[p.id] || finalSell <= 0;
-                    let hlMarkup = '';
-                    if (!isSellHidden && finalSell > 0) {
-                        const hl = getWebPhysicalSellHighLow(p.id, finalSell);
-                        hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}">H: ${formatNoComma(hl.high)}   L: ${formatNoComma(hl.low)}</div>`;
-                    } else {
-                        hlMarkup = `<div class="prod-hl-line" id="hl-${p.id}" style="display:none;"></div>`;
-                    }
+            if (!leftContainer.children.length || leftContainer.children.length !== products.length) {
+                leftContainer.innerHTML = products.map(p => {
+                    const highDisplay = p.high > 0 ? formatNoComma(p.high) : '-';
+                    const lowDisplay = p.low > 0 ? formatNoComma(p.low) : '-';
+                    const hasHl = p.high > 0 || p.low > 0;
 
                     return `
                     <div class="product-row-card" id="row-${p.id}">
                         <div class="prod-info-block">
-                            <div class="prod-name-title" id="name-${p.id}">${customName}</div>
-                            ${hlMarkup}
+                            <div class="prod-name-title">${p.name}</div>
+                            ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(finalBuy)}</div>
+                            <div class="rate-cell-text" id="buy-${p.id}">${formatNoComma(p.buy)}</div>
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="sell-${p.id}">${formatNoComma(finalSell)}</div>
+                            <div class="rate-cell-text" id="sell-${p.id}">${formatNoComma(p.sell)}</div>
                         </div>
                     </div>`;
                 }).join('');
             }
 
-            const currentRightIds = Array.from(rightContainer.children).map(c => c.id.replace('row-', ''));
-            const expectedRightIds = visibleFutures.map(f => f.id);
-            const isRightOrderMatched = currentRightIds.length === expectedRightIds.length && currentRightIds.every((val, index) => val === expectedRightIds[index]);
-
-            if (!rightContainer.children.length || !isRightOrderMatched) {
-                rightContainer.innerHTML = visibleFutures.map(f => {
-                    const customName = renames[f.id] || f.name;
-                    const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
-                    const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
-
-                    let rawBuy = f.rawBuy || f.buy;
-                    let rawSell = f.rawSell || f.sell;
-                    let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-                    let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
-
+            if (!rightContainer.children.length || rightContainer.children.length !== futures.length) {
+                rightContainer.innerHTML = futures.map(f => {
                     const highDisplay = f.high > 0 ? formatNoComma(f.high) : '-';
                     const lowDisplay = f.low > 0 ? formatNoComma(f.low) : '-';
                     const hasHl = f.high > 0 || f.low > 0;
@@ -1157,14 +484,14 @@
                     return `
                     <div class="product-row-card" id="row-${f.id}">
                         <div class="prod-info-block">
-                            <div class="prod-name-title" id="name-${f.id}">${customName}</div>
+                            <div class="prod-name-title">${f.name}</div>
                             ${hasHl ? `<div class="prod-hl-line">H: ${highDisplay}   L: ${lowDisplay}</div>` : ''}
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="buy-${f.id}">${formatNoComma(finalBuy)}</div>
+                            <div class="rate-cell-text" id="buy-${f.id}">${formatNoComma(f.buy)}</div>
                         </div>
                         <div class="price-pill-cell">
-                            <div class="rate-cell-text" id="sell-${f.id}">${formatNoComma(finalSell)}</div>
+                            <div class="rate-cell-text" id="sell-${f.id}">${formatNoComma(f.sell)}</div>
                         </div>
                     </div>`;
                 }).join('');
@@ -1172,7 +499,7 @@
         }
 
         startHeaderLiveClock();
-        initUniversalStream();
+        initLandscapeSseStream();
     </script>
 </body>
 </html>
