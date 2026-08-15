@@ -67,9 +67,20 @@ function setSecurityLockStatusSync(val) {
 
 setSecurityLockStatusSync(getSecurityLockStatus());
 
+// CANONICAL SYMBOL ID NORMALIZER
 function normalizeId(str) {
     if (!str) return "";
-    return str.replace(/\s+/g, '_').replace(/IMPOTED/g, 'IMPORTED').toUpperCase();
+    let clean = str.toUpperCase().trim();
+    if (clean.includes('SILVER') && clean.includes('CHORSA')) return 'SILVER_CHORSA_98';
+    if (clean.includes('9950') || clean.includes('IMPOTED') || clean.includes('IMPORTED')) return 'GOLD_9950_IMPORTED';
+    if (clean.includes('999') && clean.includes('KD')) return 'GOLD_999_KD';
+    if (clean.includes('RTGS')) return 'GOLD_RTGS_999';
+    if (clean.includes('RANI')) return 'RANI';
+    if (clean.includes('RUPA')) return 'RUPA';
+    if (clean.includes('SILVER') && clean.includes('FUTURE')) return 'SILVER_FUTURE';
+    if (clean.includes('GOLD') && clean.includes('FUTURE')) return 'GOLD_FUTURE';
+
+    return clean.replace(/\s+/g, '_');
 }
 
 let rawSundhaApiResponse = "";
@@ -534,8 +545,8 @@ function broadcastSsePayload() {
     } catch(e) {}
 }
 
-// POLL LIVE SUNDHA API EVERY 500 MILLISECONDS WITH REUSEABLE KEEPALIVE SOCKET POOL
-setInterval(fetchSundhaGoldLiveApi, 500);
+// POLL LIVE SUNDHA API EVERY 300 MILLISECONDS WITH KEEPALIVE SOCKET POOL
+setInterval(fetchSundhaGoldLiveApi, 300);
 fetchSundhaGoldLiveApi();
 
 const server = http.createServer((req, res) => {
@@ -543,7 +554,7 @@ const server = http.createServer((req, res) => {
         // 1. UNIVERSAL CORS & ZERO-CACHE HEADERS FOR ALL ORIGINS AND ENDPOINTS
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.setHeader('Access-Control-Max-Age', '86400');
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, post-check=0, pre-check=0');
         res.setHeader('Pragma', 'no-cache');

@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
+function getApiUrl(endpoint) {
+    if (window.location.protocol === 'file:') {
+        return 'http://localhost:8080' + endpoint;
+    }
+    return endpoint;
+}
+
 function initApp() {
     purgeStaleBrowserCaches();
     initSilentPwaServiceWorker();
@@ -45,7 +52,7 @@ function initApp() {
 
 async function fetchInitialRatesSnapshot() {
     try {
-        const res = await fetch('/api/rates-json?_=' + Date.now());
+        const res = await fetch(getApiUrl('/api/rates-json?_=' + Date.now()));
         if (res.ok) {
             const data = await res.json();
             processStreamPayload(data);
@@ -154,13 +161,13 @@ function startFallbackPolling() {
     if (fallbackPollTimer) return;
     fallbackPollTimer = setInterval(async () => {
         try {
-            const res = await fetch('/api/rates-json?_=' + Date.now());
+            const res = await fetch(getApiUrl('/api/rates-json?_=' + Date.now()));
             if (res.ok) {
                 const data = await res.json();
                 processStreamPayload(data);
             }
         } catch(e) {}
-    }, 150);
+    }, 100);
 }
 
 /* 3. REAL-TIME 0ms SSE STREAM LISTENER */
@@ -500,12 +507,11 @@ function renderSwastikAiReport(report) {
     }
 }
 
-/* 6. AUTOMATIC CUSTOMER AUTO-LOGOUT ON ADMIN DELETE OR BLOCK ACCOUNT */
 async function verifySingleSessionSecurity() {
     if (!appState.user || !appState.user.id) return;
 
     try {
-        const res = await fetch(`/api/verify-session?id=${encodeURIComponent(appState.user.id)}&sessionToken=${encodeURIComponent(appState.sessionToken || '')}&_=${Date.now()}`);
+        const res = await fetch(getApiUrl(`/api/verify-session?id=${encodeURIComponent(appState.user.id)}&sessionToken=${encodeURIComponent(appState.sessionToken || '')}&_=${Date.now()}`));
         if (res.ok) {
             const data = await res.json();
             if (data.valid === false) {
@@ -565,7 +571,7 @@ function handleLogin(e) {
     const id = document.getElementById('loginIdInput').value.trim().toUpperCase();
     const pin = document.getElementById('loginPinInput').value.trim();
 
-    fetch('/api/login', {
+    fetch(getApiUrl('/api/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, pin })
@@ -585,7 +591,7 @@ function handleLogin(e) {
             alert(data.message || "लॉगिन असफल!");
         }
     }).catch(() => {
-        alert("सर्वर से कनेक्ट करने में त्रुटि!");
+        alert("सर्वर से कनेक्ट करने में त्रुटि! (कृपया कुछ सेकंड बाद पुनः प्रयास करें)");
     });
 }
 
@@ -595,7 +601,7 @@ function handleRegister(e) {
     const mobile = document.getElementById('regMobile').value.trim();
     const city = document.getElementById('regCity').value.trim();
 
-    fetch('/api/register', {
+    fetch(getApiUrl('/api/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, mobile, city })
@@ -608,7 +614,7 @@ function handleRegister(e) {
             alert(data.message || "रजिस्ट्रेशन सबमिट नहीं हो सका!");
         }
     }).catch(() => {
-        alert("सर्वर से कनेक्ट करने में त्रुटि!");
+        alert("सर्वर से कनेक्ट करने में त्रुटि! (कृपया कुछ सेकंड बाद पुनः प्रयास करें)");
     });
 }
 

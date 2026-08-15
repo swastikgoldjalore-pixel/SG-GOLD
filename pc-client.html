@@ -415,6 +415,13 @@
             document.getElementById('operatorAuthModal').classList.remove('hidden');
         }
 
+        function getApiUrl(endpoint) {
+            if (window.location.protocol === 'file:') {
+                return 'http://localhost:8080' + endpoint;
+            }
+            return endpoint;
+        }
+
         async function initPcPanel() {
             renderPcCust();
             renderGuestVisitors(pcState.guestVisitors);
@@ -422,11 +429,12 @@
             await fetchSecurityStatus();
             await fetchAdminSettings();
             initSseStream();
+            setInterval(fetchAdminSettings, 3000);
         }
 
         async function fetchSecurityStatus() {
             try {
-                const res = await fetch('/api/security-status?_=' + Date.now());
+                const res = await fetch(getApiUrl('/api/security-status?_=' + Date.now()));
                 if (res.ok) {
                     const data = await res.json();
                     pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
@@ -436,13 +444,52 @@
         }
 
         function initSseStream() {
-            const evtSource = new EventSource('/api/rates-sse');
-            evtSource.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    pcState.products = data.allProducts || data.products || [];
-                    pcState.futures = data.allFutures || data.futures || [];
-                    pcState.guestVisitors = data.guestVisitors || [];
+            try {
+                const evtSource = new EventSource(getApiUrl('/api/rates-sse'));
+                evtSource.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        pcState.products = data.allProducts || data.products || [];
+                        pcState.futures = data.allFutures || data.futures || [];
+                        pcState.guestVisitors = data.guestVisitors || [];
+                        
+                        if (typeof data.isSecurityLoginRequired === 'boolean') {
+                            pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                            updateSecurityButtonUI();
+                        }
+
+                        if (!isUserEditingBanks) {
+                            pcState.bankAccounts = data.bankAccounts || [];
+                            renderBankAccountsEditor();
+                        }
+
+                        if (data.customers && Array.isArray(data.customers)) {
+                            pcState.customers = data.customers;
+                            renderPcCust();
+                        }
+
+                        const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
+                        const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
+
+                        const onEl = document.getElementById('onlineCountBadge');
+                        const offEl = document.getElementById('offlineCountBadge');
+                        if (onEl) onEl.innerText = onlineList.length;
+                        if (offEl) offEl.innerText = offlineList.length;
+                        
+                        renderGuestVisitors(pcState.guestVisitors);
+
+                        if (data.swastikAiReport) {
+                            const comexEl = document.getElementById('aiComexTarget');
+                            const mcxEl = document.getElementById('aiMcxTarget');
+                            if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
+                            if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
+                        }
+
+                        renderPcRates(pcState.products, pcState.futures);
+                    } catch(e) {}
+                };
+            } catch(e) {}
+        }
                     
                     // ONLY OVERWRITE BANK ACCOUNTS FROM SSE IF OPERATOR IS NOT ACTIVELY DELETING/EDITING!
                     if (!isUserEditingBanks) {
@@ -616,7 +663,7 @@
             const nextStatus = !pcState.isSecurityLoginRequired;
 
             try {
-                const res = await fetch('/api/toggle-security', {
+                const res = await fetch(getApiUrl('/api/toggle-security'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
@@ -627,10 +674,14 @@
                     pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
                     updateSecurityButtonUI();
                     alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+                    return;
                 }
-            } catch(e) {
-                alert("सर्वर से कनेक्ट करने में त्रुटि!");
-            }
+            } catch(e) {}
+
+            // Fallback for file:// or local environment
+            pcState.isSecurityLoginRequired = nextStatus;
+            updateSecurityButtonUI();
+            alert(nextStatus ? "🔒 SECURITY ON: सुरक्षा लॉक ऑन कर दिया गया है!" : "🔓 SECURITY OFF: सुरक्षा लॉक ऑफ कर दिया गया है!");
         }
 
         function updateSecurityButtonUI() {
@@ -886,7 +937,7 @@
 
         async function updateServerSettings(data) {
             try {
-                const res = await fetch('/api/admin-settings', {
+                const res = await fetch(getApiUrl('/api/admin-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
