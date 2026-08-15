@@ -67,6 +67,11 @@ function setSecurityLockStatusSync(val) {
 
 setSecurityLockStatusSync(getSecurityLockStatus());
 
+function normalizeId(str) {
+    if (!str) return "";
+    return str.replace(/\s+/g, '_').replace(/IMPOTED/g, 'IMPORTED').toUpperCase();
+}
+
 let rawSundhaApiResponse = "";
 let parsedLiveRates = {
     spot: { 
@@ -409,7 +414,7 @@ function parseRawSundhaTabStream(data) {
                 if (!symbol || symbol.length === 0 || /^\d+$/.test(symbol)) return;
                 if (['SYMBOL', 'RATE', 'NAME', 'TEMPLATE', 'ID', 'TYPE'].includes(symbol.toUpperCase())) return;
 
-                const rawId = symbol.replace(/\s+/g, '_').toUpperCase();
+                const rawId = normalizeId(symbol);
 
                 // SPOT TICKERS ALWAYS UPDATE LIVE FROM API
                 if (symbol === 'SILVER') { 
@@ -434,15 +439,15 @@ function parseRawSundhaTabStream(data) {
                     return; 
                 }
 
-                const displayName = (globalAdminSettings.renames && globalAdminSettings.renames[rawId]) || symbol;
+                const displayName = (globalAdminSettings.renames && (globalAdminSettings.renames[rawId] || globalAdminSettings.renames[symbol])) || symbol;
 
                 const origBuy = parseCleanNumber(parts[3]);
                 const origSell = parseCleanNumber(parts[4]);
                 const origHigh = parseCleanNumber(parts[5]);
                 const origLow = parseCleanNumber(parts[6]);
 
-                const buyPremium = (globalAdminSettings.premiumsBuy && globalAdminSettings.premiumsBuy[rawId]) !== undefined ? globalAdminSettings.premiumsBuy[rawId] : 0;
-                const sellPremium = (globalAdminSettings.premiumsSell && globalAdminSettings.premiumsSell[rawId]) !== undefined ? globalAdminSettings.premiumsSell[rawId] : 0;
+                const buyPremium = (globalAdminSettings.premiumsBuy && (globalAdminSettings.premiumsBuy[rawId] !== undefined ? globalAdminSettings.premiumsBuy[rawId] : globalAdminSettings.premiumsBuy[symbol])) || 0;
+                const sellPremium = (globalAdminSettings.premiumsSell && (globalAdminSettings.premiumsSell[rawId] !== undefined ? globalAdminSettings.premiumsSell[rawId] : globalAdminSettings.premiumsSell[symbol])) || 0;
 
                 let finalBuy = origBuy > 0 ? (origBuy + buyPremium) : 0;
                 let finalSell = origSell > 0 ? (origSell + sellPremium) : 0;
@@ -453,11 +458,11 @@ function parseRawSundhaTabStream(data) {
                 let finalLow = origLow > 0 ? (origLow + minPrem) : 0;
 
                 const isFuture = symbol.includes('FUTURE') || symbol.includes('MCX') || symbol.includes('MINI') || symbol.includes('NEXT');
-                const isEntireProductHidden = !!(globalAdminSettings.hiddenProducts && globalAdminSettings.hiddenProducts[rawId]);
+                const isEntireProductHidden = !!(globalAdminSettings.hiddenProducts && (globalAdminSettings.hiddenProducts[rawId] || globalAdminSettings.hiddenProducts[symbol]));
 
                 if (!isFuture) {
-                    if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenBuy && globalAdminSettings.hiddenBuy[rawId])) finalBuy = 0;
-                    if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenSell && globalAdminSettings.hiddenSell[rawId])) finalSell = 0;
+                    if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenBuy && (globalAdminSettings.hiddenBuy[rawId] || globalAdminSettings.hiddenBuy[symbol]))) finalBuy = 0;
+                    if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenSell && (globalAdminSettings.hiddenSell[rawId] || globalAdminSettings.hiddenSell[symbol]))) finalSell = 0;
                 }
 
                 const itemObj = {
@@ -529,7 +534,7 @@ function broadcastSsePayload() {
     } catch(e) {}
 }
 
-// POLL LIVE SUNDHA API EVERY 500 MILLISECONDS WITH REUSEABLE SOCKET POOL
+// POLL LIVE SUNDHA API EVERY 500 MILLISECONDS WITH REUSEABLE KEEPALIVE SOCKET POOL
 setInterval(fetchSundhaGoldLiveApi, 500);
 fetchSundhaGoldLiveApi();
 
