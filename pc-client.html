@@ -695,16 +695,13 @@
         let isUserEditingBanks = false;
         let sseEventSource = null;
 
-        // MULTI-BACKEND CANDIDATE URLS
+        // MULTI-BACKEND CANDIDATE URLS (STRICTLY PRODUCTION SWASTIKGOLD.NET & RELATIVE API.PHP)
         function getApiEndpoints(action, path) {
-            const origin = window.location.origin || 'http://localhost:8080';
-            const isFile = window.location.protocol === 'file:';
+            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 7);
             return [
-                `api.php?action=${action}&_=${Date.now()}`,
-                `${path}?_=${Date.now()}`,
-                `http://localhost:8080${path}?_=${Date.now()}`,
-                `http://127.0.0.1:8080${path}?_=${Date.now()}`,
-                `https://swastikgold.net/api.php?action=${action}&_=${Date.now()}`
+                `api.php?action=${action}&_nc=${nonce}`,
+                `${path}?_nc=${nonce}`,
+                `https://swastikgold.net/api.php?action=${action}&_nc=${nonce}`
             ];
         }
 
@@ -714,7 +711,7 @@
                 const verified = await verifyAdminToken(adminToken);
                 if (verified) {
                     document.getElementById('operatorAuthModal').classList.add('hidden');
-                    initPcPanel();
+                    await initPcPanel();
                     return;
                 }
             }
@@ -777,7 +774,6 @@
             const endpoints = [
                 'api.php?action=admin-login',
                 '/api/admin/login',
-                'http://localhost:8080/api/admin/login',
                 'https://swastikgold.net/api.php?action=admin-login'
             ];
 
@@ -806,7 +802,7 @@
                             if (data.user.must_change_password) {
                                 document.getElementById('forcePasswordChangeModal').classList.remove('hidden');
                             } else {
-                                initPcPanel();
+                                await initPcPanel();
                             }
                             loginSucceeded = true;
                             break;
@@ -851,7 +847,6 @@
             const endpoints = [
                 'api.php?action=admin-change-password',
                 '/api/admin/change-password',
-                'http://localhost:8080/api/admin/change-password',
                 'https://swastikgold.net/api.php?action=admin-change-password'
             ];
 
@@ -917,6 +912,7 @@
 
         // 2. DESK INITIALIZATION & REAL-TIME STREAMING
         async function initPcPanel() {
+            await fetchAdminSettings();
             renderPcRates(pcState.products, pcState.futures);
             renderPcCust();
             renderGuestVisitors(pcState.guestVisitors);
@@ -925,7 +921,6 @@
             initSseStream();
             loadSymbolMappings();
 
-            fetchAdminSettings();
             setInterval(fetchAdminSettings, 2000);
         }
 
@@ -954,6 +949,7 @@
 
             if (data.adminSettings) {
                 pcState.adminSettings = { ...pcState.adminSettings, ...data.adminSettings };
+                syncSettingsToDomInputs();
             }
 
             if (data.allProducts || data.products) pcState.products = data.allProducts || data.products;
@@ -1348,7 +1344,6 @@
             const urls = [
                 'api.php?action=toggle-security',
                 '/api/toggle-security',
-                'http://localhost:8080/api/toggle-security',
                 'https://swastikgold.net/api.php?action=toggle-security'
             ];
 
@@ -1397,7 +1392,6 @@
             const urls = [
                 'api.php?action=admin-settings',
                 '/api/admin-settings',
-                'http://localhost:8080/api/admin-settings',
                 'https://swastikgold.net/api.php?action=admin-settings'
             ];
 
@@ -1419,26 +1413,69 @@
             return isSavedOnServer;
         }
 
+        function syncSettingsToDomInputs() {
+            if (!pcState.adminSettings) return;
+            const allItems = [...pcState.products, ...pcState.futures];
+            allItems.forEach(p => {
+                const customName = (pcState.adminSettings.renames && pcState.adminSettings.renames[p.id]) || p.name;
+                const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id] !== undefined) ? pcState.adminSettings.premiumsBuy[p.id] : 0;
+                const sellPrem = (pcState.adminSettings.premiumsSell && pcState.adminSettings.premiumsSell[p.id] !== undefined) ? pcState.adminSettings.premiumsSell[p.id] : 0;
+
+                const renameInp = document.getElementById(`rename-${p.id}`);
+                const premBuyInp = document.getElementById(`premBuy-${p.id}`);
+                const premSellInp = document.getElementById(`premSell-${p.id}`);
+
+                if (renameInp && document.activeElement !== renameInp) {
+                    renameInp.value = customName;
+                }
+                if (premBuyInp && document.activeElement !== premBuyInp) {
+                    premBuyInp.value = buyPrem;
+                }
+                if (premSellInp && document.activeElement !== premSellInp) {
+                    premSellInp.value = sellPrem;
+                }
+
+                const hideProdChk = document.getElementById(`hideProd-${p.id}`);
+                const hideBuyChk = document.getElementById(`hideBuy-${p.id}`);
+                const hideSellChk = document.getElementById(`hideSell-${p.id}`);
+
+                if (hideProdChk && document.activeElement !== hideProdChk) {
+                    hideProdChk.checked = !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id]);
+                }
+                if (hideBuyChk && document.activeElement !== hideBuyChk) {
+                    hideBuyChk.checked = !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id]);
+                }
+                if (hideSellChk && document.activeElement !== hideSellChk) {
+                    hideSellChk.checked = !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id]);
+                }
+            });
+        }
+
         async function fetchAdminSettings() {
+            const nonce = Date.now() + '_' + Math.random().toString(36).substring(2, 7);
             const urls = [
-                'api.php?action=admin-settings&_=' + Date.now(),
-                '/api/admin-settings?_=' + Date.now(),
-                'http://localhost:8080/api/admin-settings?_=' + Date.now(),
-                'https://swastikgold.net/api.php?action=admin-settings&_=' + Date.now()
+                `api.php?action=admin-settings&_nc=${nonce}`,
+                `/api/admin-settings?_nc=${nonce}`,
+                `https://swastikgold.net/api.php?action=admin-settings&_nc=${nonce}`
             ];
 
             for (const url of urls) {
                 try {
-                    const res = await fetch(url);
+                    const res = await fetch(url, {
+                        cache: 'no-store',
+                        headers: { 'Cache-Control': 'no-cache, no-store' }
+                    });
                     if (res.ok) {
                         const data = await res.json();
                         pcState.adminSettings = { ...pcState.adminSettings, ...data };
                         if (data.customers) { pcState.customers = data.customers; renderPcCust(); }
                         if (data.bankAccounts && !isUserEditingBanks) { pcState.bankAccounts = data.bankAccounts; renderBankAccountsEditor(); }
-                        return;
+                        syncSettingsToDomInputs();
+                        return true;
                     }
                 } catch (e) {}
             }
+            return false;
         }
 
         async function savePcMarqueeText() {
@@ -1600,7 +1637,7 @@
                     <td>${isOnline ? '<strong style="color:#4ade80;">🟢 LIVE</strong>' : '<strong style="color:#f87171;">🔴 OFFLINE</strong>'}</td>
                     <td><strong style="color:#facc15;">${v.guestName || 'Guest'}</strong></td>
                     <td>${v.mobile || 'Not Registered'}</td>
-                    <td>${v.ip || '127.0.0.1'}</td>
+                    <td><span class="pin-code">${v.ip || 'Live IP'}</span></td>
                     <td><span style="color:#38bdf8;">${v.device || 'PC/Mobile'}</span></td>
                     <td>${v.city || 'Jalore'}</td>
                     <td>${v.page || 'Live Rates'}</td>
@@ -1679,7 +1716,6 @@
             const urls = [
                 'api.php?action=admin-symbol-mapping',
                 '/api/admin/symbol-mapping',
-                'http://localhost:8080/api/admin/symbol-mapping',
                 'https://swastikgold.net/api.php?action=admin-symbol-mapping'
             ];
             for (const url of urls) {
@@ -1721,7 +1757,6 @@
             const urls = [
                 'api.php?action=admin-symbol-mapping',
                 '/api/admin/symbol-mapping',
-                'http://localhost:8080/api/admin/symbol-mapping',
                 'https://swastikgold.net/api.php?action=admin-symbol-mapping'
             ];
 
@@ -1752,7 +1787,6 @@
             const urls = [
                 'api.php?action=admin-audit-logs',
                 '/api/admin/audit-logs',
-                'http://localhost:8080/api/admin/audit-logs',
                 'https://swastikgold.net/api.php?action=admin-audit-logs'
             ];
             for (const url of urls) {

@@ -204,7 +204,6 @@ async function sendVisitorPing(status = 'ONLINE') {
             visitorId: vid,
             guestName: guestDisplayName,
             mobile: isUserLoggedIn ? appState.user.mobile : (storedGuestPhone || "Not Registered"),
-            ip: "127.0.0.1",
             device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Browser",
             city: isUserLoggedIn && appState.user.city ? appState.user.city : "Jalore / Rajasthan",
             page: "Mobile Live Rates Desk",
@@ -217,15 +216,19 @@ async function sendVisitorPing(status = 'ONLINE') {
             syncChannel.postMessage({ type: 'GUEST_PING', visitor: visitorObj });
         }
 
-        const urls = ['api.php?action=visitor-ping', '/api/visitor-ping'];
+        const urls = [
+            'api.php?action=visitor-ping',
+            '/api/visitor-ping',
+            'https://swastikgold.net/api.php?action=visitor-ping'
+        ];
         for (const url of urls) {
             try {
-                await fetch(url, {
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(visitorObj)
                 });
-                break;
+                if (res.ok) break;
             } catch(e) {}
         }
     } catch(e) {}

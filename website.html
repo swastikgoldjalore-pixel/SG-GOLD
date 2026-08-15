@@ -580,7 +580,6 @@
                     visitorId: vid,
                     guestName: guestDisplayName,
                     mobile: isUserLoggedIn ? currentUser.mobile : (storedGuestPhone || "Not Registered"),
-                    ip: "127.0.0.1",
                     device: /iphone|ipad|ipod|android/i.test(navigator.userAgent) ? "Mobile Smartphone" : "Desktop PC Display",
                     city: isUserLoggedIn && currentUser.city ? currentUser.city : "Jalore / Rajasthan",
                     page: "Website Live Board (website.html)",
@@ -589,15 +588,19 @@
                     lastPing: Date.now()
                 };
 
-                const urls = ['api.php?action=visitor-ping', '/api/visitor-ping'];
+                const urls = [
+                    'api.php?action=visitor-ping',
+                    '/api/visitor-ping',
+                    'https://swastikgold.net/api.php?action=visitor-ping'
+                ];
                 for (const url of urls) {
                     try {
-                        await fetch(url, {
+                        const res = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(visitorObj)
                         });
-                        break;
+                        if (res.ok) break;
                     } catch(e) {}
                 }
             } catch(e) {}

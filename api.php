@@ -533,6 +533,11 @@ function saveVisitorPing($vObj) {
     $vId = isset($vObj['visitorId']) ? $vObj['visitorId'] : '';
     if (empty($vId)) return;
     
+    $realIp = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
+    if (!empty($realIp)) {
+        $vObj['ip'] = trim($realIp);
+    }
+
     $vObj['lastPing'] = round(microtime(true) * 1000);
     $found = false;
     foreach ($visitors as $idx => $v) {
@@ -594,7 +599,7 @@ if ($action === 'admin-login') {
     $username = trim(isset($input['username']) ? $input['username'] : '');
     $password = trim(isset($input['password']) ? $input['password'] : '');
     $remember = !empty($input['rememberMe']);
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+    $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]) : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'Client IP');
 
     $users = loadAdminUsers();
     $matched = null;
@@ -667,7 +672,7 @@ if ($action === 'admin-change-password') {
     $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $curr = trim(isset($input['currentPassword']) ? $input['currentPassword'] : '');
     $newPass = trim(isset($input['newPassword']) ? $input['newPassword'] : '');
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+    $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]) : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'Client IP');
 
     $users = loadAdminUsers();
     if (empty($users)) {
