@@ -1,0 +1,28 @@
+# SWASTIK GOLD JALORE (swastikgold.net) - Official GoDaddy Node.js & cPanel Rules
+# Guarantees HTTPS, Zero-Cache, and Reverse Proxying to Node Engine without 404 or 500 errors
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. FORCE HTTPS ENFORCEMENT ON SWASTIKGOLD.NET
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 2. APACHE PROXY & PASSENGER DIRECTIVES FOR API ENDPOINTS
+    <IfModule mod_passenger.c>
+        PassengerEnabled On
+        PassengerAppType node
+        PassengerStartupFile server.js
+    </IfModule>
+
+    # 3. ZERO-CACHE HEADERS FOR 100% REAL-TIME BROADCAST SYNC
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+        Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+        Header set X-Accel-Buffering "no"
+    </IfModule>
+</IfModule>

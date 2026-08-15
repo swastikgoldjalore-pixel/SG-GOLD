@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="sapphire">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Swastik Gold Jalore - Bullion Live Rates App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070f1e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Swastik Gold">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-pattern">
+
+    <!-- 1. APP OPEN WELCOME POP-UP MODAL -->
+    <div id="welcomePopupModal" class="modal-overlay hidden">
+        <div class="theme-modal-card" style="text-align:center;border-color:#facc15;">
+            <div style="font-size:28px;color:#facc15;font-weight:900;margin-bottom:2px;">卐</div>
+            <h3 style="color:#f59e0b;font-size:16px;font-weight:900;margin-bottom:4px;">SWASTIK GOLD JALORE</h3>
+            <p style="font-size:9px;color:#94a3b8;margin-bottom:8px;font-weight:800;">OFFICIAL BULLION ANNOUNCEMENT</p>
+            
+            <div style="background:rgba(250,204,21,0.1);padding:10px;border-radius:8px;border-left:4px solid #facc15;text-align:left;">
+                <p id="popupMsgContent" style="font-size:12px;font-weight:800;color:#f59e0b;line-height:1.4;">
+                    Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDE DRAWER MENU -->
+    <div id="sideDrawer" class="drawer-overlay hidden" onclick="toggleDrawer(false)">
+        <div class="drawer-content" onclick="event.stopPropagation()">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:22px;color:#facc15;font-weight:900;">卐</span>
+                    <span style="font-size:15px;color:#f59e0b;font-weight:800;">SWASTIK GOLD</span>
+                </div>
+                <button style="background:none;border:none;color:white;font-size:16px;" onclick="toggleDrawer(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <ul class="drawer-menu">
+                <li onclick="switchTab('live-rates'); toggleDrawer(false)"><i class="fa-solid fa-chart-line" style="color:#facc15;"></i> Live Rate</li>
+                <li onclick="switchTab('contact-bank'); toggleDrawer(false)"><i class="fa-solid fa-building-columns" style="color:#facc15;"></i> Contact & Bank</li>
+                <li onclick="switchTab('messages'); toggleDrawer(false)"><i class="fa-solid fa-comment-dots" style="color:#facc15;"></i> Message</li>
+                <li onclick="window.location.href='pc-client.html'"><i class="fa-solid fa-lock" style="color:#facc15;"></i> Admin</li>
+                <li onclick="switchTab('about-us'); toggleDrawer(false)"><i class="fa-solid fa-circle-info" style="color:#facc15;"></i> About Us</li>
+                <li onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i> Logout App</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="appContainer" class="app-viewport">
+
+        <!-- 1. HEADER (ALWAYS VISIBLE) -->
+        <header class="app-header">
+            <button class="menu-toggle-btn" onclick="toggleDrawer(true)" aria-label="Open Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="brand-header-group">
+                <div class="swastik-logo-icon">卐</div>
+                <span class="antique-brand-name">SWASTIK GOLD</span>
+            </div>
+
+            <div class="header-actions">
+                <div class="avatar-badge" id="topAvatarBadge" onclick="toggleDrawer(true)">SG1001</div>
+            </div>
+        </header>
+
+        <!-- 2. NAVIGATION TABS BAR (ALWAYS VISIBLE) -->
+        <nav class="top-nav-tabs">
+            <button class="nav-tab active" data-tab="live-rates" onclick="switchTab('live-rates')">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Live Rates</span>
+            </button>
+            <button class="nav-tab" data-tab="contact-bank" onclick="switchTab('contact-bank')">
+                <i class="fa-solid fa-building-columns"></i>
+                <span>Contact & Bank</span>
+            </button>
+            <button class="nav-tab" data-tab="messages" onclick="switchTab('messages')">
+                <i class="fa-solid fa-comment-dots"></i>
+                <span>Messages</span>
+            </button>
+            <button class="nav-tab" data-tab="about-us" onclick="switchTab('about-us')">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>About Us</span>
+            </button>
+        </nav>
+
+        <!-- 3. MARQUEE TICKER (ALWAYS VISIBLE) -->
+        <div class="ticker-banner">
+            <marquee id="marqueeText" scrollamount="5" behavior="scroll" direction="left">
+                नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं और सोने-चांदी की गलाई का कार्य भी किया जाता हैं ❖
+            </marquee>
+        </div>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="main-content">
+
+            <!-- 1. LOGIN SHIELD MODAL -->
+            <div id="authScreen" class="auth-wrapper hidden">
+                <div class="auth-card">
+
+                    <div class="auth-royal-header">
+                        <div style="font-size:40px;color:#facc15;font-weight:900;margin-bottom:2px;">卐</div>
+                        <h2 class="auth-title">SWASTIK GOLD</h2>
+                        <p class="auth-subtext">JALORE BULLION LIVE DESK</p>
+                    </div>
+                    <div id="loginBox" class="auth-box">
+                        <form id="loginForm" onsubmit="handleLogin(event)">
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-user-shield text-gold"></i> लॉगिन ID (Customer ID)</label>
+                                <input type="text" id="loginIdInput" placeholder="जैसे: SG1001" maxlength="10" required oninput="this.value = this.value.toUpperCase()" class="stylish-input" style="text-transform:uppercase;">
+                            </div>
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-key text-gold"></i> पासवर्ड / PIN</label>
+                                <input type="password" id="loginPinInput" placeholder="6 अंकों का पासवर्ड पिन" maxlength="10" required class="stylish-input">
+                            </div>
+                            <button type="submit" class="btn-royal-login">
+                                <i class="fa-solid fa-right-to-bracket"></i> ऐप में लॉगिन करें (LOGIN)
+                            </button>
+                        </form>
+                        <div class="new-reg-prompt">
+                            <p>नया खाता खोलना चाहते हैं?</p>
+                            <button type="button" class="btn-link-reg" onclick="toggleAuthView('register')">
+                                <i class="fa-solid fa-user-plus"></i> Click to New Registration
+                            </button>
+                        </div>
+                    </div>
+                    <div id="registerBox" class="auth-box hidden">
+                        <form id="registerForm" onsubmit="handleRegister(event)">
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-user text-gold"></i> आपका पूरा नाम (Full Name)</label>
+                                <input type="text" id="regName" placeholder="अपना नाम दर्ज करें" required class="stylish-input">
+                            </div>
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-mobile-screen text-gold"></i> मोबाइल नंबर (WhatsApp Number)</label>
+                                <input type="tel" id="regMobile" placeholder="10 अंकों का व्हाट्सएप नंबर" maxlength="10" required class="stylish-input">
+                            </div>
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-city text-gold"></i> शहर का नाम (City Name)</label>
+                                <input type="text" id="regCity" placeholder="जैसे: Jalore" required class="stylish-input">
+                            </div>
+                            <button type="submit" class="btn-royal-login btn-green-grad">
+                                <i class="fa-solid fa-paper-plane"></i> रजिस्ट्रेशन सबमिट करें
+                            </button>
+                        </form>
+                        <div class="new-reg-prompt">
+                            <button type="button" class="btn-link-reg" onclick="toggleAuthView('login')">
+                                <i class="fa-solid fa-arrow-left"></i> वापस लॉगिन स्क्रीन पर जाएं
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: LIVE RATES SCREEN -->
+            <section id="tab-live-rates" class="tab-pane active">
+                
+                <!-- SPOT RATES CONTAINER WITH HIGH/LOW LINES -->
+                <div class="top-spot-grid">
+                    <div class="spot-card">
+                        <span class="spot-label">SILVER</span>
+                        <span class="spot-value" id="spotSilver">57.09</span>
+                        <div id="spotSilverHl" class="spot-hl-text">H:58.50 L:56.20</div>
+                    </div>
+                    <div class="spot-card">
+                        <span class="spot-label">GOLD</span>
+                        <span class="spot-value" id="spotGold">4027.85</span>
+                        <div id="spotGoldHl" class="spot-hl-text">H:4045.00 L:4010.00</div>
+                    </div>
+                    <div class="spot-card">
+                        <span class="spot-label">USDINR</span>
+                        <span class="spot-value" id="spotUsdinr">95.40</span>
+                        <div id="spotUsdinrHl" class="spot-hl-text">H:95.80 L:95.10</div>
+                    </div>
+                </div>
+
+                <!-- PRODUCTS SECTION WITH BLUE HEADER BAR -->
+                <div class="bullion-grid-section">
+                    <div class="products-list-header">
+                        <div class="header-col-name">PRODUCTS</div>
+                        <div class="header-col-buy">BUY</div>
+                        <div class="header-col-sell">SELL</div>
+                    </div>
+                    
+                    <div class="products-list" id="productsList">
+                        <div class="product-row-card" id="prod-row-SILVER_CHORSA_98">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-SILVER_CHORSA_98">SILVER CHORSA 98</div>
+                                <div class="prod-hl-line" id="prod-hl-SILVER_CHORSA_98">H: 233600   L: 232100</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-SILVER_CHORSA_98">232100</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-SILVER_CHORSA_98">233600</div></div>
+                        </div>
+                        <div class="product-row-card" id="prod-row-GOLD_9950_IMPOTED">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-GOLD_9950_IMPOTED">GOLD 9950 IMPOTED</div>
+                                <div class="prod-hl-line" id="prod-hl-GOLD_9950_IMPOTED">H: 150290   L: 149590</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-GOLD_9950_IMPOTED">149590</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-GOLD_9950_IMPOTED">150190</div></div>
+                        </div>
+                        <div class="product-row-card" id="prod-row-GOLD_999_KD">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-GOLD_999_KD">GOLD 999 KD</div>
+                                <div class="prod-hl-line" id="prod-hl-GOLD_999_KD">H: 150940   L: 150240</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-GOLD_999_KD">150240</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-GOLD_999_KD">150840</div></div>
+                        </div>
+                        <div class="product-row-card" id="prod-row-GOLD_RTGS_999">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-GOLD_RTGS_999">GOLD RTGS 999</div>
+                                <div class="prod-hl-line" id="prod-hl-GOLD_RTGS_999">H: 158390   L: 157800</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-GOLD_RTGS_999">157800</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-GOLD_RTGS_999">158390</div></div>
+                        </div>
+                        <div class="product-row-card" id="prod-row-RANI">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-RANI">RANI</div>
+                                <div class="prod-hl-line" id="prod-hl-RANI">H: 150490   L: 149890</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-RANI">149890</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-RANI">150490</div></div>
+                        </div>
+                        <div class="product-row-card" id="prod-row-RUPA">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="prod-name-RUPA">RUPA</div>
+                                <div class="prod-hl-line" id="prod-hl-RUPA">H: 233600   L: 232100</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-buy-RUPA">232100</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="prod-sell-RUPA">233600</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FUTURES SECTION WITH BLUE HEADER BAR -->
+                <div class="bullion-grid-section">
+                    <div class="products-list-header">
+                        <div class="header-col-name">PRODUCTS</div>
+                        <div class="header-col-buy">BID</div>
+                        <div class="header-col-sell">ASK</div>
+                    </div>
+                    
+                    <div class="products-list" id="futuresList">
+                        <div class="product-row-card" id="fut-row-SILVER_FUTURE">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="fut-name-SILVER_FUTURE">SILVER FUTURE</div>
+                                <div class="prod-hl-line" id="fut-hl-SILVER_FUTURE">H: 237822   L: 231550</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="fut-buy-SILVER_FUTURE">235872</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="fut-sell-SILVER_FUTURE">236190</div></div>
+                        </div>
+                        <div class="product-row-card" id="fut-row-GOLD_FUTURE">
+                            <div class="prod-info-block">
+                                <div class="prod-name-title" id="fut-name-GOLD_FUTURE">GOLD FUTURE</div>
+                                <div class="prod-hl-line" id="fut-hl-GOLD_FUTURE">H: 155000   L: 154000</div>
+                            </div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="fut-buy-GOLD_FUTURE">154460</div></div>
+                            <div class="price-pill-cell"><div class="rate-cell-text" id="fut-sell-GOLD_FUTURE">154590</div></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: CONTACT & BANK SCREEN -->
+            <section id="tab-contact-bank" class="tab-pane">
+                
+                <div class="contact-white-card">
+                    <div class="contact-head-bar">
+                        <div class="contact-head-title"><i class="fa-solid fa-phone" style="color:#003a80;"></i> CONTACT SWASTIK GOLD JALORE</div>
+                        <a href="tel:9414152854" class="btn-add-contacts">ADD TO CONTACTS</a>
+                    </div>
+                    <p style="font-size:10px;color:#475569;margin-bottom:10px;font-weight:700;">Connect with us or visit Jalore's elite bullion merchants at our official holding premises:</p>
+
+                    <div class="contact-row-item">
+                        <span class="contact-row-label">PHONE NUMBERS:</span>
+                        <span class="contact-row-val">9414152854 / 9772277054</span>
+                    </div>
+                    <div class="contact-row-item">
+                        <span class="contact-row-label">OFFICIAL EMAIL:</span>
+                        <span class="contact-row-val">swastikgoldjalore@gmail.com</span>
+                    </div>
+                    <div class="contact-row-item">
+                        <span class="contact-row-label">HOLDING ADDRESS:</span>
+                        <span class="contact-row-val">Jiwibai complex, gandhi chowk, Jalore (raj.)343001</span>
+                    </div>
+                </div>
+
+                <div class="contact-white-card">
+                    <div style="font-size:13px;font-weight:800;color:#003a80;margin-bottom:6px;">SWASTIK BULLION OFFICIAL ACCOUNTS</div>
+                    <p style="font-size:10px;color:#475569;margin-bottom:12px;font-weight:700;">To settle physical deliveries or deposit margin funds for booking locks, transfer payment to following accounts:</p>
+
+                    <div style="border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:10px;">
+                        <div class="contact-row-item"><span class="contact-row-label">BANK NAME:</span><span class="contact-row-val">HDFC Bank Ltd</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">ACCOUNT NO:</span><span class="contact-row-val">50200084712035</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">IFSC CODE:</span><span class="contact-row-val">HDFC0000241</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">BRANCH:</span><span class="contact-row-val">gandhi chowk, Jalore</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">ACCOUNT TYPE:</span><span class="contact-row-val">Bullion Current Account</span></div>
+                    </div>
+
+                    <div>
+                        <div class="contact-row-item"><span class="contact-row-label">BANK NAME:</span><span class="contact-row-val">State Bank of India</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">ACCOUNT NO:</span><span class="contact-row-val">38147295103</span></div>
+                        <div class="contact-row-item"><span class="contact-row-label">IFSC CODE:</span><span class="contact-row-val">SBIN0001034</span></div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 3: CLIENT MESSAGES & SWASTIK AI TARGET SYSTEM SCREEN -->
+            <section id="tab-messages" class="tab-pane">
+                
+                <!-- AUTOMATIC MIDNIGHT FESTIVAL GREETINGS CARD -->
+                <div class="personal-desk-card" style="border-color:#f59e0b;background:#ffffff;">
+                    <div class="desk-title-bar" style="color:#d97706;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>🎉 卐 SWASTIK GOLD FESTIVAL GREETING 卐 🎉</span>
+                    </div>
+                    <div class="bulletin-inner-card" style="background:#fffbeb;border-color:#fef3c7;">
+                        <div class="bulletin-head">
+                            <span class="bulletin-tag" style="color:#b45309;" id="festTitle">चातुर्मास पावन पर्व</span>
+                            <span class="bulletin-date-text" id="festDateStr">आज की मंगलकामनाएं</span>
+                        </div>
+                        <div style="font-size:12px;color:#92400e;font-weight:700;line-height:1.5;" id="festMsgBody">
+                            पावन पर्व 'चातुर्मास' की आप सभी को स्वास्तिक गोल्ड जालौर की तरफ से हार्दिक शुभकामनाएं एवं मंगलकामनाएं! आपका व्यवसाय सदैव फले-फूले।
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SWASTIK AI REAL-TIME MARKET TARGET DESK -->
+                <div class="personal-desk-card" style="border-color:#003a80;background:#ffffff;">
+                    <div class="desk-title-bar" style="color:#003a80;">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>🤖 卐 SWASTIK AI MARKET TARGET & INTELLIGENCE DESK 卐</span>
+                    </div>
+                    <div class="bulletin-inner-card" style="background:#f8fafc;border-color:#e2e8f0;">
+                        <div class="bulletin-head">
+                            <span class="bulletin-tag" style="color:#003a80;">● AUTOMATIC IST AI TARGETS</span>
+                            <span class="bulletin-date-text" id="aiUpdateText">Auto-Updated</span>
+                        </div>
+                        
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                            <div style="background:#ffffff;padding:8px;border-radius:6px;border:1px solid #a0d8ef;">
+                                <div style="font-size:11px;color:#003a80;font-weight:800;">GOLD COMEX</div>
+                                <div style="font-size:15px;color:#0c182b;font-weight:800;" id="aiGoldComexRate">$2418.50</div>
+                                <div style="font-size:10px;color:#15803d;font-weight:800;">15m Target: <span id="aiGoldComexT15">$2426.00</span></div>
+                                <div style="font-size:10px;color:#475569;font-weight:700;">1w / 1m: <span id="aiGoldComexT1w">$2460</span> / <span id="aiGoldComexT1m">$2520</span></div>
+                            </div>
+
+                            <div style="background:#ffffff;padding:8px;border-radius:6px;border:1px solid #a0d8ef;">
+                                <div style="font-size:11px;color:#003a80;font-weight:800;">SILVER COMEX</div>
+                                <div style="font-size:15px;color:#0c182b;font-weight:800;" id="aiSilverComexRate">$29.80</div>
+                                <div style="font-size:10px;color:#15803d;font-weight:800;">15m Target: <span id="aiSilverComexT15">$30.20</span></div>
+                                <div style="font-size:10px;color:#475569;font-weight:700;">1w / 1m: <span id="aiSilverComexT1w">$31.50</span> / <span id="aiSilverComexT1m">$33.80</span></div>
+                            </div>
+
+                            <div style="background:#ffffff;padding:8px;border-radius:6px;border:1px solid #a0d8ef;">
+                                <div style="font-size:11px;color:#003a80;font-weight:800;">GOLD MCX (₹)</div>
+                                <div style="font-size:15px;color:#0c182b;font-weight:800;" id="aiGoldMcxRate">₹72,450</div>
+                                <div style="font-size:10px;color:#15803d;font-weight:800;">15m Target: <span id="aiGoldMcxT15">₹72,680</span></div>
+                                <div style="font-size:10px;color:#475569;font-weight:700;">1w / 1m: <span id="aiGoldMcxT1w">₹73,400</span> / <span id="aiGoldMcxT1m">₹74,800</span></div>
+                            </div>
+
+                            <div style="background:#ffffff;padding:8px;border-radius:6px;border:1px solid #a0d8ef;">
+                                <div style="font-size:11px;color:#003a80;font-weight:800;">SILVER MCX (₹)</div>
+                                <div style="font-size:15px;color:#0c182b;font-weight:800;" id="aiSilverMcxRate">₹88,200</div>
+                                <div style="font-size:10px;color:#15803d;font-weight:800;">15m Target: <span id="aiSilverMcxT15">₹88,750</span></div>
+                                <div style="font-size:10px;color:#475569;font-weight:700;">1w / 1m: <span id="aiSilverMcxT1w">₹90,100</span> / <span id="aiSilverMcxT1m">₹93,500</span></div>
+                            </div>
+                        </div>
+
+                        <div style="font-size:11px;color:#0c182b;font-weight:600;line-height:1.5;background:#ffffff;padding:8px;border-radius:6px;border:1px solid #cbd5e1;" id="aiReasonsList">
+                            🔥 ट्रम्प का नया टैरिफ बयान एवं अमेरिकी डॉलर सूचकांक (DXY) में नरमी से अंतरराष्ट्रीय सोने में उछाल। US Fed ब्याज दर कटौती संभावना से सर्राफा बाजार में बुलिश ट्रेंड।
+                        </div>
+                    </div>
+                </div>
+
+                <div class="personal-desk-card">
+                    <div class="desk-title-bar">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>卐 SWASTIK LIVE PERSONAL DESK</span>
+                    </div>
+                    <div class="bulletin-inner-card">
+                        <div class="bulletin-head">
+                            <span class="bulletin-tag">● OFFICIAL BULLETIN</span>
+                            <span class="bulletin-date-text" id="bulletinDate">25 Jun 2026, 02:24 am</span>
+                        </div>
+                        <div class="bulletin-body-text" id="bulletinMessageText">
+                            Swastik Gold में मेसेज सेवाएं भी उपलब्ध है जिसके जरिए आप Swastik Gold से हमेशा जुड़े रहेंगे धन्यवाद
+                        </div>
+                    </div>
+                </div>
+
+                <div class="send-msg-card">
+                    <div class="send-msg-title">
+                        <span>📩 SEND MESSAGE OR BOOKING LOCK REQUEST</span>
+                    </div>
+                    <p class="send-msg-subtext">Submit your message, rate booking, or delivery schedule. This updates in real-time on our server.</p>
+
+                    <form onsubmit="sendClientMessage(event)">
+                        <input type="text" id="msgName" placeholder="Your Name" required class="classic-form-input">
+                        <input type="tel" id="msgWhatsapp" placeholder="WhatsApp Number" required class="classic-form-input">
+                        <textarea id="msgBody" rows="3" placeholder="Your Booking / Query Message" required class="classic-form-input" style="height:80px;"></textarea>
+                        
+                        <button type="submit" class="btn-submit-server">
+                            SUBMIT TO SERVER
+                        </button>
+                    </form>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: ABOUT US SCREEN -->
+            <section id="tab-about-us" class="tab-pane">
+                
+                <div class="about-dark-card">
+                    <div class="about-title-text">卐 SWASTIK GOLD 卐</div>
+                    <div class="about-tagline">Trust • Purity • Excellence</div>
+                    <p class="about-desc-para">
+                        Swastik Gold Jalore is a premier name in the bullion market of Rajasthan. We provide real-time accurate live rates for Gold, Silver, and MCX Fut, ensuring unmatched transparency and premium services for jewellers, investors, and individuals alike.
+                    </p>
+                </div>
+
+                <div class="vision-promise-grid">
+                    <div class="vp-card">
+                        <div class="vp-head"><i class="fa-solid fa-star"></i> OUR VISION</div>
+                        <div class="vp-body">To bring the most transparent and advanced digital rate solutions directly to every jeweler's fingertips.</div>
+                    </div>
+                    <div class="vp-card">
+                        <div class="vp-head"><i class="fa-solid fa-star"></i> OUR PROMISE</div>
+                        <div class="vp-body">100% verified rates, clean OTC charts, zero latency data updates, and authentic investment advisory.</div>
+                    </div>
+                </div>
+
+                <div class="key-info-card">
+                    <div class="key-info-title">Key Information</div>
+                    
+                    <div class="key-item">
+                        <div class="key-item-lbl">FOUNDER / PROPRIETOR</div>
+                        <div class="key-item-val">Champalal Soni</div>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-item-lbl">HEADQUARTERS</div>
+                        <div class="key-item-val">Jalore, Rajasthan, India</div>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-item-lbl">ESTABLISHED YEAR</div>
+                        <div class="key-item-val">1998</div>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-item-lbl">SERVICES OFFERED</div>
+                        <div class="key-item-val">Real-time metal rates, physical gold delivery, and portfolio</div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- FLOATING CONTACT BUTTONS -->
+        <a href="tel:9414152854" class="float-btn-left" aria-label="Call Swastik Gold">
+            <i class="fa-solid fa-phone"></i>
+        </a>
+        <a href="https://wa.me/919414152854" target="_blank" class="float-btn-right" aria-label="WhatsApp Swastik Gold">
+            <i class="fa-solid fa-comment"></i>
+        </a>
+
+        <!-- FOOTER (POWERED BY CHAMPALAL SONI) -->
+        <footer class="app-footer">
+            <span>Powered by : Champalal Soni.</span>
+        </footer>
+
+    </div>
+
+    <!-- JS ENGINE -->
+    <script src="app.js"></script>
+</body>
+</html>
