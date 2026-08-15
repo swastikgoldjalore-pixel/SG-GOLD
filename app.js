@@ -37,8 +37,19 @@ function initApp() {
     initSilentPwaServiceWorker();
     initNetworkStatusMonitor();
     checkStoredUserSession();
+    fetchInitialRatesSnapshot();
     initRealtimeSseStream();
     setInterval(verifySingleSessionSecurity, 1500);
+}
+
+async function fetchInitialRatesSnapshot() {
+    try {
+        const res = await fetch('/api/rates-json?_=' + Date.now());
+        if (res.ok) {
+            const data = await res.json();
+            processStreamPayload(data);
+        }
+    } catch(e) {}
 }
 
 /* 0. AUTOMATIC SERVICE WORKER & LOCALSTORAGE CACHE PURGER */
