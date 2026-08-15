@@ -3,7 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-// GLOBAL UNCAUGHT EXCEPTION SHIELDS FOR GODADDY CPANEL PASSENGER
+// GLOBAL UNCAUGHT EXCEPTION SHIELDS FOR GODADDY CPANEL PASSENGER & NODE
 process.on('uncaughtException', (err) => {
     console.error('GoDaddy Server Uncaught Exception:', err);
 });
@@ -67,17 +67,32 @@ function setSecurityLockStatusSync(val) {
 
 setSecurityLockStatusSync(getSecurityLockStatus());
 
+// DEFAULT INITIAL LIVE FALLBACK PRODUCTS TO GUARANTEE 100% IMMEDIATE DISPLAY
+const INITIAL_DEFAULT_PRODUCTS = [
+    { id: "SILVER_CHORSA_98", name: "SILVER CHORSA 98", buy: 232100, sell: 233600, high: 233600, low: 232100, buyPremium: 0, sellPremium: 0, isProductHidden: false },
+    { id: "GOLD_9950_IMPOTED", name: "GOLD 9950 IMPOTED", buy: 149590, sell: 150190, high: 150290, low: 149590, buyPremium: 0, sellPremium: 0, isProductHidden: false },
+    { id: "GOLD_999_KD", name: "GOLD 999 KD", buy: 150240, sell: 150840, high: 150940, low: 150240, buyPremium: 0, sellPremium: 0, isProductHidden: false },
+    { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 157800, sell: 158390, high: 158390, low: 157800, buyPremium: 0, sellPremium: 0, isProductHidden: false },
+    { id: "RANI", name: "RANI", buy: 149890, sell: 150490, high: 150490, low: 149890, buyPremium: 0, sellPremium: 0, isProductHidden: false },
+    { id: "RUPA", name: "RUPA", buy: 232100, sell: 233600, high: 233600, low: 232100, buyPremium: 0, sellPremium: 0, isProductHidden: false }
+];
+
+const INITIAL_DEFAULT_FUTURES = [
+    { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, high: 237822, low: 231550, buyPremium: 0, sellPremium: 0 },
+    { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, high: 155000, low: 154000, buyPremium: 0, sellPremium: 0 }
+];
+
 let rawSundhaApiResponse = "";
 let parsedLiveRates = {
     spot: { 
-        gold_bid: "4027.85", gold_ask: "4028.95", gold_high: "4045.00", gold_low: "4010.00",
-        silver_bid: "57.09", silver_ask: "57.88", silver_high: "58.50", silver_low: "56.20",
-        usdinr_bid: "95.40", usdinr_ask: "95.45", usdinr_high: "95.80", usdinr_low: "95.10"
+        gold_bid: "4376.15", gold_ask: "4377.00", gold_high: "4397.26", gold_low: "4310.81",
+        silver_bid: "64.71", silver_ask: "64.74", silver_high: "65.69", silver_low: "63.48",
+        usdinr_bid: "95.46", usdinr_ask: "95.46", usdinr_high: "95.44", usdinr_low: "95.36"
     },
-    products: [],
-    futures: [],
-    allProducts: [],
-    allFutures: [],
+    products: INITIAL_DEFAULT_PRODUCTS,
+    futures: INITIAL_DEFAULT_FUTURES,
+    allProducts: INITIAL_DEFAULT_PRODUCTS,
+    allFutures: INITIAL_DEFAULT_FUTURES,
     marqueeText: "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई का कार्य किया जाता हैं ❖",
     lastUpdated: Date.now(),
     apiStatus: "CONNECTED_LIVE"
@@ -143,7 +158,7 @@ function loadSettingsFromDisk() {
         if (fs.existsSync(SETTINGS_FILE)) {
             const data = fs.readFileSync(SETTINGS_FILE, 'utf8');
             const saved = JSON.parse(data);
-            delete saved.isSecurityLoginRequired; // Security is strictly handled by security_lock.json
+            delete saved.isSecurityLoginRequired;
             globalAdminSettings = { ...globalAdminSettings, ...saved };
             bumpConfigVersion();
         }
@@ -182,7 +197,7 @@ setInterval(checkMidnightReset, 5000);
 // ACCURATE INDIAN FESTIVAL CALENDAR ENGINE
 function getTodayFestivalGreeting() {
     const today = getIstTime();
-    const month = today.getMonth() + 1; // 1-12
+    const month = today.getMonth() + 1;
     const day = today.getDate();
 
     let festivalName = "चातुर्मास पावन पर्व";
@@ -280,7 +295,7 @@ function generateSwastikAiMarketReport() {
 
 setInterval(generateSwastikAiMarketReport, 15 * 60 * 1000);
 
-// GUEST VISITORS ONLINE VS OFFLINE STATUS MONITOR WITH ADVANCED DETAILS & REAL NAME/MOBILE MATCHING
+// GUEST VISITORS ONLINE VS OFFLINE STATUS MONITOR
 setInterval(() => {
     try {
         const now = Date.now();
@@ -391,36 +406,36 @@ function parseRawSundhaTabStream(data) {
 
                 // SPOT TICKERS ALWAYS UPDATE
                 if (symbol === 'SILVER') { 
-                    parsedLiveRates.spot.silver_bid = parts[3] || "57.09";
-                    parsedLiveRates.spot.silver_ask = parts[4] || "57.88";
-                    parsedLiveRates.spot.silver_high = parts[5] || "58.50";
-                    parsedLiveRates.spot.silver_low = parts[6] || "56.20";
+                    parsedLiveRates.spot.silver_bid = parts[3] || "64.71";
+                    parsedLiveRates.spot.silver_ask = parts[4] || "64.74";
+                    parsedLiveRates.spot.silver_high = parts[5] || "65.69";
+                    parsedLiveRates.spot.silver_low = parts[6] || "63.48";
                     return; 
                 }
                 if (symbol === 'GOLD') { 
-                    parsedLiveRates.spot.gold_bid = parts[3] || "4027.85";
-                    parsedLiveRates.spot.gold_ask = parts[4] || "4028.95";
-                    parsedLiveRates.spot.gold_high = parts[5] || "4045.00";
-                    parsedLiveRates.spot.gold_low = parts[6] || "4010.00";
+                    parsedLiveRates.spot.gold_bid = parts[3] || "4376.15";
+                    parsedLiveRates.spot.gold_ask = parts[4] || "4377.00";
+                    parsedLiveRates.spot.gold_high = parts[5] || "4397.26";
+                    parsedLiveRates.spot.gold_low = parts[6] || "4310.81";
                     return; 
                 }
                 if (symbol === 'USDINR') { 
-                    parsedLiveRates.spot.usdinr_bid = parts[3] || "95.40";
-                    parsedLiveRates.spot.usdinr_ask = parts[4] || "95.45";
-                    parsedLiveRates.spot.usdinr_high = parts[5] || "95.80";
-                    parsedLiveRates.spot.usdinr_low = parts[6] || "95.10";
+                    parsedLiveRates.spot.usdinr_bid = parts[3] || "95.46";
+                    parsedLiveRates.spot.usdinr_ask = parts[4] || "95.46";
+                    parsedLiveRates.spot.usdinr_high = parts[5] || "95.44";
+                    parsedLiveRates.spot.usdinr_low = parts[6] || "95.36";
                     return; 
                 }
 
-                const displayName = globalAdminSettings.renames[rawId] || symbol;
+                const displayName = (globalAdminSettings.renames && globalAdminSettings.renames[rawId]) || symbol;
 
                 const origBuy = parseCleanNumber(parts[3]);
                 const origSell = parseCleanNumber(parts[4]);
                 const origHigh = parseCleanNumber(parts[5]);
                 const origLow = parseCleanNumber(parts[6]);
 
-                const buyPremium = globalAdminSettings.premiumsBuy[rawId] || 0;
-                const sellPremium = globalAdminSettings.premiumsSell[rawId] || 0;
+                const buyPremium = (globalAdminSettings.premiumsBuy && globalAdminSettings.premiumsBuy[rawId]) !== undefined ? globalAdminSettings.premiumsBuy[rawId] : 0;
+                const sellPremium = (globalAdminSettings.premiumsSell && globalAdminSettings.premiumsSell[rawId]) !== undefined ? globalAdminSettings.premiumsSell[rawId] : 0;
 
                 let finalBuy = origBuy > 0 ? (origBuy + buyPremium) : 0;
                 let finalSell = origSell > 0 ? (origSell + sellPremium) : 0;
@@ -433,7 +448,6 @@ function parseRawSundhaTabStream(data) {
                 const isFuture = symbol.includes('FUTURE') || symbol.includes('MCX') || symbol.includes('MINI') || symbol.includes('NEXT');
                 const isEntireProductHidden = !!(globalAdminSettings.hiddenProducts && globalAdminSettings.hiddenProducts[rawId]);
 
-                // HIDE PHYSICAL RULE: HIDE PRICES ONLY (SET BUY & SELL TO 0), DO NOT REMOVE PRODUCT ROW FROM TABLE!
                 if (!isFuture) {
                     if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenBuy && globalAdminSettings.hiddenBuy[rawId])) finalBuy = 0;
                     if (globalAdminSettings.isMasterHidden || (globalAdminSettings.hiddenSell && globalAdminSettings.hiddenSell[rawId])) finalSell = 0;
@@ -513,10 +527,21 @@ fetchSundhaGoldLiveApi();
 
 const server = http.createServer((req, res) => {
     try {
-        // FORCE STRICT ZERO-CACHE HEADERS ON ALL RESPONSES (FORCES BROWSERS & CDNs TO PURGE CACHE)
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        // 1. UNIVERSAL CORS & ZERO-CACHE HEADERS FOR ALL ORIGINS AND ENDPOINTS
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, post-check=0, pre-check=0');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+
+        // 2. CRITICAL PREFLIGHT HTTP OPTIONS HANDLER FOR FETCH/CORS (ELIMINATES CONNECTION ERROR ALERT)
+        if (req.method === 'OPTIONS') {
+            res.writeHead(200);
+            res.end();
+            return;
+        }
 
         if (!req.url.startsWith('/api/admin-settings')) {
             trackGuestVisitor(req);
@@ -552,7 +577,7 @@ const server = http.createServer((req, res) => {
             });
 
             const allGuests = Array.from(guestHistoryMap.values());
-            res.write(`data: ${JSON.stringify({ ...parsedLiveRates, isSecurityLoginRequired: getSecurityLockStatus(), isMasterHidden: globalAdminSettings.isMasterHidden, isMasterFrozen: globalAdminSettings.isMasterFrozen, hatohat: globalAdminSettings.hatohatSettings, bankAccounts: globalAdminSettings.bankAccounts || [], customers: globalAdminSettings.customers || [], swastikAiReport: swastikAiReport, guestVisitors: allGuests })}\n\n`);
+            res.write(`data: ${JSON.stringify({ ...parsedLiveRates, configVersion: globalConfigVersion, isSecurityLoginRequired: getSecurityLockStatus(), isMasterHidden: globalAdminSettings.isMasterHidden, isMasterFrozen: globalAdminSettings.isMasterFrozen, hatohat: globalAdminSettings.hatohatSettings, bankAccounts: globalAdminSettings.bankAccounts || [], customers: globalAdminSettings.customers || [], swastikAiReport: swastikAiReport, guestVisitors: allGuests })}\n\n`);
 
             sseClients.add(res);
 
@@ -571,6 +596,7 @@ const server = http.createServer((req, res) => {
             const allGuests = Array.from(guestHistoryMap.values());
             res.end(JSON.stringify({
                 ...parsedLiveRates,
+                configVersion: globalConfigVersion,
                 isSecurityLoginRequired: getSecurityLockStatus(),
                 isMasterHidden: globalAdminSettings.isMasterHidden,
                 isMasterFrozen: globalAdminSettings.isMasterFrozen,
@@ -814,12 +840,10 @@ const server = http.createServer((req, res) => {
 
 // GODADDY CPANEL PHUSION PASSENGER & STANDALONE BINDING ENGINE
 if (process.env.PORT && isNaN(Number(process.env.PORT))) {
-    // GoDaddy Phusion Passenger Unix Pipe
     server.listen(process.env.PORT, () => {
         console.log(`Swastik Gold Engine running on GoDaddy Passenger Pipe: ${process.env.PORT}`);
     });
 } else {
-    // Standard Port (GoDaddy cPanel Node App / PM2 / Localhost)
     server.listen(PORT, () => {
         console.log(`Swastik Gold High-Speed Engine running on Port ${PORT}`);
     });
