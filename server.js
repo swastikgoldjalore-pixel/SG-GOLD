@@ -132,6 +132,12 @@ let globalAdminSettings = {
     ]
 };
 
+let globalConfigVersion = Date.now();
+
+function bumpConfigVersion() {
+    globalConfigVersion = Date.now();
+}
+
 function loadSettingsFromDisk() {
     try {
         if (fs.existsSync(SETTINGS_FILE)) {
@@ -139,12 +145,14 @@ function loadSettingsFromDisk() {
             const saved = JSON.parse(data);
             delete saved.isSecurityLoginRequired; // Security is strictly handled by security_lock.json
             globalAdminSettings = { ...globalAdminSettings, ...saved };
+            bumpConfigVersion();
         }
     } catch(e) {}
 }
 
 function saveSettingsToDisk() {
     try {
+        bumpConfigVersion();
         const settingsToSave = { ...globalAdminSettings, isSecurityLoginRequired: getSecurityLockStatus() };
         fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settingsToSave, null, 2), 'utf8');
     } catch(e) {}
@@ -479,6 +487,7 @@ function broadcastSsePayload() {
         const currentSecStatus = getSecurityLockStatus();
         const payload = JSON.stringify({
             ...parsedLiveRates,
+            configVersion: globalConfigVersion,
             isSecurityLoginRequired: currentSecStatus,
             isMasterHidden: globalAdminSettings.isMasterHidden,
             isMasterFrozen: globalAdminSettings.isMasterFrozen,

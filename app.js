@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+    purgeStaleBrowserCaches();
     initSilentPwaServiceWorker();
     initNetworkStatusMonitor();
     checkStoredUserSession();
@@ -36,10 +37,26 @@ function initApp() {
     setInterval(verifySingleSessionSecurity, 1000);
 }
 
-/* 1. SILENT PWA SERVICE WORKER REGISTRATION (NO POPUPS) */
+/* 0. AUTOMATIC SERVICE WORKER & LOCALSTORAGE CACHE PURGER */
+function purgeStaleBrowserCaches() {
+    try {
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => {
+                    caches.delete(name);
+                });
+            });
+        }
+        localStorage.removeItem('cached_rates');
+        localStorage.removeItem('cached_admin_settings');
+        localStorage.removeItem('swastik_rates_cache');
+    } catch(e) {}
+}
+
+/* 1. SILENT PWA SERVICE WORKER REGISTRATION */
 function initSilentPwaServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js?v=' + Date.now()).catch(() => {});
     }
 }
 
