@@ -685,13 +685,13 @@ function renderProductsList(products) {
         const oldSell = appState.lastPrices[sId];
 
         const customName = renames[p.id] || p.name;
-        const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
-        const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
+        const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : (p.buyPremium || 0);
+        const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : (p.sellPremium || 0);
 
-        let rawBuy = p.rawBuy || p.buy;
-        let rawSell = p.rawSell || p.sell;
-        let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-        let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+        let rawBuy = (p.rawBuy !== undefined && p.rawBuy > 0) ? p.rawBuy : p.buy;
+        let rawSell = (p.rawSell !== undefined && p.rawSell > 0) ? p.rawSell : p.sell;
+        let finalBuy = rawBuy > 0 ? Math.max(0, rawBuy + buyPrem) : 0;
+        let finalSell = rawSell > 0 ? Math.max(0, rawSell + sellPrem) : 0;
 
         if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
         if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
@@ -739,13 +739,13 @@ function renderProductsList(products) {
     if (!container.children.length || !isOrderMatched) {
         container.innerHTML = visibleProds.map(p => {
             const customName = renames[p.id] || p.name;
-            const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : 0;
-            const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : 0;
+            const buyPrem = (premiumsBuy[p.id] !== undefined) ? parseInt(premiumsBuy[p.id]) : (p.buyPremium || 0);
+            const sellPrem = (premiumsSell[p.id] !== undefined) ? parseInt(premiumsSell[p.id]) : (p.sellPremium || 0);
 
-            let rawBuy = p.rawBuy || p.buy;
-            let rawSell = p.rawSell || p.sell;
-            let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-            let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+            let rawBuy = (p.rawBuy !== undefined && p.rawBuy > 0) ? p.rawBuy : p.buy;
+            let rawSell = (p.rawSell !== undefined && p.rawSell > 0) ? p.rawSell : p.sell;
+            let finalBuy = rawBuy > 0 ? Math.max(0, rawBuy + buyPrem) : 0;
+            let finalSell = rawSell > 0 ? Math.max(0, rawSell + sellPrem) : 0;
 
             if (isMasterHidden || hiddenBuy[p.id]) finalBuy = 0;
             if (isMasterHidden || hiddenSell[p.id]) finalSell = 0;
@@ -795,13 +795,13 @@ function renderFuturesList(futures) {
         const oldSell = appState.lastPrices[sId];
 
         const customName = renames[f.id] || f.name;
-        const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : 0;
-        const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : 0;
+        const buyPrem = (premiumsBuy[f.id] !== undefined) ? parseInt(premiumsBuy[f.id]) : (f.buyPremium || 0);
+        const sellPrem = (premiumsSell[f.id] !== undefined) ? parseInt(premiumsSell[f.id]) : (f.sellPremium || 0);
 
-        let rawBuy = f.rawBuy || f.buy;
-        let rawSell = f.rawSell || f.sell;
-        let finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
-        let finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
+        let rawBuy = (f.rawBuy !== undefined && f.rawBuy > 0) ? f.rawBuy : f.buy;
+        let rawSell = (f.rawSell !== undefined && f.rawSell > 0) ? f.rawSell : f.sell;
+        let finalBuy = rawBuy > 0 ? Math.max(0, rawBuy + buyPrem) : 0;
+        let finalSell = rawSell > 0 ? Math.max(0, rawSell + sellPrem) : 0;
 
         const buyText = formatCleanNoComma(finalBuy);
         const sellText = formatCleanNoComma(finalSell);

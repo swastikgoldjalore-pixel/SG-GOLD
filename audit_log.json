@@ -1,5 +1,18 @@
 [
   {
+    "id": "AUD_1786805463315_t8k4",
+    "timestamp": "2026-08-15T14:51:03.315Z",
+    "istTime": "15 Aug 2026, 08:21:03 pm",
+    "event": "ADMIN_LOGIN_SUCCESS",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "role": "SUPER ADMIN",
+      "must_change_password": true,
+      "userAgent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.26100.8972"
+    }
+  },
+  {
     "id": "AUD_1786804092313_o9kq",
     "timestamp": "2026-08-15T14:28:12.313Z",
     "istTime": "15 Aug 2026, 07:58:12 pm",

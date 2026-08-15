@@ -1,4 +1,37 @@
 {
+  "popupMsg": "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM.",
+  "broadcastMsg": "Swastik Gold में मेसेज सेवाएं भी उपलब्ध है जिसके जरिए आप Swastik Gold से हमेशा जुड़े रहेंगे धन्यवाद",
+  "broadcastDate": "15 Aug 2026, 08:20:39 pm",
+  "marqueeText": "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
+  "bulletinMsg": "Swastik Gold Jalore में आपका हार्दिक स्वागत है। बुलियन रेट्स एवं डिलीवरी संबंधी किसी भी जानकारी हेतु संपर्क करें। धन्यवाद!",
+  "isMasterHidden": false,
+  "isMasterFrozen": false,
+  "frozenPhysicalPrices": {},
+  "hatohatSettings": {
+    "goldTunchMargin": 50,
+    "silverTunchMargin": 200,
+    "rtgsGoldOffset": 0,
+    "rtgsSilverOffset": 0,
+    "isHatohatActive": true
+  },
+  "bankAccounts": [
+    {
+      "id": "bank_1",
+      "bankName": "HDFC Bank Ltd",
+      "accountNo": "50200084712035",
+      "ifsc": "HDFC0000241",
+      "branch": "gandhi chowk, Jalore",
+      "accountType": "Bullion Current Account"
+    },
+    {
+      "id": "bank_2",
+      "bankName": "State Bank of India",
+      "accountNo": "38147295103",
+      "ifsc": "SBIN0001034",
+      "branch": "Jalore Main Branch",
+      "accountType": "Bullion Current Account"
+    }
+  ],
   "productOrder": [
     "RANI",
     "RUPA",
@@ -19,34 +52,15 @@
     "GOLD_FUTURE": "GOLD FUTURE",
     "SILVER_FUTURE": "SILVER FUTURE"
   },
-  "premiumsBuy": {},
-  "premiumsSell": {},
+  "premiumsBuy": {
+    "RANI": 0
+  },
+  "premiumsSell": {
+    "RANI": 0
+  },
   "hiddenProducts": {},
   "hiddenBuy": {},
   "hiddenSell": {},
-  "isMasterHidden": false,
-  "isMasterFrozen": false,
-  "marqueeText": "नमस्कार, SWASTIK GOLD में आपका स्वागत है। ❖ यह भाव रेफरेंस के तौर पर दिए जा रहे हैं ❖ इसके अलावा हमारे यहाँ बुलियन , टंच , बदलाई एवं गलाई का कार्य किया जाता हैं ❖",
-  "bulletinMsg": "Swastik Gold Jalore में आपका हार्दिक स्वागत है। बुलियन रेट्स एवं डिलीवरी संबंधी किसी भी जानकारी हेतु संपर्क करें। धन्यवाद!",
-  "popupMsg": "Gold and Silver Swastik Gold mein aapka swagat hai. Booking Hours: 10:00 AM to 8:00 PM.",
-  "bankAccounts": [
-    {
-      "id": "bank_1",
-      "bankName": "HDFC Bank Ltd",
-      "accountNo": "50200084712035",
-      "ifsc": "HDFC0000241",
-      "branch": "gandhi chowk, Jalore",
-      "accountType": "Bullion Current Account"
-    },
-    {
-      "id": "bank_2",
-      "bankName": "State Bank of India",
-      "accountNo": "38147295103",
-      "ifsc": "SBIN0001034",
-      "branch": "Jalore Main Branch",
-      "accountType": "Bullion Current Account"
-    }
-  ],
   "customers": [
     {
       "id": "SG1001",
@@ -57,5 +71,16 @@
       "pin": "123456",
       "activeSession": null
     }
-  ]
+  ],
+  "providerConfig": {
+    "provider_name": "Sundha Gold",
+    "provider_base_url": "https://bcast.sundhagold.com:7768/VOTSBroadcastStreaming/Services/xml/GetLiveRateByTemplateID/sundhagold",
+    "polling_interval": 200,
+    "request_timeout": 4000,
+    "stale_threshold": 5000,
+    "reconnect_delay": 1000,
+    "maximum_reconnect_delay": 10000,
+    "enabled": true
+  },
+  "isSecurityLoginRequired": false
 }
