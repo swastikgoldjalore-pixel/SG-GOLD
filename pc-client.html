@@ -15,41 +15,98 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Open Sans', sans-serif; }
         body { background:#040914; color:#ffffff; overflow-x:hidden; font-size:12px; }
 
-        /* ADMIN OPERATOR LOGIN MODAL OVERLAY */
+        /* ADMIN SECURE LOGIN MODAL OVERLAY */
         .admin-auth-overlay {
             position: fixed;
             inset: 0;
             background: rgba(4, 9, 20, 0.98);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 99999;
         }
 
         .admin-auth-card {
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             background: #0c182b;
             border: 2px solid #facc15;
             border-radius: 16px;
-            padding: 28px 22px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+            padding: 30px 24px;
+            box-shadow: 0 16px 45px rgba(0,0,0,0.85);
             text-align: center;
+            animation: fadeInScale 0.25s ease-out;
         }
 
-        .admin-auth-title { color: #f59e0b; font-size: 19px; font-weight: 800; margin-bottom: 4px; }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .admin-auth-title { color: #f59e0b; font-size: 19px; font-weight: 800; margin-bottom: 4px; font-family: 'Cinzel Decorative', serif; }
         .admin-auth-sub { color: #94a3b8; font-size: 11px; font-weight: 600; margin-bottom: 20px; }
 
         .admin-input-group { margin-bottom: 14px; text-align: left; }
-        .admin-input-group label { display: block; color: #facc15; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
-        .admin-input-field { width: 100%; padding: 10px 12px; background: #070f1e; border: 1.5px solid #1e293b; border-radius: 6px; color: #ffffff; font-weight: 600; font-size: 13px; outline: none; }
-        .admin-input-field:focus { border-color: #facc15; }
+        .admin-input-group label { display: block; color: #facc15; font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+        .admin-input-field {
+            width: 100%;
+            padding: 11px 12px;
+            background: #070f1e;
+            border: 1.5px solid #1e293b;
+            border-radius: 6px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .admin-input-field:focus { border-color: #facc15; box-shadow: 0 0 8px rgba(250,204,21,0.25); }
 
-        .btn-admin-login { width: 100%; padding: 12px; background: #facc15; color: #000000; border: none; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 8px; }
+        .btn-admin-login {
+            width: 100%;
+            padding: 12px;
+            background: #facc15;
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-admin-login:hover { background: #eab308; transform: translateY(-1px); }
+
+        .login-error-msg {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: none;
+            text-align: left;
+        }
 
         /* HEADER WITH PURE SWASTIK LOGO ICON */
-        .pc-header { background:linear-gradient(135deg, #0c182b 0%, #172a4a 100%); padding:10px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #facc15; box-shadow:0 4px 14px rgba(0,0,0,0.5); flex-wrap:wrap; gap:10px; }
+        .pc-header {
+            background: linear-gradient(135deg, #0c182b 0%, #172a4a 100%);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #facc15;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
         .pc-brand { display:flex; align-items:center; gap:10px; color:#facc15; }
         .pc-brand h1 { font-family: 'Cinzel Decorative', serif; font-size:18px; font-weight:900; color:#f59e0b; }
 
@@ -62,6 +119,21 @@
             align-items: center;
             justify-content: center;
             filter: drop-shadow(0 0 6px rgba(250,204,21,0.6));
+        }
+
+        .super-admin-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #000000;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 900;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 6px;
+            box-shadow: 0 2px 6px rgba(245,158,11,0.4);
         }
 
         .header-status { display:flex; gap:8px; align-items:center; font-size:12px; flex-wrap:wrap; }
@@ -88,10 +160,28 @@
         .btn-hide-all { background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; }
         .btn-action-sm { background:#0050b3; color:white; border:none; padding:4px 8px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11px; }
 
+        /* ARROW REORDER BUTTONS */
+        .btn-arrow-move {
+            background: #0f1e36;
+            color: #facc15;
+            border: 1.5px solid #facc15;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 900;
+            transition: all 0.15s;
+            margin: 0 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-arrow-move:hover { background: #facc15; color: #040914; transform: scale(1.1); }
+
         /* RESPONSIVE LAYOUT GRID */
-        .pc-grid { display:grid; grid-template-columns: 2.4fr 1fr; gap:14px; padding:12px; max-width:1700px; margin:0 auto; }
+        .pc-grid { display:grid; grid-template-columns: 2.4fr 1fr; gap:14px; padding:12px; max-width:1750px; margin:0 auto; }
         
-        @media (max-width: 992px) {
+        @media (max-width: 1080px) {
             .pc-grid { grid-template-columns: 1fr; }
         }
 
@@ -99,9 +189,41 @@
         .pc-card { background:#0c182b; border:1.5px solid #facc15; border-radius:10px; padding:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5); margin-bottom:12px; }
         .pc-card h3 { color:#f59e0b; font-size:13px; font-weight:800; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
 
+        /* SUNDHA GOLD API STATUS CARD */
+        .api-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            background: #070f1e;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+        .api-metric-item { display: flex; flex-direction: column; }
+        .api-metric-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+        .api-metric-val { font-size: 12px; font-weight: 800; color: #ffffff; }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .status-pill.connected { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+        .status-pill.degraded { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid #eab308; }
+        .status-pill.offline { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+
+        .pulse-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+        .pulse-green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+        .pulse-yellow { background: #eab308; box-shadow: 0 0 6px #eab308; }
+        .pulse-red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
         /* RATES TABLE */
         .table-responsive { width:100%; overflow-x:auto; }
-        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:650px; }
+        .pc-table { width:100%; border-collapse:collapse; text-align:left; font-size:12px; min-width:720px; }
         .pc-table th { background:#172a4a; color:#f59e0b; padding:8px 6px; font-weight:800; border-bottom:2px solid #facc15; }
         .pc-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.08); background:#091322; color:#ffffff; font-weight:600; }
         .pc-table tr:hover td { background:#112238; }
@@ -119,10 +241,10 @@
         .cust-table td { padding:6px; border-bottom:1px solid rgba(255,255,255,0.05); color:#e2e8f0; }
 
         .pin-code { background:#070f1e; color:#facc15; padding:2px 6px; border-radius:4px; font-weight:800; font-family:monospace; }
-        .rename-input { width:115px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
+        .rename-input { width:140px; padding:4px 6px; border:1px solid #facc15; border-radius:4px; font-weight:600; color:#ffffff; background:#070f1e; }
         
-        .prem-buy-input { width:60px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
-        .prem-sell-input { width:60px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
+        .prem-buy-input { width:65px; padding:4px 6px; border:1.5px solid #16a34a; border-radius:4px; font-weight:800; text-align:center; color:#4ade80; background:#052e16; }
+        .prem-sell-input { width:65px; padding:4px 6px; border:1.5px solid #dc2626; border-radius:4px; font-weight:800; text-align:center; color:#f87171; background:#450a0a; }
 
         .eye-hide-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #dc2626; vertical-align: middle; }
 
@@ -145,12 +267,16 @@
 
         .cust-tab-btn { background:#070f1e; color:#94a3b8; border:1px solid #1e293b; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; }
         .cust-tab-btn.active { background:#facc15; color:#000000; font-weight:800; }
-        .cust-tab-btn.btn-request-highlight { background:#d97706; color:#ffffff; animation: pulseGlow 1.5s infinite; }
-
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        
+        .cust-scroll-container {
+            max-height: 420px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1.5px solid #1e293b;
+            border-radius: 8px;
+            background: #091322;
+            scrollbar-width: thin;
+            scrollbar-color: #facc15 #070f1e;
         }
 
         .hidden { display: none !important; }
@@ -158,47 +284,88 @@
 </head>
 <body>
 
-    <!-- OPERATOR ADMIN LOGIN DIALOG MODAL -->
+    <!-- 1. OPERATOR ADMIN LOGIN DIALOG MODAL (ZERO HARDCODED CREDENTIALS) -->
     <div id="operatorAuthModal" class="admin-auth-overlay">
         <div class="admin-auth-card">
-            <div style="font-size:32px;color:#facc15;font-weight:900;margin-bottom:4px;">🔒</div>
+            <div style="font-size:36px;color:#facc15;font-weight:900;margin-bottom:4px;">卐</div>
             <h2 class="admin-auth-title">ADMIN DESK ACCESS LOGIN</h2>
-            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v2.9.0)</p>
+            <p class="admin-auth-sub">Swastik Gold Jalore Operator Control Desk (v3.0.0)</p>
 
-            <form onsubmit="handleOperatorLogin(event)">
+            <div id="loginErrorBox" class="login-error-msg"></div>
+
+            <form id="adminLoginForm" onsubmit="handleOperatorLogin(event)">
                 <div class="admin-input-group">
-                    <label><i class="fa-solid fa-user-shield"></i> Operator Username</label>
-                    <input type="text" id="opUser" placeholder="Username" required class="admin-input-field">
+                    <label><i class="fa-solid fa-user-shield"></i> Username</label>
+                    <input type="text" id="opUser" placeholder="Enter Admin Username" required class="admin-input-field" autocomplete="username">
                 </div>
                 <div class="admin-input-group">
-                    <label><i class="fa-solid fa-key"></i> Operator Password</label>
-                    <input type="password" id="opPass" placeholder="Password" required class="admin-input-field">
+                    <label><i class="fa-solid fa-key"></i> Password</label>
+                    <input type="password" id="opPass" placeholder="Enter Admin Password" required class="admin-input-field" autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn-admin-login">
-                    <i class="fa-solid fa-lock-open"></i> LOGIN TO OPERATOR DESK
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:11px;color:#94a3b8;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="rememberDeviceChk" style="accent-color:#facc15;"> Remember this device
+                    </label>
+                    <a href="javascript:void(0)" onclick="alert('पासवर्ड रिकवरी के लिए कृपया प्रोजेक्ट ओनर या सर्वर एडमिनिस्ट्रेटर से संपर्क करें।')" style="color:#facc15;text-decoration:none;">Forgot Password?</a>
+                </div>
+                <button type="submit" id="loginSubmitBtn" class="btn-admin-login">
+                    <i class="fa-solid fa-lock-open"></i> LOGIN TO ADMIN DESK
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- MAIN DESK CONTENT -->
+    <!-- 2. MANDATORY FORCE PASSWORD CHANGE MODAL (FIRST LOGIN ONLY) -->
+    <div id="forcePasswordChangeModal" class="admin-auth-overlay hidden">
+        <div class="admin-auth-card" style="border-color:#ef4444;max-width:440px;">
+            <div style="font-size:32px;color:#ef4444;font-weight:900;margin-bottom:4px;">⚠️</div>
+            <h2 class="admin-auth-title" style="color:#ef4444;">MANDATORY PASSWORD CHANGE</h2>
+            <p class="admin-auth-sub" style="color:#cbd5e1;">सुरक्षा कारणों से पहली बार लॉगिन करने पर पासवर्ड बदलना अनिवार्य है।</p>
+
+            <div id="changePassErrorBox" class="login-error-msg"></div>
+
+            <form onsubmit="handleForcePasswordChange(event)">
+                <div class="admin-input-group">
+                    <label><i class="fa-solid fa-lock"></i> Current Initial Password</label>
+                    <input type="password" id="currPassInput" placeholder="Current Initial Password" required class="admin-input-field">
+                </div>
+                <div class="admin-input-group">
+                    <label><i class="fa-solid fa-key"></i> New Secure Password (Min 8 Chars)</label>
+                    <input type="password" id="newPassInput" placeholder="New Password" required minlength="8" class="admin-input-field">
+                </div>
+                <div class="admin-input-group">
+                    <label><i class="fa-solid fa-check-double"></i> Confirm New Password</label>
+                    <input type="password" id="confirmPassInput" placeholder="Re-enter New Password" required minlength="8" class="admin-input-field">
+                </div>
+                <button type="submit" id="changePassSubmitBtn" class="btn-admin-login" style="background:#ef4444;color:#ffffff;">
+                    <i class="fa-solid fa-shield-check"></i> UPDATE & PROCEED TO DESK
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. MAIN DESK CONTENT -->
     <div id="operatorDeskViewport">
         <header class="pc-header">
             <div class="pc-brand">
                 <div class="swastik-logo-icon">卐</div>
                 <div>
-                    <h1>SWASTIK GOLD - OPERATOR SOFTWARE DESK</h1>
-                    <p style="font-size:11px;color:#cbd5e1;">SSE 0ms Latency Engine • IST Timezone • v2.9.0 Latest Release</p>
+                    <div style="display:flex;align-items:center;">
+                        <h1>SWASTIK GOLD - OPERATOR SOFTWARE DESK</h1>
+                        <span class="super-admin-badge" id="adminRoleBadge"><i class="fa-solid fa-crown"></i> SUPER ADMIN</span>
+                    </div>
+                    <p style="font-size:11px;color:#cbd5e1;">Real-Time Sundha Gold Ingestion Engine • <span id="activeAdminUserDisplay" style="color:#facc15;font-weight:700;">Paliwal9824</span> • v3.0.0</p>
                 </div>
             </div>
             <div class="header-status">
-                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-on" onclick="toggleSecurityMode()">
+                <button id="pcSecurityToggleBtn" class="btn-security-toggle btn-security-off" onclick="toggleSecurityMode()">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <span id="securityBtnText">🔒 SECURITY ON: Require Customer Login</span>
+                    <span id="securityBtnText">🔓 SECURITY OFF: Direct Open (No Login Required)</span>
                 </button>
 
                 <button id="pcMasterHideBtn" class="btn-hide-all" onclick="togglePcMasterHide()"><i class="fa-solid fa-eye-slash"></i> Hide Physical</button>
                 <button id="pcFreezeBtn" class="btn-freeze" onclick="togglePcFreeze()"><i class="fa-solid fa-snowflake"></i> Freeze Physical</button>
+                <button onclick="openSymbolMappingModal()" class="btn-action-sm" style="background:#7c3aed;padding:6px 10px;"><i class="fa-solid fa-diagram-project"></i> Symbol Mapping</button>
                 <button onclick="logoutOperator()" class="btn-action-sm" style="background:#ef4444;padding:6px 10px;"><i class="fa-solid fa-right-from-bracket"></i> Lock Desk</button>
             </div>
         </header>
@@ -206,17 +373,68 @@
         <div class="pc-grid">
             <div class="col-left">
                 
-                <!-- LIVE PRODUCTS CONTROL TABLE -->
+                <!-- LIVE SUNDHA GOLD API STATUS CARD (SECTION N SPEC) -->
                 <div class="pc-card">
                     <h3>
-                        <span><i class="fa-solid fa-eye-slash"></i> Physical Product Hide & Premium Offsets Console</span>
-                        <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
+                        <span><i class="fa-solid fa-server"></i> SUNDHA GOLD LIVE API STATUS & DIAGNOSTICS</span>
+                        <span id="apiStatusPill" class="status-pill connected"><span class="pulse-dot pulse-green"></span> CONNECTED_LIVE</span>
+                    </h3>
+
+                    <div class="api-status-grid">
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Provider</span>
+                            <span class="api-metric-val" style="color:#facc15;">Sundha Gold</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Status</span>
+                            <span class="api-metric-val" id="diagStatusText" style="color:#4ade80;">CONNECTED</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Last Response</span>
+                            <span class="api-metric-val" id="diagLastResponse">--:--:-- IST</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Response Latency</span>
+                            <span class="api-metric-val" id="diagLatency"><strong style="color:#4ade80;">0</strong> ms</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Last Market Tick</span>
+                            <span class="api-metric-val" id="diagLastTick">--:--:-- IST</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Data Age</span>
+                            <span class="api-metric-val" id="diagDataAge">0 ms</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">XML/TSV Status</span>
+                            <span class="api-metric-val" id="diagXmlStatus" style="color:#4ade80;">VALID</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Mapped Instruments</span>
+                            <span class="api-metric-val" id="diagMappedInstruments" style="color:#38bdf8;">11 / 11</span>
+                        </div>
+                        <div class="api-metric-item">
+                            <span class="api-metric-label">Rejected Events</span>
+                            <span class="api-metric-val" id="diagRejectedEvents" style="color:#94a3b8;">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE PRODUCTS CONTROL TABLE WITH UP/DOWN REORDER ARROWS -->
+                <div class="pc-card">
+                    <h3>
+                        <span><i class="fa-solid fa-arrows-up-down"></i> Physical Product Order, Hide & Premium Offsets Console</span>
+                        <div style="display:flex;gap:6px;">
+                            <button onclick="resetProductOrder()" class="btn-action-sm" style="background:#475569;font-size:11px;padding:5px 10px;"><i class="fa-solid fa-rotate-left"></i> Reset Order</button>
+                            <button onclick="saveAllProductOverrides()" class="btn-action-sm" style="background:#10b981;font-size:11px;padding:5px 12px;"><i class="fa-solid fa-floppy-disk"></i> SAVE OVERRIDES</button>
+                        </div>
                     </h3>
 
                     <div class="table-responsive">
                         <table class="pc-table">
                             <thead>
                                 <tr>
+                                    <th style="color:#facc15;text-align:center;width:75px;">ORDER (⇅)</th>
                                     <th style="color:#ef4444;text-align:center;width:70px;">HIDE ROW</th>
                                     <th>SYMBOL</th>
                                     <th>RENAME NAME</th>
@@ -248,116 +466,124 @@
                     <button onclick="saveBankAccountsToAdmin()" class="btn-live" style="width:100%;margin-top:10px;background:#10b981;color:white;"><i class="fa-solid fa-floppy-disk"></i> SAVE ALL BANK ACCOUNTS</button>
                 </div>
 
-                <!-- CUSTOMER LIST & DEDICATED REGISTRATION REQUESTS CUSTOMER SYSTEM -->
+                <!-- CUSTOMER LIST & REGISTRATION REQUESTS -->
                 <div class="pc-card">
                     <h3>
                         <div style="display:flex;gap:6px;flex-wrap:wrap;">
                             <button class="cust-tab-btn active" id="tabBtnApproved" onclick="switchCustTab('approved')"><i class="fa-solid fa-user-check"></i> Approved Customers (<span id="approvedCustCountBadge">0</span>)</button>
                             <button class="cust-tab-btn btn-request-highlight" id="tabBtnRequest" onclick="switchCustTab('request')"><i class="fa-solid fa-user-clock"></i> ⏳ Request Customer (<span id="pendingRequestCountBadge">0</span>)</button>
-                            <button class="cust-tab-btn" id="tabBtnGuest" onclick="switchCustTab('guest')"><i class="fa-solid fa-wifi"></i> 🟢 Live Online (<span id="onlineCountBadge">0</span>) | 🔴 Offline Visitors (<span id="offlineCountBadge">0</span>)</button>
+                            <button class="cust-tab-btn" id="tabBtnGuest" onclick="switchCustTab('guest')"><i class="fa-solid fa-users"></i> Live Visitors (🟢 <span id="onlineCountBadge">0</span> | 🔴 <span id="offlineCountBadge">0</span>)</button>
                         </div>
                     </h3>
-                    
-                    <!-- TAB 1: APPROVED REGISTERED CUSTOMERS -->
-                    <div id="paneApprovedCust" class="table-responsive">
+
+                    <!-- SEARCH BAR -->
+                    <div class="cust-search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color:#facc15;"></i>
+                        <input type="text" id="custSearchInput" class="cust-search-input" placeholder="ग्राहक खोजें: नाम, मोबाइल नंबर, शहर, या ID..." oninput="filterAllCustTables()">
+                        <button class="btn-clear-search" onclick="clearCustSearch()"><i class="fa-solid fa-xmark"></i> Clear</button>
+                    </div>
+
+                    <!-- TAB 1: APPROVED CUSTOMERS -->
+                    <div id="paneApprovedCust" class="cust-scroll-container">
                         <table class="cust-table">
                             <thead>
                                 <tr>
-                                    <th>CUSTOMER ID</th>
-                                    <th>FULL NAME</th>
-                                    <th>MOBILE</th>
-                                    <th>CITY</th>
-                                    <th>PASSWORD (PIN)</th>
-                                    <th>STATUS</th>
-                                    <th>WHATSAPP SHARE</th>
-                                    <th>ACTIONS</th>
+                                    <th>Customer ID</th>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>City</th>
+                                    <th>Password PIN</th>
+                                    <th>Status</th>
+                                    <th>WhatsApp</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="pcApprovedCustRows">
-                                <!-- Dynamic approved registered customers -->
-                            </tbody>
+                            <tbody id="pcApprovedCustRows"></tbody>
                         </table>
                     </div>
 
-                    <!-- TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER -->
-                    <div id="paneRequestCust" class="table-responsive hidden">
-                        <p style="font-size:11px;color:#facc15;margin-bottom:8px;">⏳ स्वास्तिक गोल्ड मोबाइल ऐप या वेबसाइट द्वारा नए रजिस्टर हुए ग्राहकों की पेंडिंग रिक्वेस्ट की लिस्ट (1-Click Approve):</p>
+                    <!-- TAB 2: REGISTRATION REQUESTS -->
+                    <div id="paneRequestCust" class="cust-scroll-container hidden">
                         <table class="cust-table">
                             <thead>
                                 <tr>
-                                    <th>REQUEST ID</th>
-                                    <th>APPLICANT NAME</th>
-                                    <th>MOBILE NUMBER</th>
-                                    <th>CITY</th>
-                                    <th>GENERATED PIN</th>
-                                    <th>STATUS</th>
-                                    <th>WHATSAPP SHARE</th>
-                                    <th>1-CLICK APPROVAL ACTIONS</th>
+                                    <th>Requested ID</th>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>City</th>
+                                    <th>Assigned PIN</th>
+                                    <th>Status</th>
+                                    <th>WhatsApp Share</th>
+                                    <th>Review Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="pcRequestCustRows">
-                                <!-- Dynamic registration requests -->
-                            </tbody>
+                            <tbody id="pcRequestCustRows"></tbody>
                         </table>
                     </div>
 
-                    <!-- TAB 3: LIVE ONLINE VS OFFLINE GUEST VISITORS -->
-                    <div id="paneGuestVisitors" class="table-responsive hidden">
-                        <p style="font-size:11px;color:#facc15;margin-bottom:8px;">🟢 जो ग्राहक ऑनलाइन लाइव रेट्स देख रहे हैं या पहले देख कर ऑफलाइन हो चुके हैं, उनके रियल नाम व मोबाइल नंबर की लिस्ट:</p>
+                    <!-- TAB 3: GUEST VISITORS -->
+                    <div id="paneGuestVisitors" class="cust-scroll-container hidden">
                         <table class="cust-table">
                             <thead>
                                 <tr>
-                                    <th>STATUS</th>
-                                    <th>REAL CUSTOMER NAME</th>
-                                    <th>REAL MOBILE NUMBER</th>
-                                    <th>VISITOR IP</th>
-                                    <th>DEVICE TYPE</th>
-                                    <th>CITY / LOCATION</th>
-                                    <th>ACTIVE PAGE</th>
-                                    <th>LAST ACTIVE PING</th>
+                                    <th>Status</th>
+                                    <th>Guest / Customer Name</th>
+                                    <th>Registered Mobile</th>
+                                    <th>IP Address</th>
+                                    <th>Device / OS</th>
+                                    <th>City / Region</th>
+                                    <th>Current Page</th>
+                                    <th>Ping Time</th>
                                 </tr>
                             </thead>
-                            <tbody id="guestVisitorRows">
-                                <!-- Dynamic guest visitors -->
-                            </tbody>
+                            <tbody id="guestVisitorRows"></tbody>
                         </table>
                     </div>
-
                 </div>
 
             </div>
 
+            <!-- RIGHT SIDEBAR: TICKER, POPUP, AI & SESSION CONTROLS -->
             <div class="col-right">
-                
-                <!-- MARQUEE TICKER NEWS CONTROL -->
+
+                <!-- MARQUEE TICKER EDIT -->
                 <div class="pc-card">
-                    <h3><i class="fa-solid fa-scroll"></i> Website & Mobile App Marquee Ticker News</h3>
-                    <textarea id="pcMarqueeText" rows="3" style="width:100%;padding:8px;border-radius:6px;background:#070f1e;color:white;border:1px solid #1e293b;font-size:12px;" placeholder="नमस्कार, SWASTIK GOLD में आपका स्वागत है..."></textarea>
-                    <button onclick="savePcMarqueeText()" class="btn-live" style="width:100%;margin-top:6px;background:#facc15;color:black;"><i class="fa-solid fa-floppy-disk"></i> Save Marquee Ticker</button>
+                    <h3><span><i class="fa-solid fa-bullhorn"></i> Website & Mobile App Marquee Ticker News</span></h3>
+                    <textarea id="pcMarqueeText" rows="3" style="width:100%;padding:8px;background:#070f1e;border:1px solid #1e293b;border-radius:6px;color:#ffffff;font-size:12px;margin-bottom:8px;"></textarea>
+                    <button onclick="savePcMarqueeText()" class="btn-live" style="width:100%;background:#facc15;color:#000000;font-weight:800;"><i class="fa-solid fa-floppy-disk"></i> Save Marquee Ticker</button>
                 </div>
 
-                <!-- SWASTIK AI MARKET TARGET PREVIEW -->
-                <div class="pc-card" style="border-color:#6366f1;">
-                    <h3 style="color:#818cf8;"><i class="fa-solid fa-brain"></i> Swastik AI Market Analysis (IST)</h3>
-                    <div id="pcAiReportPreview" style="font-size:11px;color:#cbd5e1;line-height:1.5;">
-                        <p style="color:#4ade80;font-weight:700;">✔ 15-Minute AI Engine Active</p>
-                        <p>COMEX Gold Target: <strong id="aiComexTarget">$2426.00</strong></p>
-                        <p>MCX Gold Target: <strong id="aiMcxTarget">₹72,680</strong></p>
+                <!-- WELCOME POP-UP EDIT -->
+                <div class="pc-card">
+                    <h3><span><i class="fa-solid fa-message"></i> App Open Welcome Pop-up Message</span></h3>
+                    <textarea id="pcPopupText" rows="3" style="width:100%;padding:8px;background:#070f1e;border:1px solid #1e293b;border-radius:6px;color:#ffffff;font-size:12px;margin-bottom:8px;"></textarea>
+                    <button onclick="savePcPopupMsg()" class="btn-live" style="width:100%;background:#10b981;color:#ffffff;font-weight:800;"><i class="fa-solid fa-floppy-disk"></i> Save Pop-up Message</button>
+                </div>
+
+                <!-- OFFICIAL BULLETIN -->
+                <div class="pc-card">
+                    <h3><span><i class="fa-solid fa-newspaper"></i> Official Rate Bulletin Desk Message</span></h3>
+                    <textarea id="pcBulletinText" rows="3" style="width:100%;padding:8px;background:#070f1e;border:1px solid #1e293b;border-radius:6px;color:#ffffff;font-size:12px;margin-bottom:8px;"></textarea>
+                    <button onclick="savePcBulletinMsg()" class="btn-live" style="width:100%;background:#3b82f6;color:#ffffff;font-weight:800;"><i class="fa-solid fa-floppy-disk"></i> Save Bulletin Message</button>
+                </div>
+
+                <!-- LATENCY BREAKDOWN & DIAGNOSTICS CARD -->
+                <div class="pc-card">
+                    <h3><span><i class="fa-solid fa-gauge-high"></i> Latency Breakdown (Live IST)</span></h3>
+                    <div style="font-size:11px;color:#cbd5e1;line-height:1.8;">
+                        <div style="display:flex;justify-content:space-between;"><span>Provider Request Latency:</span> <strong id="latReq" style="color:#4ade80;">0 ms</strong></div>
+                        <div style="display:flex;justify-content:space-between;"><span>XML/TSV Parse Latency:</span> <strong id="latParse" style="color:#38bdf8;">0 ms</strong></div>
+                        <div style="display:flex;justify-content:space-between;"><span>Premium Calculation Latency:</span> <strong id="latCalc" style="color:#facc15;">0 ms</strong></div>
+                        <div style="display:flex;justify-content:space-between;border-top:1px solid #1e293b;padding-top:4px;margin-top:4px;"><span>End-to-End Latency:</span> <strong id="latE2E" style="color:#a855f7;">0 ms</strong></div>
                     </div>
                 </div>
 
-                <!-- WELCOME POP-UP MESSAGE CONTROL -->
+                <!-- ADMIN SESSION & AUDIT -->
                 <div class="pc-card">
-                    <h3><i class="fa-solid fa-comment-dots"></i> App Open Welcome Pop-up Message</h3>
-                    <textarea id="pcPopupText" rows="3" style="width:100%;padding:8px;border-radius:6px;background:#070f1e;color:white;border:1px solid #1e293b;font-size:12px;" placeholder="Gold and Silver Swastik Gold mein aapka swagat hai..."></textarea>
-                    <button onclick="savePcPopupMsg()" class="btn-live" style="width:100%;margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i> Save Pop-up Message</button>
-                </div>
-
-                <!-- INBOX MESSAGES -->
-                <div class="pc-card">
-                    <h3><i class="fa-solid fa-inbox"></i> Customer Booking Inbox</h3>
-                    <div id="pcInboxList" style="max-height:220px;overflow-y:auto;">
-                        <!-- Dynamic inbox -->
+                    <h3><span><i class="fa-solid fa-user-lock"></i> Session & Device Management</span></h3>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <button onclick="logoutAllDevices()" class="btn-action-sm" style="background:#dc2626;padding:8px;width:100%;text-align:center;"><i class="fa-solid fa-power-off"></i> Logout All Devices</button>
+                        <button onclick="viewAuditLogs()" class="btn-action-sm" style="background:#475569;padding:8px;width:100%;text-align:center;"><i class="fa-solid fa-list-check"></i> View Admin Audit Log</button>
                     </div>
                 </div>
 
@@ -365,371 +591,486 @@
         </div>
     </div>
 
+    <!-- 4. SYMBOL MAPPING MODAL (SECTION E SPEC) -->
+    <div id="symbolMappingModal" class="admin-auth-overlay hidden">
+        <div class="admin-auth-card" style="max-width:700px;text-align:left;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <h3 style="color:#f59e0b;font-size:15px;font-weight:800;"><i class="fa-solid fa-diagram-project"></i> Configurable Symbol Mapping Table</h3>
+                <button onclick="closeSymbolMappingModal()" style="background:transparent;border:none;color:#ef4444;font-size:18px;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:11px;color:#94a3b8;margin-bottom:12px;">Map upstream Sundha Gold API symbols to internal normalized keys and Swastik Gold display names.</p>
+            
+            <div class="cust-scroll-container" style="max-height:300px;">
+                <table class="cust-table">
+                    <thead>
+                        <tr>
+                            <th>Provider Symbol</th>
+                            <th>Internal Key</th>
+                            <th>Swastik Display Name</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="symbolMappingRows"></tbody>
+                </table>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                <button onclick="closeSymbolMappingModal()" class="btn-action-sm" style="background:#475569;padding:8px 14px;">Close</button>
+                <button onclick="saveSymbolMappingsModal()" class="btn-action-sm" style="background:#10b981;padding:8px 16px;"><i class="fa-solid fa-floppy-disk"></i> Save Mapping</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. AUDIT LOG MODAL -->
+    <div id="auditLogModal" class="admin-auth-overlay hidden">
+        <div class="admin-auth-card" style="max-width:800px;text-align:left;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <h3 style="color:#f59e0b;font-size:15px;font-weight:800;"><i class="fa-solid fa-list-check"></i> Security Audit Logs</h3>
+                <button onclick="closeAuditLogModal()" style="background:transparent;border:none;color:#ef4444;font-size:18px;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cust-scroll-container" style="max-height:350px;">
+                <table class="cust-table">
+                    <thead>
+                        <tr>
+                            <th>Time (IST)</th>
+                            <th>Event</th>
+                            <th>User</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditLogRows"></tbody>
+                </table>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+                <button onclick="closeAuditLogModal()" class="btn-action-sm" style="background:#475569;padding:6px 14px;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        /* SWASTIK GOLD OPERATOR DESK ENGINE */
+        let adminToken = localStorage.getItem('sg_admin_token') || sessionStorage.getItem('sg_admin_token') || null;
+        let currentUser = null;
+
+        const INITIAL_PC_PRODUCTS = [
+            { id: "RANI", name: "RANI", buy: 149890, sell: 0, rawBuy: 149890, rawSell: 0 },
+            { id: "RUPA", name: "RUPA", buy: 232100, sell: 0, rawBuy: 232100, rawSell: 0 },
+            { id: "SILVER_CHORSA_98", name: "SILVER CHORSA", buy: 228690, sell: 230190, rawBuy: 228690, rawSell: 230190 },
+            { id: "GOLD_9950_IMPOTED", name: "gold 9950 impot", buy: 149590, sell: 150190, rawBuy: 149590, rawSell: 150190 },
+            { id: "GOLD_999_KD", name: "Gold 999 kd", buy: 150240, sell: 150840, rawBuy: 150240, rawSell: 150840 },
+            { id: "GOLD_RTGS_999", name: "GOLD RTGS 999", buy: 0, sell: 158390, rawBuy: 0, rawSell: 158390 }
+        ];
+
+        const INITIAL_PC_FUTURES = [
+            { id: "SILVER_FUTURE", name: "SILVER FUTURE", buy: 235872, sell: 236190, rawBuy: 235872, rawSell: 236190 },
+            { id: "GOLD_FUTURE", name: "GOLD FUTURE", buy: 154460, sell: 154590, rawBuy: 154460, rawSell: 154590 }
+        ];
+
         let pcState = {
-            isFrozen: false,
-            isMasterHidden: false,
-            isSecurityLoginRequired: true,
-            adminSettings: {},
-            products: [],
-            futures: [],
+            products: [...INITIAL_PC_PRODUCTS],
+            futures: [...INITIAL_PC_FUTURES],
             lastPrices: {},
-            customers: [
-                { id: "SG1001", name: "Champalal Soni", mobile: "9414152854", city: "Jalore", status: "APPROVED", pin: "123456", activeSession: null }
-            ],
-            guestVisitors: [
-                { guestName: "Champalal Soni", mobile: "9414152854", ip: "127.0.0.1", device: "Android Smartphone", city: "Jalore", page: "Mobile App", status: "ONLINE", pingTime: "08:44 PM" }
-            ],
-            bankAccounts: []
+            isSecurityLoginRequired: false,
+            isMasterHidden: false,
+            isFrozen: false,
+            frozenPhysicalPrices: {},
+            bankAccounts: [],
+            customers: [],
+            guestVisitors: [],
+            symbolMappings: [],
+            adminSettings: {
+                renames: {},
+                premiumsBuy: {},
+                premiumsSell: {},
+                hiddenProducts: {},
+                hiddenBuy: {},
+                hiddenSell: {},
+                productOrder: ["RANI", "RUPA", "SILVER_CHORSA_98", "GOLD_9950_IMPOTED", "GOLD_999_KD", "GOLD_RTGS_999", "SILVER_FUTURE", "GOLD_FUTURE"]
+            }
         };
 
         let isPcTableBuilt = false;
-        let isUserEditingBanks = false; // PROTECT BANK EDITOR FROM SSE OVERWRITES WHILE DELETING/EDITING!
+        let isUserEditingBanks = false;
+        let sseEventSource = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const isAuth = sessionStorage.getItem('op_authenticated');
-            if (isAuth === 'true') {
-                document.getElementById('operatorAuthModal').classList.add('hidden');
-                initPcPanel();
-            } else {
-                document.getElementById('operatorAuthModal').classList.remove('hidden');
+        // 1. AUTHENTICATION LIFECYCLE
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (adminToken) {
+                const verified = await verifyAdminToken(adminToken);
+                if (verified) {
+                    document.getElementById('operatorAuthModal').classList.add('hidden');
+                    initPcPanel();
+                    return;
+                }
             }
+            document.getElementById('operatorAuthModal').classList.remove('hidden');
         });
 
-        function handleOperatorLogin(e) {
+        async function verifyAdminToken(token) {
+            try {
+                const res = await fetch(`/api/admin/verify-token?token=${token}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.valid && data.user) {
+                        currentUser = data.user;
+                        updateAdminProfileUI(data.user);
+                        if (data.user.must_change_password) {
+                            document.getElementById('forcePasswordChangeModal').classList.remove('hidden');
+                        }
+                        return true;
+                    }
+                }
+            } catch (e) {}
+            return false;
+        }
+
+        function updateAdminProfileUI(user) {
+            if (!user) return;
+            const uEl = document.getElementById('activeAdminUserDisplay');
+            const rEl = document.getElementById('adminRoleBadge');
+            if (uEl) uEl.innerText = user.username;
+            if (rEl) rEl.innerHTML = `<i class="fa-solid fa-crown"></i> ${user.role || 'SUPER ADMIN'}`;
+        }
+
+        async function handleOperatorLogin(e) {
             e.preventDefault();
             const u = document.getElementById('opUser').value.trim();
             const p = document.getElementById('opPass').value.trim();
+            const rememberMe = document.getElementById('rememberDeviceChk').checked;
+            const errBox = document.getElementById('loginErrorBox');
+            const submitBtn = document.getElementById('loginSubmitBtn');
 
-            if (u === 'Paliwal9824' && p === 'Rathore9824') {
-                sessionStorage.setItem('op_authenticated', 'true');
-                document.getElementById('operatorAuthModal').classList.add('hidden');
-                initPcPanel();
-            } else {
-                alert("गलत ऑपरेटर यूजरनेम या पासवर्ड!");
+            errBox.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p, rememberMe })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    adminToken = data.token;
+                    currentUser = data.user;
+
+                    if (rememberMe) {
+                        localStorage.setItem('sg_admin_token', data.token);
+                    } else {
+                        sessionStorage.setItem('sg_admin_token', data.token);
+                    }
+
+                    updateAdminProfileUI(data.user);
+                    document.getElementById('operatorAuthModal').classList.add('hidden');
+
+                    if (data.user.must_change_password) {
+                        document.getElementById('forcePasswordChangeModal').classList.remove('hidden');
+                    } else {
+                        initPcPanel();
+                    }
+                } else {
+                    errBox.innerText = data.message || 'गलत यूजरनेम या पासवर्ड!';
+                    errBox.style.display = 'block';
+                }
+            } catch (err) {
+                errBox.innerText = 'सर्वर कनेक्शन त्रुटि। कृपया पुनः प्रयास करें।';
+                errBox.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-lock-open"></i> LOGIN TO ADMIN DESK`;
             }
         }
 
-        function logoutOperator() {
-            sessionStorage.removeItem('op_authenticated');
-            document.getElementById('operatorAuthModal').classList.remove('hidden');
-        }
+        async function handleForcePasswordChange(e) {
+            e.preventDefault();
+            const currPass = document.getElementById('currPassInput').value.trim();
+            const newPass = document.getElementById('newPassInput').value.trim();
+            const confirmPass = document.getElementById('confirmPassInput').value.trim();
+            const errBox = document.getElementById('changePassErrorBox');
+            const submitBtn = document.getElementById('changePassSubmitBtn');
 
-        function getApiUrl(endpoint) {
-            if (window.location.protocol === 'file:') {
-                return 'http://localhost:8080' + endpoint;
+            if (newPass !== confirmPass) {
+                errBox.innerText = 'नया पासवर्ड और कन्फर्म पासवर्ड मेल नहीं खाते!';
+                errBox.style.display = 'block';
+                return;
             }
-            return endpoint;
+
+            errBox.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Updating Password...`;
+
+            try {
+                const res = await fetch('/api/admin/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ currentPassword: currPass, newPassword: newPass })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert('✔ पासवर्ड सफलतापूर्वक बदल दिया गया है!');
+                    document.getElementById('forcePasswordChangeModal').classList.add('hidden');
+                    initPcPanel();
+                } else {
+                    errBox.innerText = data.message || 'पासवर्ड बदलने में त्रुटि!';
+                    errBox.style.display = 'block';
+                }
+            } catch (err) {
+                errBox.innerText = 'सर्वर त्रुटि!';
+                errBox.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> UPDATE & PROCEED TO DESK`;
+            }
         }
 
+        async function logoutOperator() {
+            if (confirm("क्या आप वाकई एडमिन डेस्क से लॉगआउट करना चाहते हैं?")) {
+                try {
+                    await fetch('/api/admin/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${adminToken}` }
+                    });
+                } catch (e) {}
+                localStorage.removeItem('sg_admin_token');
+                sessionStorage.removeItem('sg_admin_token');
+                adminToken = null;
+                currentUser = null;
+                document.getElementById('operatorAuthModal').classList.remove('hidden');
+            }
+        }
+
+        async function logoutAllDevices() {
+            if (confirm("क्या आप वाकई सभी डिवाइसों से एडमिन सत्र समाप्त करना चाहते हैं?")) {
+                try {
+                    const res = await fetch('/api/admin/logout-all', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${adminToken}` }
+                    });
+                    const data = await res.json();
+                    alert(data.message || 'सभी डिवाइसों से लॉगआउट सफल!');
+                    logoutOperator();
+                } catch (e) {
+                    alert('त्रुटि!');
+                }
+            }
+        }
+
+        // 2. DESK INITIALIZATION & REAL-TIME STREAMING
         async function initPcPanel() {
+            renderPcRates(pcState.products, pcState.futures);
             renderPcCust();
             renderGuestVisitors(pcState.guestVisitors);
             renderBankAccountsEditor();
-            await fetchSecurityStatus();
-            await fetchAdminSettings();
-            initSseStream();
-            setInterval(fetchAdminSettings, 3000);
-        }
 
-        async function fetchSecurityStatus() {
-            try {
-                const res = await fetch(getApiUrl('/api/security-status?_=' + Date.now()));
-                if (res.ok) {
-                    const data = await res.json();
-                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                    updateSecurityButtonUI();
-                }
-            } catch(e) {}
+            initSseStream();
+            loadSymbolMappings();
+
+            // 2-second background refresh
+            setInterval(fetchAdminSettings, 2000);
         }
 
         function initSseStream() {
             try {
-                const evtSource = new EventSource(getApiUrl('/api/rates-sse'));
-                evtSource.onmessage = function(event) {
+                if (sseEventSource) sseEventSource.close();
+                sseEventSource = new EventSource('/api/rates-sse');
+                sseEventSource.onmessage = function(event) {
                     try {
                         const data = JSON.parse(event.data);
-                        pcState.products = data.allProducts || data.products || [];
-                        pcState.futures = data.allFutures || data.futures || [];
-                        pcState.guestVisitors = data.guestVisitors || [];
-                        
-                        if (typeof data.isSecurityLoginRequired === 'boolean') {
-                            pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                            updateSecurityButtonUI();
-                        }
-
-                        if (!isUserEditingBanks) {
-                            pcState.bankAccounts = data.bankAccounts || [];
-                            renderBankAccountsEditor();
-                        }
-
-                        if (data.customers && Array.isArray(data.customers)) {
-                            pcState.customers = data.customers;
-                            renderPcCust();
-                        }
-
-                        const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
-                        const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
-
-                        const onEl = document.getElementById('onlineCountBadge');
-                        const offEl = document.getElementById('offlineCountBadge');
-                        if (onEl) onEl.innerText = onlineList.length;
-                        if (offEl) offEl.innerText = offlineList.length;
-                        
-                        renderGuestVisitors(pcState.guestVisitors);
-
-                        if (data.swastikAiReport) {
-                            const comexEl = document.getElementById('aiComexTarget');
-                            const mcxEl = document.getElementById('aiMcxTarget');
-                            if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
-                            if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
-                        }
-
-                        renderPcRates(pcState.products, pcState.futures);
-                    } catch(e) {}
+                        handleIncomingPcPayload(data);
+                    } catch (e) {}
                 };
-            } catch(e) {}
-        }
-                    
-                    // ONLY OVERWRITE BANK ACCOUNTS FROM SSE IF OPERATOR IS NOT ACTIVELY DELETING/EDITING!
-                    if (!isUserEditingBanks) {
-                        pcState.bankAccounts = data.bankAccounts || [];
-                        renderBankAccountsEditor();
-                    }
-
-                    if (data.customers && Array.isArray(data.customers)) {
-                        pcState.customers = data.customers;
-                        renderPcCust();
-                    }
-
-                    const onlineList = pcState.guestVisitors.filter(v => v.status === 'ONLINE');
-                    const offlineList = pcState.guestVisitors.filter(v => v.status === 'OFFLINE');
-
-                    const onEl = document.getElementById('onlineCountBadge');
-                    const offEl = document.getElementById('offlineCountBadge');
-                    if (onEl) onEl.innerText = onlineList.length;
-                    if (offEl) offEl.innerText = offlineList.length;
-                    
-                    renderGuestVisitors(pcState.guestVisitors);
-
-                    if (data.swastikAiReport) {
-                        const comexEl = document.getElementById('aiComexTarget');
-                        const mcxEl = document.getElementById('aiMcxTarget');
-                        if (comexEl) comexEl.innerText = '$' + data.swastikAiReport.comexGold.target15m;
-                        if (mcxEl) mcxEl.innerText = '₹' + data.swastikAiReport.mcxGold.target15m;
-                    }
-
-                    renderPcRates(pcState.products, pcState.futures);
-                } catch(e) {}
-            };
+                sseEventSource.onerror = function() {
+                    try { sseEventSource.close(); } catch (e) {}
+                    setTimeout(initSseStream, 2000);
+                };
+            } catch (e) {}
         }
 
-        function renderBankAccountsEditor() {
-            const container = document.getElementById('bankAccountsContainer');
-            if (!container) return;
+        function handleIncomingPcPayload(data) {
+            if (!data) return;
 
-            if (!pcState.bankAccounts || pcState.bankAccounts.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1 / -1;text-align:center;padding:16px;background:#070f1e;border:1px dashed #cbd5e1;border-radius:6px;color:#94a3b8;font-weight:700;">⚠️ Bank Detail Is Not Available (सभी बैंक खाते डिलीट हो चुके हैं)</div>`;
-                return;
+            if (data.allProducts || data.products) pcState.products = data.allProducts || data.products;
+            if (data.allFutures || data.futures) pcState.futures = data.allFutures || data.futures;
+
+            if (data.adminSettings) {
+                pcState.adminSettings = { ...pcState.adminSettings, ...data.adminSettings };
             }
 
-            container.innerHTML = pcState.bankAccounts.map((b, idx) => `
-                <div style="background:#070f1e;padding:8px;border-radius:6px;border:1px solid #1e293b;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                        <span style="color:#f59e0b;font-weight:700;">Bank #${idx + 1}</span>
-                        <button onclick="removeBankRow('${b.id}')" style="background:#ef4444;color:white;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px;"><i class="fa-solid fa-trash"></i> Delete</button>
-                    </div>
-                    <input type="text" id="bankName-${b.id}" class="bank-input-field" value="${b.bankName || ''}" placeholder="Bank Name" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="accountNo-${b.id}" class="bank-input-field" value="${b.accountNo || ''}" placeholder="Account Number" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="ifsc-${b.id}" class="bank-input-field" value="${b.ifsc || ''}" placeholder="IFSC Code" onfocus="isUserEditingBanks=true">
-                    <input type="text" id="branch-${b.id}" class="bank-input-field" value="${b.branch || ''}" placeholder="Branch Location" onfocus="isUserEditingBanks=true">
-                </div>
-            `).join('');
+            if (data.isSecurityLoginRequired !== undefined) {
+                pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
+                updateSecurityButtonUI();
+            }
+
+            if (data.isMasterHidden !== undefined) pcState.isMasterHidden = data.isMasterHidden;
+            if (data.isMasterFrozen !== undefined) pcState.isFrozen = data.isMasterFrozen;
+            updateControlButtons();
+
+            if (data.guestVisitors && Array.isArray(data.guestVisitors)) {
+                pcState.guestVisitors = data.guestVisitors;
+                renderGuestVisitors(data.guestVisitors);
+            }
+
+            if (!isUserEditingBanks && data.bankAccounts && data.bankAccounts.length > 0) {
+                pcState.bankAccounts = data.bankAccounts;
+                renderBankAccountsEditor();
+            }
+
+            if (data.customers && Array.isArray(data.customers)) {
+                pcState.customers = data.customers;
+                renderPcCust();
+            }
+
+            if (data.apiDiagnostics) {
+                updateApiDiagnosticsUI(data.apiDiagnostics);
+            }
+
+            renderPcRates(pcState.products, pcState.futures);
         }
 
-        function addNewBankAccountRow() {
-            isUserEditingBanks = true;
-            const newId = "bank_" + Date.now();
-            if (!pcState.bankAccounts) pcState.bankAccounts = [];
-            pcState.bankAccounts.push({
-                id: newId,
-                bankName: "HDFC Bank Ltd",
-                accountNo: "50200084712035",
-                ifsc: "HDFC0000241",
-                branch: "gandhi chowk, Jalore",
-                accountType: "Bullion Current Account"
+        function updateApiDiagnosticsUI(diag) {
+            if (!diag) return;
+            const statusPill = document.getElementById('apiStatusPill');
+            const statusText = document.getElementById('diagStatusText');
+            const lastResp = document.getElementById('diagLastResponse');
+            const latency = document.getElementById('diagLatency');
+            const lastTick = document.getElementById('diagLastTick');
+            const dataAge = document.getElementById('diagDataAge');
+            const xmlStat = document.getElementById('diagXmlStatus');
+            const mapped = document.getElementById('diagMappedInstruments');
+            const rej = document.getElementById('diagRejectedEvents');
+
+            const isOnline = diag.status === 'CONNECTED_LIVE';
+            const isDegraded = diag.status === 'DEGRADED';
+
+            if (statusPill) {
+                statusPill.className = `status-pill ${isOnline ? 'connected' : (isDegraded ? 'degraded' : 'offline')}`;
+                statusPill.innerHTML = `<span class="pulse-dot ${isOnline ? 'pulse-green' : (isDegraded ? 'pulse-yellow' : 'pulse-red')}"></span> ${diag.status}`;
+            }
+
+            if (statusText) statusText.innerText = diag.status;
+            if (lastResp) lastResp.innerText = `${diag.lastResponse} IST`;
+            if (latency) latency.innerHTML = `<strong style="color:#4ade80;">${diag.responseLatency}</strong> ms`;
+            if (lastTick) lastTick.innerText = `${diag.lastValidMarketTick} IST`;
+            if (dataAge) dataAge.innerText = diag.dataAge || '0 ms';
+            if (xmlStat) xmlStat.innerText = diag.xmlStatus;
+            if (mapped) mapped.innerText = diag.mappedInstruments;
+            if (rej) rej.innerText = diag.rejectedEvents;
+
+            if (diag.latencies) {
+                const reqEl = document.getElementById('latReq');
+                const parseEl = document.getElementById('latParse');
+                const calcEl = document.getElementById('latCalc');
+                const e2eEl = document.getElementById('latE2E');
+                if (reqEl) reqEl.innerText = `${diag.latencies.provider_request_latency} ms`;
+                if (parseEl) parseEl.innerText = `${diag.latencies.xml_parse_latency} ms`;
+                if (calcEl) calcEl.innerText = `${diag.latencies.calculation_latency} ms`;
+                if (e2eEl) e2eEl.innerText = `${diag.latencies.end_to_end_latency} ms`;
+            }
+        }
+
+        // 3. PRODUCT REORDERING & OVERRIDES
+        function applyProductOrdering(list, order) {
+            if (!order || order.length === 0) return list;
+            const itemMap = new Map();
+            list.forEach(item => itemMap.set(item.id, item));
+            const ordered = [];
+            order.forEach(id => {
+                if (itemMap.has(id)) {
+                    ordered.push(itemMap.get(id));
+                    itemMap.delete(id);
+                }
             });
-            renderBankAccountsEditor();
+            itemMap.forEach(item => ordered.push(item));
+            return ordered;
         }
 
-        async function removeBankRow(id) {
-            isUserEditingBanks = true;
-            pcState.bankAccounts = pcState.bankAccounts.filter(x => x.id !== id);
-            renderBankAccountsEditor();
-            await saveBankAccountsToAdmin(false); // ATOMIC 1-CLICK PERMANENT SAVE ON DELETE
-        }
-
-        async function saveBankAccountsToAdmin(showAlert = true) {
-            const updatedBanks = pcState.bankAccounts.map(b => {
-                const bNameEl = document.getElementById(`bankName-${b.id}`);
-                const accNoEl = document.getElementById(`accountNo-${b.id}`);
-                const ifscEl = document.getElementById(`ifsc-${b.id}`);
-                const branchEl = document.getElementById(`branch-${b.id}`);
-
-                const bName = bNameEl ? bNameEl.value.trim() : b.bankName;
-                const accNo = accNoEl ? accNoEl.value.trim() : b.accountNo;
-                const ifsc = ifscEl ? ifscEl.value.trim() : b.ifsc;
-                const branch = branchEl ? branchEl.value.trim() : b.branch;
-
-                return { ...b, bankName: bName, accountNo: accNo, ifsc: ifsc, branch: branch };
-            });
-
-            await updateServerSettings({ bankAccounts: updatedBanks });
-            isUserEditingBanks = false;
-            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट एवं डिस्क पर सेव हो गए!");
-        }
-
-        function switchCustTab(tabType) {
-            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
-            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
-            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
-
-            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
-            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
-            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
-        }
-
-        function renderGuestVisitors(visitors) {
-            const tbody = document.getElementById('guestVisitorRows');
-            if (!tbody) return;
-            if (!visitors || visitors.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई गेस्ट विज़िटर डेटा उपलब्ध नहीं है</td></tr>`;
-                return;
+        function moveItemUp(id) {
+            let order = pcState.adminSettings.productOrder || [];
+            const allItems = [...pcState.products, ...pcState.futures];
+            if (order.length === 0) order = allItems.map(x => x.id);
+            const idx = order.indexOf(id);
+            if (idx > 0) {
+                const temp = order[idx];
+                order[idx] = order[idx - 1];
+                order[idx - 1] = temp;
+                pcState.adminSettings.productOrder = order;
+                isPcTableBuilt = false;
+                renderPcRates(pcState.products, pcState.futures);
+                updateServerSettings({ productOrder: order });
             }
-
-            tbody.innerHTML = visitors.map(v => {
-                const isOnline = v.status === 'ONLINE';
-                const statusBadge = isOnline ? 
-                    `<strong style="color:#4ade80;">🟢 LIVE ONLINE</strong>` : 
-                    `<strong style="color:#f87171;">🔴 OFFLINE VISITED</strong>`;
-
-                const nameDisplay = v.guestName || 'Champalal Soni';
-                const mobileDisplay = v.mobile || '9414152854';
-
-                return `
-                <tr style="${!isOnline ? 'opacity:0.75;' : ''}">
-                    <td>${statusBadge}</td>
-                    <td><strong style="color:#facc15;">${nameDisplay}</strong></td>
-                    <td><strong style="color:#4ade80;font-family:monospace;">${mobileDisplay}</strong></td>
-                    <td><strong>${v.ip}</strong></td>
-                    <td><span style="color:#38bdf8;font-weight:700;">${v.device}</span></td>
-                    <td>${v.city || 'Jalore Region'}</td>
-                    <td>${v.page}</td>
-                    <td><span class="pin-code">${v.pingTime}</span></td>
-                </tr>`;
-            }).join('');
         }
 
-        async function fetchAdminSettings() {
-            try {
-                const res = await fetch('/api/admin-settings?_=' + Date.now());
-                if (res.ok) {
-                    pcState.adminSettings = await res.json();
-                    pcState.customers = pcState.adminSettings.customers || [];
-                    pcState.bankAccounts = pcState.adminSettings.bankAccounts || [];
-                    
-                    const marqueeInput = document.getElementById('pcMarqueeText');
-                    if (marqueeInput && !marqueeInput.matches(':focus')) {
-                        marqueeInput.value = pcState.adminSettings.marqueeText || '';
-                    }
-
-                    const popupInput = document.getElementById('pcPopupText');
-                    if (popupInput && !popupInput.matches(':focus')) {
-                        popupInput.value = pcState.adminSettings.popupMsg || '';
-                    }
-
-                    pcState.isMasterHidden = pcState.adminSettings.isMasterHidden || false;
-                    pcState.isFrozen = pcState.adminSettings.isMasterFrozen || false;
-                    
-                    updateControlButtons();
-                    renderPcCust();
-                    renderBankAccountsEditor();
-                }
-            } catch(e) {}
-        }
-
-        /* DEDICATED ATOMIC TOGGLE SECURITY FUNCTION (POST /api/toggle-security) */
-        async function toggleSecurityMode() {
-            const nextStatus = !pcState.isSecurityLoginRequired;
-
-            try {
-                const res = await fetch(getApiUrl('/api/toggle-security'), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ isSecurityLoginRequired: nextStatus })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    pcState.isSecurityLoginRequired = data.isSecurityLoginRequired;
-                    updateSecurityButtonUI();
-                    alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
-                    return;
-                }
-            } catch(e) {}
-
-            // Fallback for file:// or local environment
-            pcState.isSecurityLoginRequired = nextStatus;
-            updateSecurityButtonUI();
-            alert(nextStatus ? "🔒 SECURITY ON: सुरक्षा लॉक ऑन कर दिया गया है!" : "🔓 SECURITY OFF: सुरक्षा लॉक ऑफ कर दिया गया है!");
-        }
-
-        function updateSecurityButtonUI() {
-            const btn = document.getElementById('pcSecurityToggleBtn');
-            const txt = document.getElementById('securityBtnText');
-            if (btn && txt) {
-                if (pcState.isSecurityLoginRequired) {
-                    btn.className = "btn-security-toggle btn-security-on";
-                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
-                } else {
-                    btn.className = "btn-security-toggle btn-security-off";
-                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
-                }
+        function moveItemDown(id) {
+            let order = pcState.adminSettings.productOrder || [];
+            const allItems = [...pcState.products, ...pcState.futures];
+            if (order.length === 0) order = allItems.map(x => x.id);
+            const idx = order.indexOf(id);
+            if (idx >= 0 && idx < order.length - 1) {
+                const temp = order[idx];
+                order[idx] = order[idx + 1];
+                order[idx + 1] = temp;
+                pcState.adminSettings.productOrder = order;
+                isPcTableBuilt = false;
+                renderPcRates(pcState.products, pcState.futures);
+                updateServerSettings({ productOrder: order });
             }
+        }
+
+        function resetProductOrder() {
+            pcState.adminSettings.productOrder = INITIAL_PC_PRODUCTS.map(p => p.id).concat(INITIAL_PC_FUTURES.map(f => f.id));
+            isPcTableBuilt = false;
+            renderPcRates(pcState.products, pcState.futures);
+            updateServerSettings({ productOrder: pcState.adminSettings.productOrder });
+            alert("✔ प्रोडक्ट का क्रम डिफ़ॉल्ट पर रीसेट कर दिया गया है!");
         }
 
         function renderPcRates(products, futures) {
             const tbody = document.getElementById('pcRatesRows');
-            const allItems = [...products, ...futures];
+            const orderedOrder = pcState.adminSettings.productOrder || [];
+            const sortedProds = applyProductOrdering(products, orderedOrder);
+            const sortedFuts = applyProductOrdering(futures, orderedOrder);
+            const allItems = applyProductOrdering([...sortedProds, ...sortedFuts], orderedOrder);
 
             if (!isPcTableBuilt || tbody.children.length !== allItems.length) {
                 tbody.innerHTML = allItems.map(p => {
-                    const isProductHidden = pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id];
-                    const isBuyHidden = pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id];
-                    const isSellHidden = pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id];
+                    const isProductHidden = !!(pcState.adminSettings.hiddenProducts && pcState.adminSettings.hiddenProducts[p.id]);
+                    const isBuyHidden = !!(pcState.adminSettings.hiddenBuy && pcState.adminSettings.hiddenBuy[p.id]);
+                    const isSellHidden = !!(pcState.adminSettings.hiddenSell && pcState.adminSettings.hiddenSell[p.id]);
                     const customName = (pcState.adminSettings.renames && pcState.adminSettings.renames[p.id]) || p.name;
                     
-                    const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id]) !== undefined ? pcState.adminSettings.premiumsBuy[p.id] : 0;
-                    const sellPrem = (pcState.adminSettings.premiumsSell && pcState.adminSettings.premiumsSell[p.id]) !== undefined ? pcState.adminSettings.premiumsSell[p.id] : 0;
+                    const buyPrem = (pcState.adminSettings.premiumsBuy && pcState.adminSettings.premiumsBuy[p.id]) !== undefined ? pcState.adminSettings.premiumsBuy[p.id] : (p.buyPremium || 0);
+                    const sellPrem = (pcState.adminSettings.premiumsSell && pcState.adminSettings.premiumsSell[p.id]) !== undefined ? pcState.adminSettings.premiumsSell[p.id] : (p.sellPremium || 0);
 
                     return `
                     <tr id="pc-row-${p.id}" class="${isProductHidden ? 'row-hidden' : ''}">
+                        <td style="text-align:center;white-space:nowrap;">
+                            <button type="button" class="btn-arrow-move" onclick="moveItemUp('${p.id}')" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" class="btn-arrow-move" onclick="moveItemDown('${p.id}')" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                        </td>
                         <td style="text-align:center;background:rgba(239,68,68,0.1);">
                             <input type="checkbox" class="eye-hide-checkbox" id="hideProd-${p.id}" ${isProductHidden ? 'checked' : ''} onchange="toggleInstantProductHide('${p.id}')">
                         </td>
                         <td><strong>${p.id}</strong></td>
                         <td>
-                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}">
+                            <input type="text" class="rename-input" id="rename-${p.id}" value="${customName}" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;">
-                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                            <input type="number" class="prem-buy-input" id="premBuy-${p.id}" value="${buyPrem}" placeholder="Buy +/-" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;"><span class="price-up" id="pc-buy-${p.id}">${(p.buy > 0 && !isProductHidden && !isBuyHidden) ? p.buy : '-'}</span></td>
                         <td style="text-align:center;">
                             <input type="checkbox" id="hideBuy-${p.id}" ${isBuyHidden ? 'checked' : ''} onchange="toggleInstantColumnHide('${p.id}', 'buy')">
                         </td>
                         <td style="text-align:center;">
-                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell + / -" oninput="previewLiveCalculatedRates('${p.id}')">
+                            <input type="number" class="prem-sell-input" id="premSell-${p.id}" value="${sellPrem}" placeholder="Sell +/-" oninput="previewLiveCalculatedRates('${p.id}')">
                         </td>
                         <td style="text-align:center;"><span class="price-down" id="pc-sell-${p.id}">${(p.sell > 0 && !isProductHidden && !isSellHidden) ? p.sell : '-'}</span></td>
                         <td style="text-align:center;">
@@ -742,6 +1083,7 @@
 
             allItems.forEach(p => {
                 const key = p.id;
+                const isFuture = p.id.includes('FUTURE') || p.id.includes('MCX');
                 const oldPrices = pcState.lastPrices[key] || { buy: p.buy, sell: p.sell };
 
                 const buyEl = document.getElementById(`pc-buy-${key}`);
@@ -763,17 +1105,19 @@
                     else rowEl.classList.remove('row-hidden');
                 }
 
-                const rawBuy = p.rawBuy || p.buy;
-                const rawSell = p.rawSell || p.sell;
+                let rawBuy = p.rawBuy || p.buy;
+                let rawSell = p.rawSell || p.sell;
 
                 const activeBuyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : (p.buyPremium || 0);
                 const activeSellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : (p.sellPremium || 0);
 
-                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : p.buy;
-                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : p.sell;
+                const finalBuyPreview = rawBuy > 0 ? (rawBuy + activeBuyPrem) : 0;
+                const finalSellPreview = rawSell > 0 ? (rawSell + activeSellPrem) : 0;
+
+                const isPriceHiddenByMaster = !isFuture && pcState.isMasterHidden;
 
                 if (buyEl) {
-                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? String(finalBuyPreview) : '-';
+                    const buyText = (finalBuyPreview > 0 && !isRowHidden && !isBuyHidden && !isPriceHiddenByMaster) ? String(finalBuyPreview) : '-';
                     if (buyEl.innerText !== buyText) buyEl.innerText = buyText;
 
                     if (finalBuyPreview > 0 && oldPrices.buy > 0 && finalBuyPreview !== oldPrices.buy) {
@@ -782,7 +1126,7 @@
                 }
 
                 if (sellEl) {
-                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? String(finalSellPreview) : '-';
+                    const sellText = (finalSellPreview > 0 && !isRowHidden && !isSellHidden && !isPriceHiddenByMaster) ? String(finalSellPreview) : '-';
                     if (sellEl.innerText !== sellText) sellEl.innerText = sellText;
 
                     if (finalSellPreview > 0 && oldPrices.sell > 0 && finalSellPreview !== oldPrices.sell) {
@@ -801,32 +1145,6 @@
             setTimeout(() => cellEl.classList.remove('flash-green', 'flash-red'), 350);
         }
 
-        async function toggleInstantProductHide(itemId) {
-            const chk = document.getElementById(`hideProd-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            const currentHiddenMap = { ...(pcState.adminSettings.hiddenProducts || {}) };
-            currentHiddenMap[itemId] = isChecked;
-
-            await updateServerSettings({ hiddenProducts: currentHiddenMap });
-            previewLiveCalculatedRates(itemId);
-        }
-
-        async function toggleInstantColumnHide(itemId, colType) {
-            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
-            const isChecked = chk ? chk.checked : false;
-
-            let currentMap = colType === 'buy' ? { ...(pcState.adminSettings.hiddenBuy || {}) } : { ...(pcState.adminSettings.hiddenSell || {}) };
-            currentMap[itemId] = isChecked;
-
-            const updatedSettings = {};
-            if (colType === 'buy') updatedSettings.hiddenBuy = currentMap;
-            else updatedSettings.hiddenSell = currentMap;
-
-            await updateServerSettings(updatedSettings);
-            previewLiveCalculatedRates(itemId);
-        }
-
         function previewLiveCalculatedRates(itemId) {
             const allItems = [...pcState.products, ...pcState.futures];
             const item = allItems.find(x => x.id === itemId);
@@ -837,25 +1155,37 @@
             const premBuyInp = document.getElementById(`premBuy-${itemId}`);
             const premSellInp = document.getElementById(`premSell-${itemId}`);
             
-            const hideProdChk = document.getElementById(`hideProd-${itemId}`);
-            const hideBuyChk = document.getElementById(`hideBuy-${itemId}`);
-            const hideSellChk = document.getElementById(`hideSell-${itemId}`);
-
-            const isRowHidden = hideProdChk ? hideProdChk.checked : false;
-            const isBuyHidden = hideBuyChk ? hideBuyChk.checked : false;
-            const isSellHidden = hideSellChk ? hideSellChk.checked : false;
-
             const rawBuy = item.rawBuy || item.buy;
             const rawSell = item.rawSell || item.sell;
 
             const buyPrem = premBuyInp ? (parseInt(premBuyInp.value) || 0) : 0;
             const sellPrem = premSellInp ? (parseInt(premSellInp.value) || 0) : 0;
 
-            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : item.buy;
-            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : item.sell;
+            const finalBuy = rawBuy > 0 ? (rawBuy + buyPrem) : 0;
+            const finalSell = rawSell > 0 ? (rawSell + sellPrem) : 0;
 
-            if (buyEl) buyEl.innerText = (finalBuy > 0 && !isRowHidden && !isBuyHidden && !pcState.isMasterHidden) ? finalBuy : '-';
-            if (sellEl) sellEl.innerText = (finalSell > 0 && !isRowHidden && !isSellHidden && !pcState.isMasterHidden) ? finalSell : '-';
+            if (buyEl) buyEl.innerText = finalBuy > 0 ? finalBuy : '-';
+            if (sellEl) sellEl.innerText = finalSell > 0 ? finalSell : '-';
+        }
+
+        async function toggleInstantProductHide(itemId) {
+            const chk = document.getElementById(`hideProd-${itemId}`);
+            if (!pcState.adminSettings.hiddenProducts) pcState.adminSettings.hiddenProducts = {};
+            pcState.adminSettings.hiddenProducts[itemId] = chk ? chk.checked : false;
+            await updateServerSettings({ hiddenProducts: pcState.adminSettings.hiddenProducts });
+        }
+
+        async function toggleInstantColumnHide(itemId, colType) {
+            const chk = document.getElementById(colType === 'buy' ? `hideBuy-${itemId}` : `hideSell-${itemId}`);
+            if (colType === 'buy') {
+                if (!pcState.adminSettings.hiddenBuy) pcState.adminSettings.hiddenBuy = {};
+                pcState.adminSettings.hiddenBuy[itemId] = chk ? chk.checked : false;
+                await updateServerSettings({ hiddenBuy: pcState.adminSettings.hiddenBuy });
+            } else {
+                if (!pcState.adminSettings.hiddenSell) pcState.adminSettings.hiddenSell = {};
+                pcState.adminSettings.hiddenSell[itemId] = chk ? chk.checked : false;
+                await updateServerSettings({ hiddenSell: pcState.adminSettings.hiddenSell });
+            }
         }
 
         async function saveAllProductOverrides() {
@@ -867,7 +1197,6 @@
             const hiddenSell = {};
 
             const allItems = [...pcState.products, ...pcState.futures];
-
             allItems.forEach(p => {
                 const renameEl = document.getElementById(`rename-${p.id}`);
                 const premBuyEl = document.getElementById(`premBuy-${p.id}`);
@@ -885,15 +1214,112 @@
                 if (hideSellEl && hideSellEl.checked) hiddenSell[p.id] = true;
             });
 
-            await updateServerSettings({ renames, premiumsBuy, premiumsSell, hiddenProducts, hiddenBuy, hiddenSell });
-            alert("उत्पाद के नाम, प्रीमियम और हाइड कंट्रोल्स सफलतापूर्वक सेव हो गए!");
+            await updateServerSettings({
+                renames,
+                premiumsBuy,
+                premiumsSell,
+                hiddenProducts,
+                hiddenBuy,
+                hiddenSell
+            });
+
+            alert("✔ सेटिंग्स और प्रीमियम सफलतापूर्वक सेव एवं सिंक हो गए!");
+        }
+
+        async function togglePcMasterHide() {
+            pcState.isMasterHidden = !pcState.isMasterHidden;
+            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
+            updateControlButtons();
+            renderPcRates(pcState.products, pcState.futures);
+        }
+
+        async function togglePcFreeze() {
+            pcState.isFrozen = !pcState.isFrozen;
+            if (pcState.isFrozen) {
+                pcState.frozenPhysicalPrices = {};
+                pcState.products.forEach(p => {
+                    pcState.frozenPhysicalPrices[p.id] = { buy: p.buy, sell: p.sell };
+                });
+            } else {
+                pcState.frozenPhysicalPrices = {};
+            }
+
+            await updateServerSettings({ isMasterFrozen: pcState.isFrozen, frozenPhysicalPrices: pcState.frozenPhysicalPrices });
+            updateControlButtons();
+            renderPcRates(pcState.products, pcState.futures);
+        }
+
+        function updateControlButtons() {
+            const hideBtn = document.getElementById('pcMasterHideBtn');
+            if (hideBtn) {
+                hideBtn.innerText = pcState.isMasterHidden ? "Show Physical" : "Hide Physical";
+                hideBtn.style.background = pcState.isMasterHidden ? "#10b981" : "#dc2626";
+            }
+
+            const freezeBtn = document.getElementById('pcFreezeBtn');
+            if (freezeBtn) {
+                freezeBtn.innerText = pcState.isFrozen ? "Resume Physical" : "Freeze Physical";
+                freezeBtn.style.background = pcState.isFrozen ? "#10b981" : "#ef4444";
+            }
+        }
+
+        async function toggleSecurityMode() {
+            pcState.isSecurityLoginRequired = !pcState.isSecurityLoginRequired;
+            updateSecurityButtonUI();
+
+            try {
+                await fetch('/api/toggle-security', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isSecurityLoginRequired: pcState.isSecurityLoginRequired })
+                });
+            } catch (e) {}
+
+            alert(pcState.isSecurityLoginRequired ? "🔒 SECURITY ON: अब ऐप में लॉगिन आवश्यक है!" : "🔓 SECURITY OFF: अब लाइव रेट्स डायरेक्ट खुलेंगी!");
+        }
+
+        function updateSecurityButtonUI() {
+            const btn = document.getElementById('pcSecurityToggleBtn');
+            const txt = document.getElementById('securityBtnText');
+            if (btn && txt) {
+                if (pcState.isSecurityLoginRequired) {
+                    btn.className = "btn-security-toggle btn-security-on";
+                    txt.innerText = "🔒 SECURITY ON: Require Customer Login";
+                } else {
+                    btn.className = "btn-security-toggle btn-security-off";
+                    txt.innerText = "🔓 SECURITY OFF: Direct Open (No Login Required)";
+                }
+            }
+        }
+
+        async function updateServerSettings(data) {
+            pcState.adminSettings = { ...pcState.adminSettings, ...data };
+            try {
+                await fetch('/api/admin-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } catch (e) {}
+        }
+
+        async function fetchAdminSettings() {
+            try {
+                const res = await fetch('/api/admin-settings?_=' + Date.now());
+                if (res.ok) {
+                    const data = await res.json();
+                    pcState.adminSettings = { ...pcState.adminSettings, ...data };
+                    if (data.customers) { pcState.customers = data.customers; renderPcCust(); }
+                    if (data.bankAccounts && !isUserEditingBanks) { pcState.bankAccounts = data.bankAccounts; renderBankAccountsEditor(); }
+                }
+            } catch (e) {}
         }
 
         async function savePcMarqueeText() {
             const txt = document.getElementById('pcMarqueeText').value.trim();
             if (!txt) return;
             await updateServerSettings({ marqueeText: txt });
-            alert("मार्की न्यूज़ टिकर सफलतापूर्वक सेव हो गया!");
+            alert("मार्की टिकर सफलतापूर्वक सेव हो गया!");
         }
 
         async function savePcPopupMsg() {
@@ -903,150 +1329,106 @@
             alert("पॉप-अप मैसेज सफलतापूर्वक अपडेट हो गया!");
         }
 
-        async function togglePcMasterHide() {
-            pcState.isMasterHidden = !pcState.isMasterHidden;
-            await updateServerSettings({ isMasterHidden: pcState.isMasterHidden });
-            updateControlButtons();
+        async function savePcBulletinMsg() {
+            const txt = document.getElementById('pcBulletinText').value.trim();
+            if (!txt) return;
+            await updateServerSettings({ bulletinMsg: txt });
+            alert("बुलेटिन संदेश सफलतापूर्वक लाइव हो गया!");
         }
 
-        async function togglePcFreeze() {
-            pcState.isFrozen = !pcState.isFrozen;
-            await updateServerSettings({ isMasterFrozen: pcState.isFrozen });
-            updateControlButtons();
+        // 4. CUSTOMER MANAGEMENT
+        function switchCustTab(tabType) {
+            document.getElementById('tabBtnApproved').classList.toggle('active', tabType === 'approved');
+            document.getElementById('tabBtnRequest').classList.toggle('active', tabType === 'request');
+            document.getElementById('tabBtnGuest').classList.toggle('active', tabType === 'guest');
+
+            document.getElementById('paneApprovedCust').classList.toggle('hidden', tabType !== 'approved');
+            document.getElementById('paneRequestCust').classList.toggle('hidden', tabType !== 'request');
+            document.getElementById('paneGuestVisitors').classList.toggle('hidden', tabType !== 'guest');
         }
 
-        function updateControlButtons() {
-            const hideBtn = document.getElementById('pcMasterHideBtn');
-            if (pcState.isMasterHidden) {
-                hideBtn.innerText = "Show Physical";
-                hideBtn.style.background = "#10b981";
-            } else {
-                hideBtn.innerText = "Hide Physical";
-                hideBtn.style.background = "#dc2626";
-            }
-
-            const freezeBtn = document.getElementById('pcFreezeBtn');
-            if (pcState.isFrozen) {
-                freezeBtn.innerText = "Resume Physical";
-                freezeBtn.style.background = "#10b981";
-            } else {
-                freezeBtn.innerText = "Freeze Physical";
-                freezeBtn.style.background = "#ef4444";
-            }
+        function filterAllCustTables() {
+            renderPcCust();
+            renderGuestVisitors(pcState.guestVisitors);
         }
 
-        async function updateServerSettings(data) {
-            try {
-                const res = await fetch(getApiUrl('/api/admin-settings'), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    const result = await res.json();
-                    pcState.adminSettings = result.settings;
-                    pcState.customers = result.settings.customers || [];
-                    pcState.bankAccounts = result.settings.bankAccounts || [];
-                    renderPcCust();
-                    renderBankAccountsEditor();
-                }
-            } catch(e) {}
+        function clearCustSearch() {
+            const inp = document.getElementById('custSearchInput');
+            if (inp) inp.value = '';
+            renderPcCust();
+            renderGuestVisitors(pcState.guestVisitors);
         }
 
         function renderPcCust() {
             const approvedTbody = document.getElementById('pcApprovedCustRows');
             const requestTbody = document.getElementById('pcRequestCustRows');
+            const query = (document.getElementById('custSearchInput')?.value || '').trim().toLowerCase();
 
             const approvedList = (pcState.customers || []).filter(c => c.status === 'APPROVED' || c.status === 'BLOCKED');
             const pendingList = (pcState.customers || []).filter(c => c.status === 'PENDING');
 
             const appBadge = document.getElementById('approvedCustCountBadge');
             const reqBadge = document.getElementById('pendingRequestCountBadge');
-
             if (appBadge) appBadge.innerText = approvedList.length;
             if (reqBadge) reqBadge.innerText = pendingList.length;
 
-            // RENDER TAB 1: APPROVED CUSTOMERS
-            if (approvedTbody) {
-                if (approvedList.length === 0) {
-                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">कोई स्वीकृत कस्टमर नहीं है</td></tr>`;
-                } else {
-                    approvedTbody.innerHTML = approvedList.map(c => {
-                        const pinStr = c.pin || '123456';
-                        const waText = encodeURIComponent(
-                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
-                            `नमस्कार ${c.name} जी! Swastik Gold में आपका हार्दिक स्वागत है।\n\n` +
-                            `आपकी बुलियन लाइव रेट्स ऐप एवं वेबसाइट की लॉगिन डिटेल्स निम्न प्रकार हैं:\n\n` +
-                            `🔑 *User ID:* ${c.id}\n` +
-                            `🔒 *Password PIN:* ${pinStr}\n\n` +
-                            `🌐 *Website Link:* https://swastikgold.net/\n\n` +
-                            `धन्यवाद!\n` +
-                            `*Swastik Gold Jalore - Champalal Soni*\n` +
-                            `📞 Contact: 9414152854 / 9772277054`
-                        );
+            const filterFn = (c) => {
+                if (!query) return true;
+                return (c.id || '').toLowerCase().includes(query) || (c.name || '').toLowerCase().includes(query) || (c.mobile || '').toLowerCase().includes(query) || (c.city || '').toLowerCase().includes(query);
+            };
 
-                        return `
+            const displayApproved = approvedList.filter(filterFn);
+            const displayPending = pendingList.filter(filterFn);
+
+            if (approvedTbody) {
+                if (displayApproved.length === 0) {
+                    approvedTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:12px;color:#94a3b8;">कोई स्वीकृत ग्राहक नहीं है</td></tr>`;
+                } else {
+                    approvedTbody.innerHTML = displayApproved.map(c => `
                         <tr>
                             <td><strong>${c.id}</strong></td>
                             <td><strong>${c.name}</strong></td>
                             <td>${c.mobile}</td>
                             <td>${c.city}</td>
-                            <td><span class="pin-code">${pinStr}</span></td>
+                            <td><span class="pin-code">${c.pin || '123456'}</span></td>
                             <td><strong style="color:${c.status === 'APPROVED' ? '#4ade80' : '#f87171'};">${c.status}</strong></td>
                             <td>
-                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
-                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
+                                <a href="https://wa.me/91${c.mobile}?text=${encodeURIComponent(`स्वास्तिक गोल्ड लॉगिन:\nUser ID: ${c.id}\nPIN: ${c.pin || '123456'}\nhttps://swastikgold.net/`)}" target="_blank" class="btn-wa-share">
+                                    <i class="fa-brands fa-whatsapp"></i> Share
                                 </a>
                             </td>
                             <td>
-                                ${c.status === 'APPROVED' ? `<button class="btn-action-sm" style="background:#ef4444;" onclick="setCustStatus('${c.id}', 'BLOCKED')">Block Account</button>` : ''}
-                                ${c.status === 'BLOCKED' ? `<button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')">Unblock Account</button>` : ''}
-                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                                ${c.status === 'APPROVED' ? `<button class="btn-action-sm" style="background:#ef4444;" onclick="setCustStatus('${c.id}', 'BLOCKED')">Block</button>` : `<button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')">Unblock</button>`}
+                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-trash"></i></button>
                             </td>
-                        </tr>`;
-                    }).join('');
+                        </tr>
+                    `).join('');
                 }
             }
 
-            // RENDER TAB 2: DEDICATED REGISTRATION REQUESTS CUSTOMER
             if (requestTbody) {
-                if (pendingList.length === 0) {
-                    requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px;">वर्तमान में कोई नई रजिस्ट्रेशन रिक्वेस्ट पेंडिंग नहीं है</td></tr>`;
+                if (displayPending.length === 0) {
+                    requestTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:12px;color:#94a3b8;">कोई नई रजिस्ट्रेशन रिक्वेस्ट नहीं है</td></tr>`;
                 } else {
-                    requestTbody.innerHTML = pendingList.map(c => {
-                        const pinStr = c.pin || '123456';
-                        const waText = encodeURIComponent(
-                            `卐 *SWASTIK GOLD JALORE* 卐\n` +
-                            `नमस्कार ${c.name} जी! आपकी रजिस्ट्रेशन रिक्वेस्ट स्वास्तिक गोल्ड में स्वीकृत कर ली गई है।\n\n` +
-                            `आपकी लॉगिन आईडी एवं पासवर्ड निम्न हैं:\n` +
-                            `🔑 User ID: ${c.id}\n` +
-                            `🔒 PIN: ${pinStr}\n` +
-                            `🌐 Website: https://swastikgold.net/`
-                        );
-
-                        return `
-                        <tr style="background:rgba(250,204,21,0.14);">
+                    requestTbody.innerHTML = displayPending.map(c => `
+                        <tr style="background:rgba(250,204,21,0.12);">
                             <td><strong style="color:#f59e0b;">${c.id}</strong></td>
-                            <td><strong style="color:#ffffff;font-size:12px;">${c.name}</strong></td>
-                            <td><strong style="color:#4ade80;font-family:monospace;">${c.mobile}</strong></td>
+                            <td><strong>${c.name}</strong></td>
+                            <td><strong style="color:#4ade80;">${c.mobile}</strong></td>
                             <td>${c.city}</td>
-                            <td><span class="pin-code">${pinStr}</span></td>
-                            <td><strong style="color:#facc15;">⏳ PENDING REQUEST</strong></td>
+                            <td><span class="pin-code">${c.pin || '123456'}</span></td>
+                            <td><strong style="color:#facc15;">⏳ PENDING</strong></td>
                             <td>
-                                <a href="https://wa.me/91${c.mobile}?text=${waText}" target="_blank" class="btn-wa-share">
-                                    <i class="fa-brands fa-whatsapp"></i> Share Creds
+                                <a href="https://wa.me/91${c.mobile}?text=${encodeURIComponent(`स्वास्तिक गोल्ड में आपका स्वागत है!\nUser ID: ${c.id}\nPIN: ${c.pin || '123456'}`)}" target="_blank" class="btn-wa-share">
+                                    <i class="fa-brands fa-whatsapp"></i> Share
                                 </a>
                             </td>
                             <td>
-                                <button class="btn-action-sm" style="background:#16a34a;padding:5px 12px;font-size:11px;" onclick="setCustStatus('${c.id}', 'APPROVED')">
-                                    <i class="fa-solid fa-check"></i> APPROVE REQUEST
-                                </button>
-                                <button class="btn-action-sm" style="background:#dc2626;padding:5px 8px;font-size:11px;" onclick="deleteCustomer('${c.id}')">
-                                    <i class="fa-solid fa-xmark"></i> Reject
-                                </button>
+                                <button class="btn-action-sm" style="background:#16a34a;" onclick="setCustStatus('${c.id}', 'APPROVED')"><i class="fa-solid fa-check"></i> APPROVE</button>
+                                <button class="btn-action-sm" style="background:#dc2626;" onclick="deleteCustomer('${c.id}')"><i class="fa-solid fa-xmark"></i></button>
                             </td>
-                        </tr>`;
-                    }).join('');
+                        </tr>
+                    `).join('');
                 }
             }
         }
@@ -1056,17 +1438,195 @@
             const target = custs.find(x => x.id === id);
             if (target) {
                 target.status = status;
-                if (status === 'BLOCKED') target.activeSession = null;
                 await updateServerSettings({ customers: custs });
-                alert(`कस्टमर ${target.name} (ID: ${target.id}) की रिक्वेस्ट ${status === 'APPROVED' ? 'स्वीकृत (APPROVED)' : status} कर दी गई है!`);
+                renderPcCust();
+                alert(`✔ ग्राहक ${target.name} की स्थिति ${status} कर दी गई है!`);
             }
         }
 
         async function deleteCustomer(id) {
-            if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को डिलीट/रिजेक्ट करना चाहते हैं?`)) return;
-            const updatedCusts = pcState.customers.filter(x => x.id !== id);
-            await updateServerSettings({ customers: updatedCusts });
-            alert(`कस्टमर ID ${id} रिजेक्ट/डिलीट कर दिया गया है!`);
+            if (!confirm(`क्या आप वाकई कस्टमर ID ${id} को हटाना चाहते हैं?`)) return;
+            pcState.customers = pcState.customers.filter(x => x.id !== id);
+            await updateServerSettings({ customers: pcState.customers });
+            renderPcCust();
+        }
+
+        function renderGuestVisitors(visitors) {
+            const tbody = document.getElementById('guestVisitorRows');
+            if (!tbody) return;
+            if (!visitors || visitors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:10px;">कोई गेस्ट विज़िटर डेटा नहीं है</td></tr>`;
+                return;
+            }
+
+            const now = Date.now();
+            let onlineCount = 0, offlineCount = 0;
+
+            tbody.innerHTML = visitors.map(v => {
+                const isOnline = (v.status === 'ONLINE' && (now - (v.lastPing || 0) < 15000));
+                if (isOnline) onlineCount++; else offlineCount++;
+
+                return `
+                <tr style="${!isOnline ? 'opacity:0.75;' : ''}">
+                    <td>${isOnline ? '<strong style="color:#4ade80;">🟢 LIVE</strong>' : '<strong style="color:#f87171;">🔴 OFFLINE</strong>'}</td>
+                    <td><strong style="color:#facc15;">${v.guestName || 'Guest'}</strong></td>
+                    <td>${v.mobile || 'Not Registered'}</td>
+                    <td>${v.ip || '127.0.0.1'}</td>
+                    <td><span style="color:#38bdf8;">${v.device || 'PC/Mobile'}</span></td>
+                    <td>${v.city || 'Jalore'}</td>
+                    <td>${v.page || 'Live Rates'}</td>
+                    <td><span class="pin-code">${v.pingTime || '--:--'}</span></td>
+                </tr>`;
+            }).join('');
+
+            const onEl = document.getElementById('onlineCountBadge');
+            const offEl = document.getElementById('offlineCountBadge');
+            if (onEl) onEl.innerText = onlineCount;
+            if (offEl) offEl.innerText = offlineCount;
+        }
+
+        // 5. BANK ACCOUNTS
+        function renderBankAccountsEditor() {
+            const container = document.getElementById('bankAccountsContainer');
+            if (!container) return;
+
+            if (!pcState.bankAccounts || pcState.bankAccounts.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1 / -1;text-align:center;padding:14px;color:#94a3b8;">कोई बैंक खाता मौजूद नहीं है</div>`;
+                return;
+            }
+
+            container.innerHTML = pcState.bankAccounts.map((b, idx) => `
+                <div style="background:#070f1e;padding:8px;border-radius:6px;border:1px solid #1e293b;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <span style="color:#f59e0b;font-weight:700;">Bank #${idx + 1}</span>
+                        <button onclick="removeBankRow('${b.id}')" style="background:#ef4444;color:white;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <input type="text" id="bankName-${b.id}" class="bank-input-field" value="${b.bankName || ''}" placeholder="Bank Name" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="accountNo-${b.id}" class="bank-input-field" value="${b.accountNo || ''}" placeholder="Account Number" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="ifsc-${b.id}" class="bank-input-field" value="${b.ifsc || ''}" placeholder="IFSC Code" onfocus="isUserEditingBanks=true">
+                    <input type="text" id="branch-${b.id}" class="bank-input-field" value="${b.branch || ''}" placeholder="Branch Location" onfocus="isUserEditingBanks=true">
+                </div>
+            `).join('');
+        }
+
+        function addNewBankAccountRow() {
+            isUserEditingBanks = true;
+            if (!pcState.bankAccounts) pcState.bankAccounts = [];
+            pcState.bankAccounts.push({
+                id: "bank_" + Date.now(),
+                bankName: "HDFC Bank Ltd",
+                accountNo: "",
+                ifsc: "",
+                branch: "Jalore",
+                accountType: "Bullion Current Account"
+            });
+            renderBankAccountsEditor();
+        }
+
+        async function removeBankRow(id) {
+            isUserEditingBanks = true;
+            pcState.bankAccounts = pcState.bankAccounts.filter(x => x.id !== id);
+            renderBankAccountsEditor();
+            await saveBankAccountsToAdmin(false);
+        }
+
+        async function saveBankAccountsToAdmin(showAlert = true) {
+            const updatedBanks = pcState.bankAccounts.map(b => {
+                const bName = document.getElementById(`bankName-${b.id}`)?.value.trim() || b.bankName;
+                const accNo = document.getElementById(`accountNo-${b.id}`)?.value.trim() || b.accountNo;
+                const ifsc = document.getElementById(`ifsc-${b.id}`)?.value.trim() || b.ifsc;
+                const branch = document.getElementById(`branch-${b.id}`)?.value.trim() || b.branch;
+                return { ...b, bankName: bName, accountNo: accNo, ifsc, branch };
+            });
+
+            pcState.bankAccounts = updatedBanks;
+            await updateServerSettings({ bankAccounts: updatedBanks });
+            isUserEditingBanks = false;
+            if (showAlert) alert("बैंक खाते सफलतापूर्वक अपडेट हो गए!");
+        }
+
+        // 6. SYMBOL MAPPINGS MODAL (SECTION E SPEC)
+        async function loadSymbolMappings() {
+            try {
+                const res = await fetch('/api/admin/symbol-mapping');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.mappings) pcState.symbolMappings = data.mappings;
+                }
+            } catch (e) {}
+        }
+
+        function openSymbolMappingModal() {
+            const tbody = document.getElementById('symbolMappingRows');
+            if (tbody && pcState.symbolMappings) {
+                tbody.innerHTML = pcState.symbolMappings.map((m, idx) => `
+                    <tr>
+                        <td><strong>${m.providerSymbol}</strong></td>
+                        <td><span class="pin-code">${m.internalSymbol}</span></td>
+                        <td><input type="text" id="symDisp-${idx}" value="${m.displayName}" class="rename-input" style="width:180px;"></td>
+                        <td><span style="color:#38bdf8;">${m.assetType}</span></td>
+                    </tr>
+                `).join('');
+            }
+            document.getElementById('symbolMappingModal').classList.remove('hidden');
+        }
+
+        function closeSymbolMappingModal() {
+            document.getElementById('symbolMappingModal').classList.add('hidden');
+        }
+
+        async function saveSymbolMappingsModal() {
+            const updated = pcState.symbolMappings.map((m, idx) => {
+                const disp = document.getElementById(`symDisp-${idx}`)?.value.trim() || m.displayName;
+                return { ...m, displayName: disp };
+            });
+
+            try {
+                const res = await fetch('/api/admin/symbol-mapping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ mappings: updated })
+                });
+                if (res.ok) {
+                    pcState.symbolMappings = updated;
+                    closeSymbolMappingModal();
+                    alert('✔ सिंबल मैपिंग सफलतापूर्वक सेव हो गई!');
+                }
+            } catch (e) {
+                alert('त्रुटि!');
+            }
+        }
+
+        // 7. AUDIT LOG MODAL
+        async function viewAuditLogs() {
+            try {
+                const res = await fetch('/api/admin/audit-logs', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const tbody = document.getElementById('auditLogRows');
+                    if (tbody && data.logs) {
+                        tbody.innerHTML = data.logs.map(l => `
+                            <tr>
+                                <td style="white-space:nowrap;"><span class="pin-code">${l.istTime || l.timestamp}</span></td>
+                                <td><strong style="color:#facc15;">${l.event}</strong></td>
+                                <td>${l.username}</td>
+                                <td>${l.ip}</td>
+                                <td style="font-size:10px;color:#94a3b8;">${JSON.stringify(l.details || {})}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    document.getElementById('auditLogModal').classList.remove('hidden');
+                }
+            } catch (e) {}
+        }
+
+        function closeAuditLogModal() {
+            document.getElementById('auditLogModal').classList.add('hidden');
         }
     </script>
 </body>

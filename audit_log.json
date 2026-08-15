@@ -1,0 +1,61 @@
+[
+  {
+    "id": "AUD_1786804092313_o9kq",
+    "timestamp": "2026-08-15T14:28:12.313Z",
+    "istTime": "15 Aug 2026, 07:58:12 pm",
+    "event": "ADMIN_PASSWORD_CHANGED",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "message": "Admin password updated successfully. must_change_password flag cleared."
+    }
+  },
+  {
+    "id": "AUD_1786804092157_xbll",
+    "timestamp": "2026-08-15T14:28:12.157Z",
+    "istTime": "15 Aug 2026, 07:58:12 pm",
+    "event": "ADMIN_LOGIN_SUCCESS",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "role": "SUPER ADMIN",
+      "must_change_password": false,
+      "userAgent": "node"
+    }
+  },
+  {
+    "id": "AUD_1786804092076_n0c5",
+    "timestamp": "2026-08-15T14:28:12.076Z",
+    "istTime": "15 Aug 2026, 07:58:12 pm",
+    "event": "ADMIN_PASSWORD_CHANGED",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "message": "Admin password updated successfully. must_change_password flag cleared."
+    }
+  },
+  {
+    "id": "AUD_1786804091909_whmi",
+    "timestamp": "2026-08-15T14:28:11.909Z",
+    "istTime": "15 Aug 2026, 07:58:11 pm",
+    "event": "ADMIN_LOGIN_SUCCESS",
+    "username": "Paliwal9824",
+    "ip": "127.0.0.1",
+    "details": {
+      "role": "SUPER ADMIN",
+      "must_change_password": true,
+      "userAgent": "node"
+    }
+  },
+  {
+    "id": "AUD_1786802853105_lan1",
+    "timestamp": "2026-08-15T14:07:33.105Z",
+    "istTime": "15 Aug 2026, 07:37:33 pm",
+    "event": "SUPER_ADMIN_PROVISIONED",
+    "username": "Paliwal9824",
+    "ip": "SYSTEM",
+    "details": {
+      "message": "Initial Super Admin account provisioned securely from environment secrets with must_change_password=true"
+    }
+  }
+]
